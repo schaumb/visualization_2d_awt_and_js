@@ -86,4 +86,6 @@ public class Point {
                 ", y=" + y +
                 '}';
     }
+
+    public static final Point ORIGO = new Point(0, 0);
 }

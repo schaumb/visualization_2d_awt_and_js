@@ -1,4 +1,4 @@
-package bxlx;
+package bxlx.graphics;
 
 import java.util.HashMap;
 import java.util.function.Function;

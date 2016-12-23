@@ -1,6 +1,6 @@
 package bxlx.jsweet;
 
-import bxlx.ImageCaches;
+import bxlx.graphics.ImageCaches;
 import bxlx.graphics.Color;
 import bxlx.graphics.ICanvas;
 import bxlx.graphics.Point;
@@ -9,6 +9,7 @@ import bxlx.graphics.shapes.Arc;
 import bxlx.graphics.shapes.Polygon;
 import bxlx.graphics.shapes.Rectangle;
 import jsweet.dom.CanvasRenderingContext2D;
+import jsweet.dom.HTMLCanvasElement;
 import jsweet.dom.HTMLImageElement;
 import jsweet.util.StringTypes;
 
@@ -27,13 +28,15 @@ public class HtmlCanvas implements ICanvas {
     private static final ImageCaches<HTMLImageElement> imageCaches =
             new ImageCaches<>(src -> document.createElement(StringTypes.img));
 
-    public HtmlCanvas(CanvasRenderingContext2D context) {
-        this.context = context;
-        clips.push(new Rectangle(new Point(0, 0), new Size(context.canvas.width, context.canvas.height)));
+    public HtmlCanvas(HTMLCanvasElement canvasElement) {
+        this.context = canvasElement.getContext(StringTypes._2d);
     }
 
     @Override
     public Rectangle getBoundingRectangle() {
+        if(clips.empty()) {
+            return new Rectangle(Point.ORIGO, new Size(context.canvas.width, context.canvas.height));
+        }
         return clips.peek();
     }
 
@@ -82,6 +85,7 @@ public class HtmlCanvas implements ICanvas {
 
     @Override
     public void clip(Rectangle rectangle) {
+        clips.push(rectangle);
         context.save();
         context.beginPath();
         context.rect(rectangle.getStart().getX(),
@@ -93,6 +97,7 @@ public class HtmlCanvas implements ICanvas {
 
     @Override
     public void restore() {
+        clips.pop();
         context.restore();
     }
 }

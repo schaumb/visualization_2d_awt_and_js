@@ -1,7 +1,9 @@
 package bxlx.jsweet;
 
 
+import bxlx.graphics.Color;
 import bxlx.graphics.Size;
+import bxlx.graphics.shapes.Arc;
 
 import static jsweet.dom.Globals.console;
 
@@ -10,11 +12,11 @@ import static jsweet.dom.Globals.console;
  */
 public class TestMain {
 
-    public TestMain() {
-    }
-
     public static void main(String[] args) {
-        Size s = new Size(3, 4);
-        console.debug(s.asPoint().asSize().toString());
+        JSweetSystemSpecific.create().setDrawFunction(c -> {
+            c.setColor(Color.GREEN);
+            Size size = c.getBoundingRectangle().getSize();
+            c.fillArc(Arc.circle(c.getBoundingRectangle().getCenter(), Math.min(size.getHeight(), size.getWidth()) / 2));
+        });
     }
 }

@@ -1,10 +1,15 @@
 package bxlx;
 
+import bxlx.graphics.ICanvas;
+
+import java.util.function.Consumer;
+import java.util.function.Function;
+
 /**
  * Created by qqcs on 2016.12.23..
  */
 public abstract class SystemSpecific {
-    private static SystemSpecific INSTANCE;
+    protected static SystemSpecific INSTANCE;
 
     public static SystemSpecific get() {
         if(INSTANCE == null) {
@@ -20,6 +25,7 @@ public abstract class SystemSpecific {
         INSTANCE = this;
     }
 
+    abstract public void setDrawFunction(Consumer<ICanvas> canvasConsumer);
     abstract public boolean isEqual(double d1, double d2);
     abstract public long getTime();
     abstract public void log(String message);

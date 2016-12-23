@@ -35,6 +35,10 @@ public class Rectangle {
         return size;
     }
 
+    public Point getCenter() {
+        return start.add(getSize().asPoint().multiple(0.5));
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;

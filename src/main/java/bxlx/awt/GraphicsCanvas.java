@@ -1,6 +1,6 @@
 package bxlx.awt;
 
-import bxlx.ImageCaches;
+import bxlx.graphics.ImageCaches;
 import bxlx.graphics.Color;
 import bxlx.graphics.Direction;
 import bxlx.graphics.ICanvas;
@@ -109,7 +109,8 @@ public class GraphicsCanvas implements ICanvas {
 
     @Override
     public void restore() {
-        Rectangle rectangle = clips.pop();
+        clips.pop();
+        Rectangle rectangle = getBoundingRectangle();
         graphics.setClip(
                 (int) Math.round(rectangle.getStart().getX()),
                 (int) Math.round(rectangle.getStart().getY()),
