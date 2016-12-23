@@ -1,0 +1,98 @@
+package bxlx.jsweet;
+
+import bxlx.ImageCaches;
+import bxlx.graphics.Color;
+import bxlx.graphics.ICanvas;
+import bxlx.graphics.Point;
+import bxlx.graphics.Size;
+import bxlx.graphics.shapes.Arc;
+import bxlx.graphics.shapes.Polygon;
+import bxlx.graphics.shapes.Rectangle;
+import jsweet.dom.CanvasRenderingContext2D;
+import jsweet.dom.HTMLImageElement;
+import jsweet.util.StringTypes;
+
+import java.util.List;
+import java.util.Stack;
+
+import static jsweet.dom.Globals.document;
+import static jsweet.util.Globals.union;
+
+/**
+ * Created by qqcs on 2016.12.23..
+ */
+public class HtmlCanvas implements ICanvas {
+    private final CanvasRenderingContext2D context;
+    private final Stack<Rectangle> clips = new Stack<>();
+    private static final ImageCaches<HTMLImageElement> imageCaches =
+            new ImageCaches<>(src -> document.createElement(StringTypes.img));
+
+    public HtmlCanvas(CanvasRenderingContext2D context) {
+        this.context = context;
+        clips.push(new Rectangle(new Point(0, 0), new Size(context.canvas.width, context.canvas.height)));
+    }
+
+    @Override
+    public Rectangle getBoundingRectangle() {
+        return clips.peek();
+    }
+
+    @Override
+    public void setColor(Color color) {
+        context.fillStyle = union(color.toString());
+        context.globalAlpha = color.getAlpha();
+    }
+
+    @Override
+    public void fillArc(Arc arc) {
+        context.beginPath();
+        context.arc(arc.getCenter().getX(), arc.getCenter().getY(),
+                arc.getRadius(), arc.getFromRadian(), arc.getToRadian(),
+                arc.getFromRadian() < arc.getToRadian());
+        context.fill();
+    }
+
+    @Override
+    public void fillRectangle(Rectangle rectangle) {
+        context.fillRect(rectangle.getStart().getX(),
+                rectangle.getStart().getY(),
+                rectangle.getSize().getWidth(),
+                rectangle.getSize().getHeight());
+    }
+
+    @Override
+    public void fillPolygon(Polygon polygon) {
+        List<Point> points = polygon.getPoints();
+        context.beginPath();
+        context.moveTo(points.get(0).getX(), points.get(0).getY());
+        for(int i = 1; i < points.size(); ++i) {
+            context.lineTo(points.get(i).getX(), points.get(i).getY());
+        }
+        context.fill();
+    }
+
+    @Override
+    public void drawImage(String src, Rectangle to) {
+        context.drawImage(imageCaches.get(src),
+                to.getStart().getX(),
+                to.getStart().getY(),
+                to.getSize().getWidth(),
+                to.getSize().getHeight());
+    }
+
+    @Override
+    public void clip(Rectangle rectangle) {
+        context.save();
+        context.beginPath();
+        context.rect(rectangle.getStart().getX(),
+                rectangle.getStart().getY(),
+                rectangle.getSize().getWidth(),
+                rectangle.getSize().getHeight());
+        context.clip();
+    }
+
+    @Override
+    public void restore() {
+        context.restore();
+    }
+}
