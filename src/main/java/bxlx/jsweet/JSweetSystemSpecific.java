@@ -1,6 +1,7 @@
 package bxlx.jsweet;
 
 import bxlx.CommonError;
+import bxlx.MyConsumer;
 import bxlx.SystemSpecific;
 import bxlx.graphics.ICanvas;
 import jsweet.dom.HTMLCanvasElement;
@@ -20,7 +21,7 @@ import static jsweet.dom.Globals.window;
 public class JSweetSystemSpecific extends SystemSpecific {
 
     private HTMLCanvasElement canvasElement;
-    private Consumer<ICanvas> canvasConsumer;
+    private MyConsumer<ICanvas> canvasConsumer;
 
     private JSweetSystemSpecific() {}
 
@@ -29,18 +30,19 @@ public class JSweetSystemSpecific extends SystemSpecific {
         return new JSweetSystemSpecific();
     }
 
-    private void draw(double var) {
+    private void draw(double __var) {
         if(canvasElement.width != window.innerWidth || canvasElement.height != window.innerHeight) {
             canvasElement.width = window.innerWidth;
             canvasElement.height = window.innerHeight;
         }
+
         canvasConsumer.accept(new HtmlCanvas(canvasElement));
 
         window.requestAnimationFrame(x -> draw(x));
     }
 
     @Override
-    public void setDrawFunction(Consumer<ICanvas> canvasConsumer) {
+    public void setDrawFunction(MyConsumer<ICanvas> canvasConsumer) {
         this.canvasConsumer = canvasConsumer;
         if(canvasElement == null) {
             canvasElement = document.createElement(StringTypes.canvas);

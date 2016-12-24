@@ -1,6 +1,7 @@
 package bxlx.awt;
 
 import bxlx.CommonError;
+import bxlx.MyConsumer;
 import bxlx.SystemSpecific;
 import bxlx.graphics.ICanvas;
 import bxlx.graphics.Size;
@@ -8,6 +9,7 @@ import bxlx.graphics.Size;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.Timer;
+import java.awt.Color;
 import java.awt.EventQueue;
 import java.awt.Graphics;
 import java.awt.event.ComponentAdapter;
@@ -32,8 +34,10 @@ public class AwtSystemSpecific extends SystemSpecific {
     }
 
     private void refresh() {
-        frame.repaint();
-        frame.revalidate();
+        if(panel != null) {
+            panel.revalidate();
+            panel.repaint();
+        }
         try {
             Thread.sleep(20);
         } catch (InterruptedException e) {
@@ -43,7 +47,7 @@ public class AwtSystemSpecific extends SystemSpecific {
     }
 
     @Override
-    public void setDrawFunction(Consumer<ICanvas> canvasConsumer) {
+    public void setDrawFunction(MyConsumer<ICanvas> canvasConsumer) {
         if(frame == null) {
             frame = new JFrame();
             frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -57,7 +61,7 @@ public class AwtSystemSpecific extends SystemSpecific {
         frame.add(panel = new JPanel() {
             @Override
             protected void paintComponent(Graphics graphics) {
-                super.paintComponent(graphics);
+                //super.paintComponent(graphics);
 
                 canvasConsumer.accept(canvas = new GraphicsCanvas(graphics));
             }

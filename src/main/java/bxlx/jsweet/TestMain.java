@@ -13,10 +13,7 @@ import static jsweet.dom.Globals.console;
 public class TestMain {
 
     public static void main(String[] args) {
-        JSweetSystemSpecific.create().setDrawFunction(c -> {
-            c.setColor(Color.GREEN);
-            Size size = c.getBoundingRectangle().getSize();
-            c.fillArc(Arc.circle(c.getBoundingRectangle().getCenter(), Math.min(size.getHeight(), size.getWidth()) / 2));
-        });
+        JSweetSystemSpecific.create();
+        new bxlx.TestMain();
     }
 }

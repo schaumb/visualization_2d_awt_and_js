@@ -25,7 +25,7 @@ public abstract class SystemSpecific {
         INSTANCE = this;
     }
 
-    abstract public void setDrawFunction(Consumer<ICanvas> canvasConsumer);
+    abstract public void setDrawFunction(MyConsumer<ICanvas> canvasConsumer);
     abstract public boolean isEqual(double d1, double d2);
     abstract public long getTime();
     abstract public void log(String message);

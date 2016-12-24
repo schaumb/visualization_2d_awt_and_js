@@ -26,7 +26,11 @@ public class HtmlCanvas implements ICanvas {
     private final CanvasRenderingContext2D context;
     private final Stack<Rectangle> clips = new Stack<>();
     private static final ImageCaches<HTMLImageElement> imageCaches =
-            new ImageCaches<>(src -> document.createElement(StringTypes.img));
+            new ImageCaches<>(src -> {
+                HTMLImageElement img = document.createElement(StringTypes.img);
+                img.src = src;
+                return img;
+            });
 
     public HtmlCanvas(HTMLCanvasElement canvasElement) {
         this.context = canvasElement.getContext(StringTypes._2d);
@@ -49,8 +53,9 @@ public class HtmlCanvas implements ICanvas {
     @Override
     public void fillArc(Arc arc) {
         context.beginPath();
+        context.moveTo(arc.getCenter().getX(), arc.getCenter().getY());
         context.arc(arc.getCenter().getX(), arc.getCenter().getY(),
-                arc.getRadius(), arc.getFromRadian(), arc.getToRadian(),
+                arc.getRadius(), Math.PI * 2 - arc.getFromRadian(), Math.PI * 2 - arc.getToRadian(),
                 arc.getFromRadian() < arc.getToRadian());
         context.fill();
     }
@@ -76,11 +81,14 @@ public class HtmlCanvas implements ICanvas {
 
     @Override
     public void drawImage(String src, Rectangle to) {
-        context.drawImage(imageCaches.get(src),
-                to.getStart().getX(),
-                to.getStart().getY(),
-                to.getSize().getWidth(),
-                to.getSize().getHeight());
+        HTMLImageElement element = imageCaches.get(src);
+        if(element.complete) {
+            context.drawImage(element,
+                    to.getStart().getX(),
+                    to.getStart().getY(),
+                    to.getSize().getWidth(),
+                    to.getSize().getHeight());
+        }
     }
 
     @Override

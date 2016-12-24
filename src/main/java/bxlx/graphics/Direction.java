@@ -24,11 +24,11 @@ public class Direction {
     public static final Direction RIGHT = new Direction(1, 0);
 
     public static Direction fromRadian(double radian) {
-        return new Direction(Math.cos(radian), Math.sin(radian));
+        return new Direction(Math.cos(radian), -Math.sin(radian));
     }
 
     public double toRadian() {
-        return Math.atan2(vector.getY(), vector.getX());
+        return Math.atan2(-vector.getY(), vector.getX());
     }
 
     @Override
