@@ -4,12 +4,10 @@ import bxlx.CommonError;
 import bxlx.MyConsumer;
 import bxlx.SystemSpecific;
 import bxlx.graphics.ICanvas;
+import jsweet.dom.HTMLAudioElement;
 import jsweet.dom.HTMLCanvasElement;
-import jsweet.dom.HTMLDivElement;
 import jsweet.lang.Date;
 import jsweet.util.StringTypes;
-
-import java.util.function.Consumer;
 
 import static jsweet.dom.Globals.console;
 import static jsweet.dom.Globals.document;
@@ -75,5 +73,19 @@ public class JSweetSystemSpecific extends SystemSpecific {
     @Override
     public void log(CommonError commonError, String message) {
         console.debug("ERROR: " + commonError.name + " - " + commonError.message + " - " + message);
+    }
+
+    @Override
+    public void playMusic(String src) {
+        HTMLAudioElement element = document.createElement(StringTypes.audio);
+        element.src = src;
+        element.style.display = "none";
+        element.autoplay = true;
+        element.onended = x -> {
+            element.play();
+            return x;
+        };
+
+        document.body.appendChild(element);
     }
 }

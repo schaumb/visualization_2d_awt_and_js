@@ -39,6 +39,23 @@ public class Rectangle {
         return start.add(getSize().asPoint().multiple(0.5));
     }
 
+    public Point getEnd() {
+        return start.add(getSize().asPoint());
+    }
+
+    public Rectangle intersect(Rectangle other) {
+        double xStart = Math.max(getStart().getX(), other.getStart().getX());
+        double yStart = Math.max(getStart().getY(), other.getStart().getY());
+        double xEnd = Math.min(getEnd().getX(), other.getEnd().getX());
+        double yEnd = Math.min(getEnd().getY(), other.getEnd().getY());
+
+        if(xEnd <= xStart || yEnd <= yStart) return NULL_RECTANGLE;
+
+        return new Rectangle(xStart, yStart, xEnd - xStart, yEnd - yStart);
+    }
+
+    public static final Rectangle NULL_RECTANGLE = new Rectangle(0, 0, 0, 0);
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;

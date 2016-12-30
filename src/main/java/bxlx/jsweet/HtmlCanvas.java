@@ -31,6 +31,7 @@ public class HtmlCanvas implements ICanvas {
                 img.src = src;
                 return img;
             });
+    private Color latestColor;
 
     public HtmlCanvas(HTMLCanvasElement canvasElement) {
         this.context = canvasElement.getContext(StringTypes._2d);
@@ -46,8 +47,15 @@ public class HtmlCanvas implements ICanvas {
 
     @Override
     public void setColor(Color color) {
+        if(color == null) return;
+        latestColor = color;
         context.fillStyle = union(color.toString());
         context.globalAlpha = color.getAlpha();
+    }
+
+    @Override
+    public Color getColor() {
+        return latestColor;
     }
 
     @Override
@@ -93,7 +101,7 @@ public class HtmlCanvas implements ICanvas {
 
     @Override
     public void clip(Rectangle rectangle) {
-        clips.push(rectangle);
+        clips.push(rectangle.intersect(getBoundingRectangle()));
         context.save();
         context.beginPath();
         context.rect(rectangle.getStart().getX(),

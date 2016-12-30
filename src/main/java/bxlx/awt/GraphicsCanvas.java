@@ -49,6 +49,12 @@ public class GraphicsCanvas implements ICanvas {
     }
 
     @Override
+    public Color getColor() {
+        java.awt.Color color = graphics.getColor();
+        return new Color(color.getRed(), color.getGreen(), color.getBlue(), color.getAlpha());
+    }
+
+    @Override
     public void fillArc(Arc arc) {
         Point start = arc.getCenter().add(Direction.UP.getVector().multiple(arc.getRadius()))
                 .add(Direction.LEFT.getVector().multiple(arc.getRadius()));
@@ -99,6 +105,7 @@ public class GraphicsCanvas implements ICanvas {
 
     @Override
     public void clip(Rectangle rectangle) {
+        rectangle = rectangle.intersect(getBoundingRectangle());
         clips.push(rectangle);
         graphics.setClip(
                 (int) Math.round(rectangle.getStart().getX()),

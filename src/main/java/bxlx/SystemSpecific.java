@@ -30,4 +30,5 @@ public abstract class SystemSpecific {
     abstract public long getTime();
     abstract public void log(String message);
     abstract public void log(CommonError commonError, String message);
+    abstract public void playMusic(String src);
 }

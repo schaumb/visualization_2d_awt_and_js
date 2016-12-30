@@ -4,19 +4,16 @@ import bxlx.CommonError;
 import bxlx.MyConsumer;
 import bxlx.SystemSpecific;
 import bxlx.graphics.ICanvas;
-import bxlx.graphics.Size;
 
+import javax.media.Manager;
+import javax.media.MediaLocator;
+import javax.media.Player;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
-import javax.swing.Timer;
-import java.awt.Color;
 import java.awt.EventQueue;
 import java.awt.Graphics;
-import java.awt.event.ComponentAdapter;
-import java.awt.event.ComponentEvent;
-import java.awt.event.ComponentListener;
+import java.io.File;
 import java.util.Date;
-import java.util.function.Consumer;
 
 /**
  * Created by qqcs on 2016.12.23..
@@ -86,5 +83,17 @@ public class AwtSystemSpecific extends SystemSpecific {
     @Override
     public void log(CommonError commonError, String message) {
         System.out.println("ERROR: " + commonError.name + " - " + commonError.message + " - " + message);
+    }
+
+    @Override
+    public void playMusic(String src) {
+        // TODO mp3? only wav files!
+        try{
+            Player player = Manager.createPlayer(new MediaLocator(new File(src).toURI().toURL()));
+            player.start();
+        }
+        catch(Exception ex){
+            ex.printStackTrace();
+        }
     }
 }
