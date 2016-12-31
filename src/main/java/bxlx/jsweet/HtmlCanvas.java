@@ -100,6 +100,16 @@ public class HtmlCanvas implements ICanvas {
     }
 
     @Override
+    public void setFont(String name, int size, boolean italic, boolean bold) {
+        context.font = (italic ? "italic " : "") + (bold ? "bold " : "") + size + "px " + name;
+    }
+
+    @Override
+    public void fillText(String text, Point to) {
+        context.fillText(text, to.getX(), to.getY());
+    }
+
+    @Override
     public void clip(Rectangle rectangle) {
         clips.push(rectangle.intersect(getBoundingRectangle()));
         context.save();

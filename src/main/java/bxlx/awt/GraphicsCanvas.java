@@ -1,5 +1,6 @@
 package bxlx.awt;
 
+import bxlx.SystemSpecific;
 import bxlx.graphics.ImageCaches;
 import bxlx.graphics.Color;
 import bxlx.graphics.Direction;
@@ -11,7 +12,10 @@ import bxlx.graphics.shapes.Polygon;
 import bxlx.graphics.shapes.Rectangle;
 
 import javax.imageio.ImageIO;
+import java.awt.Font;
 import java.awt.Graphics;
+import java.awt.Graphics2D;
+import java.awt.RenderingHints;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
@@ -36,6 +40,16 @@ public class GraphicsCanvas implements ICanvas {
         this.graphics = graphics;
         java.awt.Rectangle bound = graphics.getClipBounds();
         this.clips.add(new Rectangle(bound.getX(), bound.getY(), bound.getWidth(), bound.getHeight()));
+
+        if(graphics instanceof Graphics2D) {
+            ((Graphics2D) graphics).setRenderingHint(
+                    RenderingHints.KEY_ANTIALIASING,
+                    RenderingHints.VALUE_ANTIALIAS_ON);
+
+            ((Graphics2D) graphics).setRenderingHint(
+                    RenderingHints.KEY_TEXT_ANTIALIASING,
+                    RenderingHints.VALUE_TEXT_ANTIALIAS_DEFAULT);
+        }
     }
 
     @Override
@@ -101,6 +115,18 @@ public class GraphicsCanvas implements ICanvas {
                 (int) Math.round(to.getSize().getHeight()),
                 null
         );
+    }
+
+    @Override
+    public void setFont(String name, int size, boolean italic, boolean bold) {
+        graphics.setFont(new Font(name, (italic ? Font.ITALIC : Font.PLAIN) | (bold ? Font.BOLD : Font.PLAIN), size));
+    }
+
+    @Override
+    public void fillText(String text, Point to) {
+        graphics.drawString(text,
+                (int) Math.round(to.getX()),
+                (int) Math.round(to.getY()));
     }
 
     @Override
