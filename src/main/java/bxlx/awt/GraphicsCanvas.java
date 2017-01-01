@@ -1,10 +1,9 @@
 package bxlx.awt;
 
-import bxlx.SystemSpecific;
-import bxlx.graphics.ImageCaches;
 import bxlx.graphics.Color;
 import bxlx.graphics.Direction;
 import bxlx.graphics.ICanvas;
+import bxlx.graphics.ImageCaches;
 import bxlx.graphics.Point;
 import bxlx.graphics.Size;
 import bxlx.graphics.shapes.Arc;
@@ -41,7 +40,7 @@ public class GraphicsCanvas implements ICanvas {
         java.awt.Rectangle bound = graphics.getClipBounds();
         this.clips.add(new Rectangle(bound.getX(), bound.getY(), bound.getWidth(), bound.getHeight()));
 
-        if(graphics instanceof Graphics2D) {
+        if (graphics instanceof Graphics2D) {
             ((Graphics2D) graphics).setRenderingHint(
                     RenderingHints.KEY_ANTIALIASING,
                     RenderingHints.VALUE_ANTIALIAS_ON);

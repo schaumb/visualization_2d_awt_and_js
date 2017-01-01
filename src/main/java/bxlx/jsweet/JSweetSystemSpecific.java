@@ -1,9 +1,9 @@
 package bxlx.jsweet;
 
 import bxlx.CommonError;
-import bxlx.MyConsumer;
+import bxlx.IRenderer;
 import bxlx.SystemSpecific;
-import bxlx.graphics.ICanvas;
+import jsweet.dom.Event;
 import jsweet.dom.HTMLAudioElement;
 import jsweet.dom.HTMLCanvasElement;
 import jsweet.lang.Date;
@@ -19,30 +19,37 @@ import static jsweet.dom.Globals.window;
 public class JSweetSystemSpecific extends SystemSpecific {
 
     private HTMLCanvasElement canvasElement;
-    private MyConsumer<ICanvas> canvasConsumer;
+    private IRenderer renderer;
 
-    private JSweetSystemSpecific() {}
+    private JSweetSystemSpecific() {
+    }
 
     public static SystemSpecific create() {
-        if(INSTANCE != null) return get();
+        if (INSTANCE != null) return get();
         return new JSweetSystemSpecific();
     }
 
     private void draw(double __var) {
-        if(canvasElement.width != window.innerWidth || canvasElement.height != window.innerHeight) {
+        if (rendering = renderer.render(new HtmlCanvas(canvasElement))) {
+            window.requestAnimationFrame(x -> draw(x));
+        }
+    }
+
+    private Object resized(Event event) {
+        if (canvasElement.width != window.innerWidth || canvasElement.height != window.innerHeight) {
             canvasElement.width = window.innerWidth;
             canvasElement.height = window.innerHeight;
         }
 
-        canvasConsumer.accept(new HtmlCanvas(canvasElement));
-
-        window.requestAnimationFrame(x -> draw(x));
+        if (!isRendering()) {
+            window.requestAnimationFrame(x -> draw(x));
+        }
+        return null;
     }
 
     @Override
-    public void setDrawFunction(MyConsumer<ICanvas> canvasConsumer) {
-        this.canvasConsumer = canvasConsumer;
-        if(canvasElement == null) {
+    public void setDrawFunction(IRenderer renderer) {
+        if (canvasElement == null) {
             canvasElement = document.createElement(StringTypes.canvas);
             canvasElement.width = window.innerWidth;
             canvasElement.height = window.innerHeight;
@@ -51,13 +58,19 @@ public class JSweetSystemSpecific extends SystemSpecific {
             canvasElement.style.left = "0";
 
             document.body.appendChild(canvasElement);
+
+            window.onresize = this::resized;
+        }
+        this.renderer = renderer;
+
+        if (!isRendering()) {
             window.requestAnimationFrame(x -> draw(x));
         }
     }
 
     @Override
     public boolean isEqual(double d1, double d2) {
-        return Math.abs(d1-d2) < 0.00000001;
+        return Math.abs(d1 - d2) < 0.00000001;
     }
 
     @Override

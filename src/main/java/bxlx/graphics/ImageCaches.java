@@ -18,7 +18,7 @@ public class ImageCaches<ImageType> {
 
     public ImageType get(String src) {
         ImageType result = images.get(src);
-        if(result == null) {
+        if (result == null) {
             result = create(src);
         }
         return result;

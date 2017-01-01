@@ -6,10 +6,10 @@ package bxlx;
 public class CommonError extends jsweet.lang.Error {
     public CommonError(String name, String message) {
         super(message);
-        if(this.message == null) {
+        if (this.message == null) {
             this.message = message;
         }
-        if(this.name == null) {
+        if (this.name == null) {
             this.name = name;
         }
     }

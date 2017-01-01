@@ -1,6 +1,5 @@
 package bxlx.graphics.shapes;
 
-import bxlx.SystemSpecific;
 import bxlx.graphics.Direction;
 import bxlx.graphics.Point;
 
@@ -23,11 +22,11 @@ public class Polygon {
 
     public static Polygon nGon(int n, Point center, double radius, double startAngle) {
         List<Point> points = new ArrayList<>(n);
-        for(int i = 0; i < n; ++i) {
+        for (int i = 0; i < n; ++i) {
             double radian = 2 * Math.PI * i / n + startAngle;
             points.add(
                     center.add(Direction.fromRadian(radian)
-                        .getVector().multiple(radius)));
+                            .getVector().multiple(radius)));
         }
         return new Polygon(points);
     }

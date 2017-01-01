@@ -49,7 +49,7 @@ public class Rectangle {
         double xEnd = Math.min(getEnd().getX(), other.getEnd().getX());
         double yEnd = Math.min(getEnd().getY(), other.getEnd().getY());
 
-        if(xEnd <= xStart || yEnd <= yStart) return NULL_RECTANGLE;
+        if (xEnd <= xStart || yEnd <= yStart) return NULL_RECTANGLE;
 
         return new Rectangle(xStart, yStart, xEnd - xStart, yEnd - yStart);
     }

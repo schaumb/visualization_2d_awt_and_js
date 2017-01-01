@@ -18,7 +18,7 @@ public class Rect implements IDrawable {
     public void draw(ICanvas canvas) {
         Rectangle bounds = canvas.getBoundingRectangle();
 
-        if(bounds.getSize().getWidth() <= 0 || bounds.getSize().getHeight() <= 0) {
+        if (bounds.getSize().getWidth() <= 0 || bounds.getSize().getHeight() <= 0) {
             return;
         }
 

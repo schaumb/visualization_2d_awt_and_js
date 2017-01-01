@@ -1,8 +1,8 @@
 package bxlx.jsweet;
 
-import bxlx.graphics.ImageCaches;
 import bxlx.graphics.Color;
 import bxlx.graphics.ICanvas;
+import bxlx.graphics.ImageCaches;
 import bxlx.graphics.Point;
 import bxlx.graphics.Size;
 import bxlx.graphics.shapes.Arc;
@@ -39,7 +39,7 @@ public class HtmlCanvas implements ICanvas {
 
     @Override
     public Rectangle getBoundingRectangle() {
-        if(clips.empty()) {
+        if (clips.empty()) {
             return new Rectangle(Point.ORIGO, new Size(context.canvas.width, context.canvas.height));
         }
         return clips.peek();
@@ -47,7 +47,7 @@ public class HtmlCanvas implements ICanvas {
 
     @Override
     public void setColor(Color color) {
-        if(color == null) return;
+        if (color == null) return;
         latestColor = color;
         context.fillStyle = union(color.toString());
         context.globalAlpha = color.getAlpha();
@@ -81,7 +81,7 @@ public class HtmlCanvas implements ICanvas {
         List<Point> points = polygon.getPoints();
         context.beginPath();
         context.moveTo(points.get(0).getX(), points.get(0).getY());
-        for(int i = 1; i < points.size(); ++i) {
+        for (int i = 1; i < points.size(); ++i) {
             context.lineTo(points.get(i).getX(), points.get(i).getY());
         }
         context.fill();
@@ -90,7 +90,7 @@ public class HtmlCanvas implements ICanvas {
     @Override
     public void drawImage(String src, Rectangle to) {
         HTMLImageElement element = imageCaches.get(src);
-        if(element.complete) {
+        if (element.complete) {
             context.drawImage(element,
                     to.getStart().getX(),
                     to.getStart().getY(),
