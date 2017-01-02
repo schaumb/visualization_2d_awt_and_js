@@ -14,6 +14,10 @@ public class Rectangle {
         this(new Point(x, y), new Size(width, height));
     }
 
+    public Rectangle(Point start, Point end) {
+        this(start, end.add(start.negate()).asSize());
+    }
+
     public Rectangle(Point start, Size size) {
         this.start = start;
         this.size = size;
@@ -80,5 +84,9 @@ public class Rectangle {
                 "start=" + start +
                 ", size=" + size +
                 '}';
+    }
+
+    public Rectangle getBoundingRectangle() {
+        return this;
     }
 }

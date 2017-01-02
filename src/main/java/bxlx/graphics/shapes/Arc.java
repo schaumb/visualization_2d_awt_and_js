@@ -69,4 +69,9 @@ public class Arc {
                 ", toRadian=" + toRadian +
                 '}';
     }
+
+    public Rectangle getBoundingRectangle() {
+        // TODO more precision
+        return new Rectangle(center.add(-radius), center.add(radius));
+    }
 }

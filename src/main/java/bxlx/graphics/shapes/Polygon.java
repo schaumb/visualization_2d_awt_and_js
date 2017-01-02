@@ -30,4 +30,28 @@ public class Polygon {
         }
         return new Polygon(points);
     }
+
+
+    public Rectangle getBoundingRectangle() {
+        double minX = points.get(0).getX();
+        double minY = points.get(0).getY();
+        double maxX = minX;
+        double maxY = minY;
+
+        for(Point p : points) {
+            if(minX > p.getX()) {
+                minX = p.getX();
+            }
+            if(maxX < p.getX()) {
+                maxX = p.getX();
+            }
+            if(minY > p.getY()) {
+                minY = p.getY();
+            }
+            if(maxY < p.getY()) {
+                maxY = p.getY();
+            }
+        }
+        return new Rectangle(new Point(minX, minY), new Point(maxX, maxY));
+    }
 }
