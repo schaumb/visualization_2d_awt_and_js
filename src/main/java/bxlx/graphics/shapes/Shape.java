@@ -4,7 +4,7 @@ package bxlx.graphics.shapes;
  * Created by qqcs on 2017.01.03..
  */
 public abstract class Shape {
-    public enum Type { ARC, POLYGON, RECTANGLE }
+    public enum Type {ARC, POLYGON, RECTANGLE}
 
     private final Type type;
 

@@ -28,6 +28,14 @@ public class Size {
         return height;
     }
 
+    public double getShorterDimension() {
+        return Math.min(width, height);
+    }
+
+    public double getLongerDimension() {
+        return Math.max(width, height);
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;

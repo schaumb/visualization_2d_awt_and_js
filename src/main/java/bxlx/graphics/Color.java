@@ -70,7 +70,7 @@ public class Color {
         );
     }
 
-    public List<Color> getScale(Color to, int count) {
+    public List<Color> getScaleList(Color to, int count) {
         List<Color> result = new ArrayList<>(count);
 
         for (int i = 0; i < count; ++i) {
@@ -80,18 +80,18 @@ public class Color {
         return result;
     }
 
-    public static List<Color> getScale(Color from, Color middle, Color to, int count) {
+    public static List<Color> getScaleList(Color from, Color middle, Color to, int count) {
         List<Color> result = new ArrayList<>(count);
         if (count % 2 == 1) {
-            result.addAll(from.getScale(middle, count / 2 + 1));
+            result.addAll(from.getScaleList(middle, count / 2 + 1));
             result.remove(count / 2);
-            result.addAll(middle.getScale(to, count / 2 + 1));
+            result.addAll(middle.getScaleList(to, count / 2 + 1));
         } else {
-            List<Color> mul = from.getScale(middle, count);
+            List<Color> mul = from.getScaleList(middle, count);
             for (int i = 0; i < count / 2; ++i) {
                 result.add(mul.get(i * 2));
             }
-            mul = middle.getScale(to, count);
+            mul = middle.getScaleList(to, count);
             for (int i = 0; i < count / 2; ++i) {
                 result.add(mul.get(i * 2 + 1));
             }
@@ -101,7 +101,7 @@ public class Color {
     }
 
     public static List<Color> getScaleFromBackToWhite(Color color, int count) {
-        return getScale(BLACK, color, WHITE, count);
+        return getScaleList(BLACK, color, WHITE, count);
     }
 
     @Override

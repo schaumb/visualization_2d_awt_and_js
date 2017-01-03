@@ -44,17 +44,17 @@ public class Polygon extends Shape {
         double maxX = minX;
         double maxY = minY;
 
-        for(Point p : points) {
-            if(minX > p.getX()) {
+        for (Point p : points) {
+            if (minX > p.getX()) {
                 minX = p.getX();
             }
-            if(maxX < p.getX()) {
+            if (maxX < p.getX()) {
                 maxX = p.getX();
             }
-            if(minY > p.getY()) {
+            if (minY > p.getY()) {
                 minY = p.getY();
             }
-            if(maxY < p.getY()) {
+            if (maxY < p.getY()) {
                 maxY = p.getY();
             }
         }

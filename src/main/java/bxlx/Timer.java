@@ -8,7 +8,7 @@ public class Timer {
     private long length;
 
     public Timer() {
-        this(1000);
+        this(0);
     }
 
     public Timer(int length) {

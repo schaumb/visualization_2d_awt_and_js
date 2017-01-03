@@ -49,6 +49,7 @@ public class HtmlCanvas implements ICanvas {
         if (color == null) return;
         latestColor = color;
         context.fillStyle = union(color.toString());
+
         context.globalAlpha = color.getAlpha();
     }
 
@@ -78,7 +79,7 @@ public class HtmlCanvas implements ICanvas {
                 Polygon polygon = shape.getAsPolygon();
                 List<Point> points = polygon.getPoints();
                 context.moveTo(points.get(0).getX(), points.get(0).getY());
-                for (int i = 1; i < points.size(); ++i) {
+                for (int i = points.size() - 1; i >= 0; --i) {
                     context.lineTo(points.get(i).getX(), points.get(i).getY());
                 }
                 break;
@@ -133,7 +134,7 @@ public class HtmlCanvas implements ICanvas {
         context.save();
 
         setShape(shape);
-        context.rect( context.canvas.width,
+        context.rect(context.canvas.width,
                 0,
                 -context.canvas.width,
                 context.canvas.height
