@@ -60,4 +60,10 @@ public class Polygon extends Shape {
         }
         return new Rectangle(new Point(minX, minY), new Point(maxX, maxY));
     }
+
+    @Override
+    public boolean isContains(Point point) {
+        // TODO this...
+        return false;
+    }
 }

@@ -95,4 +95,10 @@ public class Rectangle extends Shape {
     public Rectangle getBoundingRectangle() {
         return this;
     }
+
+    @Override
+    public boolean isContains(Point point) {
+        return start.getX() <= point.getX() && point.getX() <= start.getX() + size.getWidth()
+                && start.getY() <= point.getY() && point.getY() <= start.getY() + size.getHeight();
+    }
 }

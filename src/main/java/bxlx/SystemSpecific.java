@@ -23,6 +23,8 @@ public abstract class SystemSpecific {
 
     abstract public void setDrawFunction(IRenderer renderer);
 
+    abstract public void setMouseEventListener(IMouseEventListener listener);
+
     abstract public boolean isEqual(double d1, double d2);
 
     abstract public long getTime();
@@ -32,6 +34,8 @@ public abstract class SystemSpecific {
     abstract public void log(CommonError commonError, String message);
 
     abstract public void playMusic(String src);
+
+    abstract public void readTextFileAsync(String fileName, Consumer<String> consumer);
 
     public final boolean isRendering() {
         return rendering;

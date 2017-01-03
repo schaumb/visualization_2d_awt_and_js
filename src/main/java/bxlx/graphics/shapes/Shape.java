@@ -1,5 +1,7 @@
 package bxlx.graphics.shapes;
 
+import bxlx.graphics.Point;
+
 /**
  * Created by qqcs on 2017.01.03..
  */
@@ -29,4 +31,6 @@ public abstract class Shape {
     }
 
     public abstract Rectangle getBoundingRectangle();
+
+    public abstract boolean isContains(Point point);
 }

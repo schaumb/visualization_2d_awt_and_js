@@ -1,5 +1,6 @@
 package bxlx.graphics.shapes;
 
+import bxlx.graphics.Direction;
 import bxlx.graphics.Point;
 
 /**
@@ -80,5 +81,13 @@ public class Arc extends Shape {
     public Rectangle getBoundingRectangle() {
         // TODO more precision
         return new Rectangle(center.add(-radius), center.add(radius));
+    }
+
+    @Override
+    public boolean isContains(Point point) {
+        Point vector = point.add(center.negate());
+
+        double i = new Direction(vector).toRadian();
+        return fromRadian <= i && i <= toRadian && vector.length() <= radius;
     }
 }

@@ -1,8 +1,11 @@
 package bxlx.awt;
 
 import bxlx.CommonError;
+import bxlx.Consumer;
+import bxlx.IMouseEventListener;
 import bxlx.IRenderer;
 import bxlx.SystemSpecific;
+import bxlx.graphics.Point;
 
 import javax.media.Manager;
 import javax.media.MediaLocator;
@@ -14,8 +17,14 @@ import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.Date;
+import java.util.stream.Collectors;
 
 /**
  * Created by qqcs on 2016.12.23..
@@ -78,6 +87,39 @@ public class AwtSystemSpecific extends SystemSpecific {
     }
 
     @Override
+    public void setMouseEventListener(IMouseEventListener listener) {
+        if (panel != null) {
+            MouseAdapter adapter = new MouseAdapter() {
+                @Override
+                public void mousePressed(MouseEvent mouseEvent) {
+                    java.awt.Point p = mouseEvent.getPoint();
+                    listener.down(new Point(p.getX(), p.getY()), mouseEvent.getButton() == MouseEvent.BUTTON1);
+                }
+
+                @Override
+                public void mouseReleased(MouseEvent mouseEvent) {
+                    java.awt.Point p = mouseEvent.getPoint();
+                    listener.up(new Point(p.getX(), p.getY()), mouseEvent.getButton() == MouseEvent.BUTTON1);
+                }
+
+                @Override
+                public void mouseMoved(MouseEvent mouseEvent) {
+                    java.awt.Point p = mouseEvent.getPoint();
+                    listener.move(new Point(p.getX(), p.getY()));
+                }
+
+                @Override
+                public void mouseDragged(MouseEvent mouseEvent) {
+                    java.awt.Point p = mouseEvent.getPoint();
+                    listener.move(new Point(p.getX(), p.getY()));
+                }
+            };
+            panel.addMouseListener(adapter);
+            panel.addMouseMotionListener(adapter);
+        }
+    }
+
+    @Override
     public boolean isEqual(double d1, double d2) {
         return Double.compare(d1, d2) == 0;
     }
@@ -106,5 +148,18 @@ public class AwtSystemSpecific extends SystemSpecific {
         } catch (Exception ex) {
             ex.printStackTrace();
         }
+    }
+
+    @Override
+    public void readTextFileAsync(String fileName, Consumer<String> consumer) {
+        Thread t = new Thread(() -> {
+            try {
+                consumer.accept(Files.readAllLines(Paths.get(fileName)).stream().collect(Collectors.joining("\n")));
+            } catch (IOException e) {
+                consumer.accept(null);
+            }
+        });
+        t.setDaemon(true);
+        t.start();
     }
 }
