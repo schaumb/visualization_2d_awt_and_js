@@ -1,7 +1,5 @@
 package bxlx.graphics;
 
-import bxlx.graphics.ICanvas;
-
 /**
  * Created by qqcs on 2016.12.24..
  */

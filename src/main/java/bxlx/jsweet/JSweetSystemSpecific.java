@@ -1,11 +1,11 @@
 package bxlx.jsweet;
 
+import bxlx.graphics.Point;
 import bxlx.system.CommonError;
 import bxlx.system.Consumer;
 import bxlx.system.IMouseEventListener;
 import bxlx.system.IRenderer;
 import bxlx.system.SystemSpecific;
-import bxlx.graphics.Point;
 import jsweet.dom.Event;
 import jsweet.dom.HTMLAudioElement;
 import jsweet.dom.HTMLCanvasElement;

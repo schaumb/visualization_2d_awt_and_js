@@ -18,6 +18,9 @@ public class Arc extends Shape {
         this.radius = radius;
         this.fromRadian = fromRadian;
         this.toRadian = toRadian;
+        while (fromRadian > toRadian) {
+            toRadian += 2 * Math.PI;
+        }
     }
 
     public static Arc circle(Point center, double radius) {
@@ -88,6 +91,10 @@ public class Arc extends Shape {
         Point vector = point.add(center.negate());
 
         double i = new Direction(vector).toRadian();
+        while (fromRadian > i) {
+            i += 2 * Math.PI;
+        }
+
         return fromRadian <= i && i <= toRadian && vector.length() <= radius;
     }
 }

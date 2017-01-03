@@ -1,10 +1,8 @@
 package bxlx.pipe;
 
-import bxlx.graphics.IDrawable;
-import bxlx.graphics.Color;
 import bxlx.graphics.ICanvas;
+import bxlx.graphics.IDrawable;
 import bxlx.graphics.Point;
-import bxlx.graphics.Size;
 import bxlx.graphics.shapes.Arc;
 import bxlx.graphics.shapes.Rectangle;
 
@@ -12,7 +10,15 @@ import bxlx.graphics.shapes.Rectangle;
  * Created by qqcs on 2016.12.24..
  */
 public class Rect implements IDrawable {
-    private final static double RATE = 1.0 / 3.0;
+    private double rate;
+
+    public Rect() {
+        this(1 / 3.0);
+    }
+
+    public Rect(double rate) {
+        this.rate = rate;
+    }
 
     @Override
     public void draw(ICanvas canvas) {
@@ -22,35 +28,30 @@ public class Rect implements IDrawable {
             return;
         }
 
-        canvas.setColor(Color.BLUE);
+        double circles = bounds.getSize().getShorterDimension() * rate;
 
-        canvas.fill(bounds);
+        canvas.fill(Arc.circle(bounds.getStart().add(circles), circles));
+        canvas.fill(Arc.circle(bounds.getStart().add(new Point(circles, bounds.getSize().getHeight() - circles)), circles));
+        canvas.fill(Arc.circle(bounds.getStart().add(new Point(bounds.getSize().getWidth() - circles, circles)), circles));
+        canvas.fill(Arc.circle(bounds.getStart().add(new Point(bounds.getSize().getWidth() - circles, bounds.getSize().getHeight() - circles)), circles));
+        canvas.fill(new Rectangle(bounds.getStart().add(new Point(0, circles)),
+                bounds.getStart().add(bounds.getSize().asPoint()).add(new Point(0, -circles))));
+        canvas.fill(new Rectangle(bounds.getStart().add(new Point(circles, 0)),
+                bounds.getStart().add(bounds.getSize().asPoint()).add(new Point(-circles, 0))));
+    }
 
-        double rectSizeX = Math.min(bounds.getSize().getHeight(), bounds.getSize().getWidth()) * RATE;
-        Size rectSize = Point.same(rectSizeX).asSize();
-        canvas.clip(new Rectangle(bounds.getStart(), rectSize));
-        canvas.clipInverse(Arc.circle(rectSize.asPoint().add(bounds.getStart()), rectSizeX));
-        canvas.clearCanvas(Color.WHITE);
-        canvas.restore();
-        canvas.restore();
+    public boolean isContains(Rectangle bounds, Point point) {
+        if (bounds.getSize().getWidth() <= 0 || bounds.getSize().getHeight() <= 0) {
+            return false;
+        }
 
-        canvas.clip(new Rectangle(new Point(bounds.getStart().getX(), bounds.getStart().getY() + bounds.getSize().getHeight() - rectSizeX), rectSize));
-        canvas.clipInverse(Arc.circle(canvas.getBoundingRectangle().getStart().add(new Point(rectSizeX, 0)), rectSizeX));
-        canvas.clearCanvas(Color.WHITE);
-        canvas.restore();
-        canvas.restore();
+        double circles = bounds.getSize().getShorterDimension() * rate;
 
-        canvas.clip(new Rectangle(bounds.getStart().add(bounds.getSize().asPoint())
-                .add(-rectSizeX), rectSize));
-        canvas.clipInverse(Arc.circle(canvas.getBoundingRectangle().getStart(), rectSizeX));
-        canvas.clearCanvas(Color.WHITE);
-        canvas.restore();
-        canvas.restore();
-
-        canvas.clip(new Rectangle(new Point(bounds.getStart().getX() + bounds.getSize().getWidth() - rectSizeX, bounds.getStart().getY()), rectSize));
-        canvas.clipInverse(Arc.circle(canvas.getBoundingRectangle().getStart().add(new Point(0, rectSizeX)), rectSizeX));
-        canvas.clearCanvas(Color.WHITE);
-        canvas.restore();
-        canvas.restore();
+        return new Rectangle(bounds.getStart().add(new Point(circles, 0)), bounds.getStart().add(bounds.getSize().asPoint()).add(new Point(-circles, 0))).isContains(point)
+                || new Rectangle(bounds.getStart().add(new Point(0, circles)), bounds.getStart().add(bounds.getSize().asPoint()).add(new Point(0, -circles))).isContains(point)
+                || Arc.circle(bounds.getStart().add(circles), circles).isContains(point)
+                || Arc.circle(bounds.getStart().add(new Point(circles, bounds.getSize().getHeight() - circles)), circles).isContains(point)
+                || Arc.circle(bounds.getStart().add(new Point(bounds.getSize().getWidth() - circles, circles)), circles).isContains(point)
+                || Arc.circle(bounds.getStart().add(new Point(bounds.getSize().getWidth() - circles, bounds.getSize().getHeight() - circles)), circles).isContains(point);
     }
 }
