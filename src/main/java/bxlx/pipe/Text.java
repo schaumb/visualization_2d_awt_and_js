@@ -9,7 +9,7 @@ import bxlx.graphics.shapes.Rectangle;
  * Created by qqcs on 2017.01.03..
  */
 public class Text implements IDrawable {
-    private final double XY = 2.1;
+    private final double XY = 2.0;
     private String text;
 
     public Text(String text) {

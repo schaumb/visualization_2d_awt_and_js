@@ -3,6 +3,8 @@ package bxlx.graphics.shapes;
 import bxlx.graphics.Direction;
 import bxlx.graphics.Point;
 
+import java.util.ArrayList;
+
 /**
  * Created by qqcs on 2016.12.23..
  */
@@ -14,13 +16,12 @@ public class Arc extends Shape {
 
     public Arc(Point center, double radius, double fromRadian, double toRadian) {
         super(Type.ARC);
+        if (fromRadian == toRadian)
+            radius = 0;
         this.center = center;
         this.radius = radius;
         this.fromRadian = fromRadian;
         this.toRadian = toRadian;
-        while (fromRadian > toRadian) {
-            toRadian += 2 * Math.PI;
-        }
     }
 
     public static Arc circle(Point center, double radius) {
@@ -82,19 +83,40 @@ public class Arc extends Shape {
 
     @Override
     public Rectangle getBoundingRectangle() {
-        // TODO more precision
-        return new Rectangle(center.add(-radius), center.add(radius));
+        ArrayList<Point> points = new ArrayList<>(7);
+        points.add(center);
+        points.add(center.add(Direction.fromRadian(fromRadian).getVector().multiple(radius)));
+        points.add(center.add(Direction.fromRadian(toRadian).getVector().multiple(radius)));
+
+        for (double d = fromRadian - fromRadian % (Math.PI / 2) + (Math.PI / 2); d < toRadian; d += Math.PI / 2) {
+            points.add(center.add(Direction.fromRadian(d).getVector().multiple(radius)));
+        }
+
+        for (double d = fromRadian - fromRadian % (Math.PI / 2); d > toRadian; d -= Math.PI / 2) {
+            points.add(center.add(Direction.fromRadian(d).getVector().multiple(radius)));
+        }
+
+        return new Polygon(points).getBoundingRectangle();
     }
 
     @Override
     public boolean isContains(Point point) {
         Point vector = point.add(center.negate());
 
+        if (vector.length() > radius)
+            return false;
+
         double i = new Direction(vector).toRadian();
         while (fromRadian > i) {
             i += 2 * Math.PI;
         }
 
-        return fromRadian <= i && i <= toRadian && vector.length() <= radius;
+        if (fromRadian <= i && i <= toRadian) {
+            return true;
+        }
+
+        i -= 2 * Math.PI;
+
+        return toRadian <= i && i < fromRadian;
     }
 }

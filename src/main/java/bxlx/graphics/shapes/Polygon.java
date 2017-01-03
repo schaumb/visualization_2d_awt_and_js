@@ -2,6 +2,7 @@ package bxlx.graphics.shapes;
 
 import bxlx.graphics.Direction;
 import bxlx.graphics.Point;
+import bxlx.graphics.Size;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -28,6 +29,17 @@ public class Polygon extends Shape {
             points.add(
                     center.add(Direction.fromRadian(radian)
                             .getVector().multiple(radius)));
+        }
+        return new Polygon(points);
+    }
+
+    public static Polygon ellipseNGon(int n, Point center, Size size, double startAngle) {
+        List<Point> points = new ArrayList<>(n);
+        for (int i = 0; i < n; ++i) {
+            double radian = 2 * Math.PI * i / n + startAngle;
+            points.add(
+                    center.add(Direction.fromRadian(radian)
+                            .getVector().multiple(size.asPoint().multiple(1 / 2.0))));
         }
         return new Polygon(points);
     }
@@ -63,7 +75,19 @@ public class Polygon extends Shape {
 
     @Override
     public boolean isContains(Point point) {
-        // TODO this...
-        return false;
+        List<Point> points = getPoints();
+        int i, j, nvert = points.size();
+        boolean c = false;
+
+        for (i = 0, j = nvert - 1; i < nvert; j = i++) {
+            if (((points.get(i).getY() >= point.getY()) != (points.get(j).getY() >= point.getY())) &&
+                    (point.getX() <= (points.get(j).getX() - points.get(i).getX()) *
+                            (point.getY() - points.get(i).getY()) / (points.get(j).getY() - points.get(i).getY()) +
+                            points.get(i).getX())
+                    )
+                c = !c;
+        }
+
+        return c;
     }
 }
