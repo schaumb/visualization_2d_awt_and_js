@@ -1,4 +1,4 @@
-package bxlx;
+package bxlx.graphics;
 
 import bxlx.graphics.ICanvas;
 

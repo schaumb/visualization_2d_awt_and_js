@@ -1,4 +1,4 @@
-package bxlx;
+package bxlx.system;
 
 /**
  * Created by qqcs on 2016.12.23..

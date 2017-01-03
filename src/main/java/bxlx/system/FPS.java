@@ -1,7 +1,8 @@
-package bxlx;
+package bxlx.system;
 
 import bxlx.graphics.Color;
 import bxlx.graphics.ICanvas;
+import bxlx.graphics.IDrawable;
 import bxlx.graphics.Point;
 import bxlx.graphics.shapes.Rectangle;
 

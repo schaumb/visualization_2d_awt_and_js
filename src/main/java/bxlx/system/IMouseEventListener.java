@@ -1,4 +1,4 @@
-package bxlx;
+package bxlx.system;
 
 import bxlx.graphics.Point;
 

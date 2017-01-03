@@ -4,6 +4,12 @@ import bxlx.graphics.Color;
 import bxlx.graphics.ICanvas;
 import bxlx.graphics.Point;
 import bxlx.pipe.Rect;
+import bxlx.system.Consumer;
+import bxlx.system.FPS;
+import bxlx.system.IMouseEventListener;
+import bxlx.system.IRenderer;
+import bxlx.system.SystemSpecific;
+import bxlx.system.Timer;
 
 /**
  * Created by qqcs on 2016.12.24..

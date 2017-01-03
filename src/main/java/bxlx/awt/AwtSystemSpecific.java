@@ -1,10 +1,10 @@
 package bxlx.awt;
 
-import bxlx.CommonError;
-import bxlx.Consumer;
-import bxlx.IMouseEventListener;
-import bxlx.IRenderer;
-import bxlx.SystemSpecific;
+import bxlx.system.CommonError;
+import bxlx.system.Consumer;
+import bxlx.system.IMouseEventListener;
+import bxlx.system.IRenderer;
+import bxlx.system.SystemSpecific;
 import bxlx.graphics.Point;
 
 import javax.media.Manager;

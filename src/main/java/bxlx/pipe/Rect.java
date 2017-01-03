@@ -1,6 +1,6 @@
 package bxlx.pipe;
 
-import bxlx.IDrawable;
+import bxlx.graphics.IDrawable;
 import bxlx.graphics.Color;
 import bxlx.graphics.ICanvas;
 import bxlx.graphics.Point;
