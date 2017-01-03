@@ -24,33 +24,33 @@ public class Rect implements IDrawable {
 
         canvas.setColor(Color.BLUE);
 
-        canvas.fillRectangle(bounds);
+        canvas.fill(bounds);
 
         double rectSizeX = Math.min(bounds.getSize().getHeight(), bounds.getSize().getWidth()) * RATE;
         Size rectSize = Point.same(rectSizeX).asSize();
         canvas.clip(new Rectangle(bounds.getStart(), rectSize));
+        canvas.clipInverse(Arc.circle(rectSize.asPoint().add(bounds.getStart()), rectSizeX));
         canvas.clearCanvas(Color.WHITE);
-        canvas.setColor(Color.BLUE);
-        canvas.fillArc(Arc.circle(rectSize.asPoint().add(bounds.getStart()), rectSizeX));
+        canvas.restore();
         canvas.restore();
 
         canvas.clip(new Rectangle(new Point(bounds.getStart().getX(), bounds.getStart().getY() + bounds.getSize().getHeight() - rectSizeX), rectSize));
+        canvas.clipInverse(Arc.circle(canvas.getBoundingRectangle().getStart().add(new Point(rectSizeX, 0)), rectSizeX));
         canvas.clearCanvas(Color.WHITE);
-        canvas.setColor(Color.BLUE);
-        canvas.fillArc(Arc.circle(canvas.getBoundingRectangle().getStart().add(new Point(rectSizeX, 0)), rectSizeX));
+        canvas.restore();
         canvas.restore();
 
         canvas.clip(new Rectangle(bounds.getStart().add(bounds.getSize().asPoint())
                 .add(-rectSizeX), rectSize));
+        canvas.clipInverse(Arc.circle(canvas.getBoundingRectangle().getStart(), rectSizeX));
         canvas.clearCanvas(Color.WHITE);
-        canvas.setColor(Color.BLUE);
-        canvas.fillArc(Arc.circle(canvas.getBoundingRectangle().getStart(), rectSizeX));
+        canvas.restore();
         canvas.restore();
 
         canvas.clip(new Rectangle(new Point(bounds.getStart().getX() + bounds.getSize().getWidth() - rectSizeX, bounds.getStart().getY()), rectSize));
+        canvas.clipInverse(Arc.circle(canvas.getBoundingRectangle().getStart().add(new Point(0, rectSizeX)), rectSizeX));
         canvas.clearCanvas(Color.WHITE);
-        canvas.setColor(Color.BLUE);
-        canvas.fillArc(Arc.circle(canvas.getBoundingRectangle().getStart().add(new Point(0, rectSizeX)), rectSizeX));
+        canvas.restore();
         canvas.restore();
     }
 }

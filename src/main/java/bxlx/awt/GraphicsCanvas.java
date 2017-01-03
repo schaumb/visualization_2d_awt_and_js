@@ -9,12 +9,15 @@ import bxlx.graphics.Size;
 import bxlx.graphics.shapes.Arc;
 import bxlx.graphics.shapes.Polygon;
 import bxlx.graphics.shapes.Rectangle;
+import bxlx.graphics.shapes.Shape;
 
 import javax.imageio.ImageIO;
 import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.RenderingHints;
+import java.awt.geom.Arc2D;
+import java.awt.geom.Area;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
@@ -24,8 +27,9 @@ import java.util.Stack;
  * Created by qqcs on 2016.12.23..
  */
 public class GraphicsCanvas implements ICanvas {
-    private final Graphics graphics;
+    private final Graphics2D graphics;
     private final Stack<Rectangle> clips = new Stack<>();
+    private final Stack<Area> areas = new Stack<>();
     private static final ImageCaches<BufferedImage> imageCaches = new ImageCaches<>(str ->
     {
         try {
@@ -35,20 +39,19 @@ public class GraphicsCanvas implements ICanvas {
         }
     });
 
-    public GraphicsCanvas(Graphics graphics) {
+    public GraphicsCanvas(Graphics2D graphics) {
         this.graphics = graphics;
         java.awt.Rectangle bound = graphics.getClipBounds();
         this.clips.add(new Rectangle(bound.getX(), bound.getY(), bound.getWidth(), bound.getHeight()));
+        areas.push(new Area(bound));
+        this.graphics.setClip(bound);
 
-        if (graphics instanceof Graphics2D) {
-            ((Graphics2D) graphics).setRenderingHint(
+        graphics.setRenderingHint(
                     RenderingHints.KEY_ANTIALIASING,
                     RenderingHints.VALUE_ANTIALIAS_ON);
-
-            ((Graphics2D) graphics).setRenderingHint(
+        graphics.setRenderingHint(
                     RenderingHints.KEY_TEXT_ANTIALIASING,
                     RenderingHints.VALUE_TEXT_ANTIALIAS_DEFAULT);
-        }
     }
 
     @Override
@@ -68,40 +71,48 @@ public class GraphicsCanvas implements ICanvas {
     }
 
     @Override
-    public void fillArc(Arc arc) {
-        Point start = arc.getCenter().add(Direction.UP.getVector().multiple(arc.getRadius()))
-                .add(Direction.LEFT.getVector().multiple(arc.getRadius()));
-
-        Size size = Point.same(arc.getRadius() * 2).asSize();
-
-        int startAngle = (int) Math.round(arc.getFromRadian() / 2 / Math.PI * 360);
-
-        int relativeAngle = (int) Math.round((arc.getToRadian() - arc.getFromRadian()) / 2 / Math.PI * 360);
-        graphics.fillArc((int) Math.round(start.getX()),
-                (int) Math.round(start.getY()),
-                (int) Math.round(size.getWidth()),
-                (int) Math.round(size.getHeight()),
-                startAngle,
-                relativeAngle);
+    public void fill(Shape shape) {
+        graphics.fill(convertToArea(shape));
     }
 
-    @Override
-    public void fillRectangle(Rectangle rectangle) {
-        graphics.fillRect(
-                (int) Math.round(rectangle.getStart().getX()),
-                (int) Math.round(rectangle.getStart().getY()),
-                (int) Math.round(rectangle.getSize().getWidth()),
-                (int) Math.round(rectangle.getSize().getHeight()));
-    }
+    private Area convertToArea(Shape shape) {
+        switch (shape.getType()) {
+            case RECTANGLE:
+                Rectangle rectangle = shape.getAsRectangle();
+                return new Area(new java.awt.Rectangle(
+                        (int) Math.round(rectangle.getStart().getX()),
+                        (int) Math.round(rectangle.getStart().getY()),
+                        (int) Math.round(rectangle.getSize().getWidth()),
+                        (int) Math.round(rectangle.getSize().getHeight())));
+            case POLYGON:
+                Polygon polygon = shape.getAsPolygon();
 
-    @Override
-    public void fillPolygon(Polygon polygon) {
-        int[] xPoints = polygon.getPoints().stream()
-                .mapToInt(p -> (int) Math.round(p.getX())).toArray();
-        int[] yPoints = polygon.getPoints().stream()
-                .mapToInt(p -> (int) Math.round(p.getY())).toArray();
+                int[] xPoints = polygon.getPoints().stream()
+                        .mapToInt(p -> (int) Math.round(p.getX())).toArray();
+                int[] yPoints = polygon.getPoints().stream()
+                        .mapToInt(p -> (int) Math.round(p.getY())).toArray();
+                return new Area(new java.awt.Polygon(xPoints, yPoints, polygon.getPoints().size()));
+            case ARC:
+                Arc arc = shape.getAsArc();
 
-        graphics.fillPolygon(xPoints, yPoints, polygon.getPoints().size());
+                Point start = arc.getCenter().add(Direction.UP.getVector().multiple(arc.getRadius()))
+                        .add(Direction.LEFT.getVector().multiple(arc.getRadius()));
+
+                Size size = Point.same(arc.getRadius() * 2).asSize();
+
+                int startAngle = (int) Math.round(arc.getFromRadian() / 2 / Math.PI * 360);
+
+                int relativeAngle = (int) Math.round((arc.getToRadian() - arc.getFromRadian()) / 2 / Math.PI * 360);
+
+                return new Area(new Arc2D.Double((int) Math.round(start.getX()),
+                        (int) Math.round(start.getY()),
+                        (int) Math.round(size.getWidth()),
+                        (int) Math.round(size.getHeight()),
+                        startAngle,
+                        relativeAngle,
+                        Arc2D.PIE));
+        }
+        return null;
     }
 
     @Override
@@ -129,24 +140,39 @@ public class GraphicsCanvas implements ICanvas {
     }
 
     @Override
-    public void clip(Rectangle rectangle) {
-        rectangle = rectangle.intersect(getBoundingRectangle());
+    public void clip(Shape shape) {
+
+        Rectangle rectangle = shape.getBoundingRectangle().intersect(getBoundingRectangle());
         clips.push(rectangle);
-        graphics.setClip(
-                (int) Math.round(rectangle.getStart().getX()),
-                (int) Math.round(rectangle.getStart().getY()),
-                (int) Math.round(rectangle.getSize().getWidth()),
-                (int) Math.round(rectangle.getSize().getHeight()));
+
+        Area newArea = convertToArea(shape);
+        if(newArea == null) return;
+
+        newArea.intersect(new Area(graphics.getClip()));
+
+        areas.push(newArea);
+        graphics.setClip(newArea);
+    }
+
+    @Override
+    public void clipInverse(Shape shape) {
+        Rectangle rectangle = shape.getBoundingRectangle().intersect(getBoundingRectangle());
+        clips.push(rectangle);
+
+        Area newArea = convertToArea(shape);
+        if(newArea == null) return;
+
+        Area clippedArea = new Area(graphics.getClip());
+        clippedArea.subtract(newArea);
+
+        areas.push(clippedArea);
+        graphics.setClip(clippedArea);
     }
 
     @Override
     public void restore() {
         clips.pop();
-        Rectangle rectangle = getBoundingRectangle();
-        graphics.setClip(
-                (int) Math.round(rectangle.getStart().getX()),
-                (int) Math.round(rectangle.getStart().getY()),
-                (int) Math.round(rectangle.getSize().getWidth()),
-                (int) Math.round(rectangle.getSize().getHeight()));
+        areas.pop();
+        graphics.setClip(areas.peek());
     }
 }

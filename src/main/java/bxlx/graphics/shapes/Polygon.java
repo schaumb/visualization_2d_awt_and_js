@@ -9,10 +9,11 @@ import java.util.List;
 /**
  * Created by qqcs on 2016.12.23..
  */
-public class Polygon {
+public class Polygon extends Shape {
     private final List<Point> points;
 
     public Polygon(List<Point> points) {
+        super(Type.POLYGON);
         this.points = points;
     }
 
@@ -31,7 +32,12 @@ public class Polygon {
         return new Polygon(points);
     }
 
+    @Override
+    public Polygon getAsPolygon() {
+        return this;
+    }
 
+    @Override
     public Rectangle getBoundingRectangle() {
         double minX = points.get(0).getX();
         double minY = points.get(0).getY();

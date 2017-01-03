@@ -6,7 +6,7 @@ import bxlx.graphics.Size;
 /**
  * Created by qqcs on 2016.12.23..
  */
-public class Rectangle {
+public class Rectangle extends Shape {
     private final Point start;
     private final Size size;
 
@@ -19,6 +19,7 @@ public class Rectangle {
     }
 
     public Rectangle(Point start, Size size) {
+        super(Type.RECTANGLE);
         this.start = start;
         this.size = size;
     }
@@ -84,6 +85,11 @@ public class Rectangle {
                 "start=" + start +
                 ", size=" + size +
                 '}';
+    }
+
+    @Override
+    public Rectangle getAsRectangle() {
+        return this;
     }
 
     public Rectangle getBoundingRectangle() {

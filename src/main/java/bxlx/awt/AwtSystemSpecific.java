@@ -11,6 +11,7 @@ import javax.swing.JFrame;
 import javax.swing.JPanel;
 import java.awt.EventQueue;
 import java.awt.Graphics;
+import java.awt.Graphics2D;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
 import java.io.File;
@@ -66,7 +67,7 @@ public class AwtSystemSpecific extends SystemSpecific {
             protected void paintComponent(Graphics graphics) {
                 //super.paintComponent(graphics);
 
-                if (rendering = renderer.render(new GraphicsCanvas(graphics))) {
+                if (rendering = renderer.render(new GraphicsCanvas((Graphics2D) graphics))) {
                     EventQueue.invokeLater(AwtSystemSpecific.this::refresh);
                 }
             }

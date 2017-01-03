@@ -3,6 +3,7 @@ package bxlx.graphics;
 import bxlx.graphics.shapes.Arc;
 import bxlx.graphics.shapes.Polygon;
 import bxlx.graphics.shapes.Rectangle;
+import bxlx.graphics.shapes.Shape;
 
 /**
  * Created by qqcs on 2016.12.23..
@@ -11,7 +12,7 @@ public interface ICanvas {
     default void clearCanvas(Color to) {
         Color saved = getColor();
         setColor(to);
-        fillRectangle(getBoundingRectangle());
+        fill(getBoundingRectangle());
         setColor(saved);
     }
 
@@ -21,11 +22,7 @@ public interface ICanvas {
 
     Color getColor();
 
-    void fillArc(Arc arc);
-
-    void fillRectangle(Rectangle rectangle);
-
-    void fillPolygon(Polygon polygon);
+    void fill(Shape shape);
 
     void drawImage(String src, Rectangle to);
 
@@ -33,7 +30,9 @@ public interface ICanvas {
 
     void fillText(String text, Point to);
 
-    void clip(Rectangle rectangle);
+    void clip(Shape shape);
+
+    void clipInverse(Shape shape);
 
     void restore();
 }

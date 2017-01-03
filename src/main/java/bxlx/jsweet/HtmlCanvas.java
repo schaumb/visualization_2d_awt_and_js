@@ -8,6 +8,7 @@ import bxlx.graphics.Size;
 import bxlx.graphics.shapes.Arc;
 import bxlx.graphics.shapes.Polygon;
 import bxlx.graphics.shapes.Rectangle;
+import bxlx.graphics.shapes.Shape;
 import jsweet.dom.CanvasRenderingContext2D;
 import jsweet.dom.HTMLCanvasElement;
 import jsweet.dom.HTMLImageElement;
@@ -35,13 +36,11 @@ public class HtmlCanvas implements ICanvas {
 
     public HtmlCanvas(HTMLCanvasElement canvasElement) {
         this.context = canvasElement.getContext(StringTypes._2d);
+        clips.push(new Rectangle(Point.ORIGO, new Size(context.canvas.width, context.canvas.height)));
     }
 
     @Override
     public Rectangle getBoundingRectangle() {
-        if (clips.empty()) {
-            return new Rectangle(Point.ORIGO, new Size(context.canvas.width, context.canvas.height));
-        }
         return clips.peek();
     }
 
@@ -59,32 +58,38 @@ public class HtmlCanvas implements ICanvas {
     }
 
     @Override
-    public void fillArc(Arc arc) {
-        context.beginPath();
-        context.moveTo(arc.getCenter().getX(), arc.getCenter().getY());
-        context.arc(arc.getCenter().getX(), arc.getCenter().getY(),
-                arc.getRadius(), Math.PI * 2 - arc.getFromRadian(), Math.PI * 2 - arc.getToRadian(),
-                arc.getFromRadian() < arc.getToRadian());
+    public void fill(Shape shape) {
+        setShape(shape);
         context.fill();
     }
 
-    @Override
-    public void fillRectangle(Rectangle rectangle) {
-        context.fillRect(rectangle.getStart().getX(),
-                rectangle.getStart().getY(),
-                rectangle.getSize().getWidth(),
-                rectangle.getSize().getHeight());
-    }
-
-    @Override
-    public void fillPolygon(Polygon polygon) {
-        List<Point> points = polygon.getPoints();
+    private void setShape(Shape shape) {
         context.beginPath();
-        context.moveTo(points.get(0).getX(), points.get(0).getY());
-        for (int i = 1; i < points.size(); ++i) {
-            context.lineTo(points.get(i).getX(), points.get(i).getY());
+        switch (shape.getType()) {
+            case ARC:
+                Arc arc = shape.getAsArc();
+                context.moveTo(arc.getCenter().getX(), arc.getCenter().getY());
+                context.arc(arc.getCenter().getX(), arc.getCenter().getY(),
+                        arc.getRadius(), Math.PI * 2 - arc.getToRadian(), Math.PI * 2 - arc.getFromRadian(),
+                        arc.getFromRadian() > arc.getToRadian());
+                context.lineTo(arc.getCenter().getX(), arc.getCenter().getY());
+                break;
+            case POLYGON:
+                Polygon polygon = shape.getAsPolygon();
+                List<Point> points = polygon.getPoints();
+                context.moveTo(points.get(0).getX(), points.get(0).getY());
+                for (int i = 1; i < points.size(); ++i) {
+                    context.lineTo(points.get(i).getX(), points.get(i).getY());
+                }
+                break;
+            case RECTANGLE:
+                Rectangle rectangle = shape.getAsRectangle();
+                context.rect(rectangle.getStart().getX(),
+                        rectangle.getStart().getY(),
+                        rectangle.getSize().getWidth(),
+                        rectangle.getSize().getHeight());
+                break;
         }
-        context.fill();
     }
 
     @Override
@@ -110,14 +115,30 @@ public class HtmlCanvas implements ICanvas {
     }
 
     @Override
-    public void clip(Rectangle rectangle) {
-        clips.push(rectangle.intersect(getBoundingRectangle()));
+    public void clip(Shape shape) {
+        clips.push(shape.getBoundingRectangle().intersect(getBoundingRectangle()));
+
         context.save();
-        context.beginPath();
-        context.rect(rectangle.getStart().getX(),
-                rectangle.getStart().getY(),
-                rectangle.getSize().getWidth(),
-                rectangle.getSize().getHeight());
+
+        setShape(shape);
+
+        context.clip();
+    }
+
+    @Override
+    public void clipInverse(Shape shape) {
+        Rectangle boundRect = clips.peek();
+        clips.push(boundRect);
+
+        context.save();
+
+        setShape(shape);
+        context.rect( context.canvas.width,
+                0,
+                -context.canvas.width,
+                context.canvas.height
+        );
+
         context.clip();
     }
 

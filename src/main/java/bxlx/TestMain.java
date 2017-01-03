@@ -19,20 +19,22 @@ public class TestMain {
         public boolean render(ICanvas c) {
             c.clearCanvas(Color.WHITE);
 
-            c.clip(new Rectangle(new Point(20, 20), c.getBoundingRectangle().getSize().asPoint().add(-40).asSize()));
-            int n = (int) (timer.percent() * 0.99999 * 8 + 3);
+            new Rect().draw(c);
+            c.clipInverse(new Rectangle(new Point(20, 20), c.getBoundingRectangle().getSize().asPoint().add(-40).asSize()));
+            int n = (int) (timer.percent() * 0.99999 * 10 + 3);
             Polygon p = Polygon.nGon(n, c.getBoundingRectangle().getCenter(),
                     Math.min(c.getBoundingRectangle().getSize().getHeight(),
-                            c.getBoundingRectangle().getSize().getWidth()) / 2, Math.PI / 4.0 * (n-3));
+                            c.getBoundingRectangle().getSize().getWidth()) / 2 + 20, Math.PI / 4.0 * (n-3));
 
             c.setColor(Color.LIGHT_GRAY);
-            c.fillRectangle(p.getBoundingRectangle());
+            c.fill(p.getBoundingRectangle());
             c.setColor(Color.RED);
-            c.fillPolygon(p);
+            c.fill(p);
             c.restore();
             if(timer.elapsed()) {
                 timer.setStart();
             }
+
             return true;
         }
     }

@@ -5,13 +5,14 @@ import bxlx.graphics.Point;
 /**
  * Created by qqcs on 2016.12.23..
  */
-public class Arc {
+public class Arc extends Shape {
     private final Point center;
     private final double radius;
     private final double fromRadian;
     private final double toRadian;
 
     public Arc(Point center, double radius, double fromRadian, double toRadian) {
+        super(Type.ARC);
         this.center = center;
         this.radius = radius;
         this.fromRadian = fromRadian;
@@ -70,6 +71,12 @@ public class Arc {
                 '}';
     }
 
+    @Override
+    public Arc getAsArc() {
+        return this;
+    }
+
+    @Override
     public Rectangle getBoundingRectangle() {
         // TODO more precision
         return new Rectangle(center.add(-radius), center.add(radius));
