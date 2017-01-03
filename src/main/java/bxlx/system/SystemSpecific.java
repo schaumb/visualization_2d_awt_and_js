@@ -6,6 +6,7 @@ package bxlx.system;
 public abstract class SystemSpecific {
     protected static SystemSpecific INSTANCE;
     protected boolean rendering = false;
+    protected String[] args;
 
     public static SystemSpecific get() {
         if (INSTANCE == null) {
@@ -19,6 +20,14 @@ public abstract class SystemSpecific {
             throw new CommonError("Singleton two instance", "2 or more system specific instance created");
         }
         INSTANCE = this;
+    }
+
+    public void setArgs(String[] args) {
+        this.args = args;
+    }
+
+    public String[] getArgs() {
+        return args;
     }
 
     abstract public void setDrawFunction(IRenderer renderer);

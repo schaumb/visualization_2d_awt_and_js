@@ -37,19 +37,21 @@ public class TestMain implements IRenderer, IMouseEventListener, Consumer<String
         if (data != null) {
             c.fillText(data, new Point(0, 80));
         }
+        String[] args = SystemSpecific.get().getArgs();
+        for(int i = 0; i < args.length; ++i) {
+            c.fillText(args[i], new Point(0, 100 + i * 20));
+        }
 
         fps.draw(c);
 
         return true;
     }
 
-
     public TestMain() {
         SystemSpecific.get().setDrawFunction(this);
         SystemSpecific.get().setMouseEventListener(this);
         SystemSpecific.get().readTextFileAsync("test2.txt", this);
     }
-
 
     @Override
     public void move(Point position) {
