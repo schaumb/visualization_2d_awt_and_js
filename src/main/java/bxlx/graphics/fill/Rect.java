@@ -1,5 +1,6 @@
-package bxlx.pipe;
+package bxlx.graphics.fill;
 
+import bxlx.graphics.Color;
 import bxlx.graphics.ICanvas;
 import bxlx.graphics.IDrawable;
 import bxlx.graphics.Point;
@@ -11,6 +12,7 @@ import bxlx.graphics.shapes.Rectangle;
  */
 public class Rect implements IDrawable {
     private double rate;
+    private Color color;
 
     public Rect() {
         this(1 / 3.0);
@@ -18,6 +20,14 @@ public class Rect implements IDrawable {
 
     public Rect(double rate) {
         this.rate = rate;
+    }
+
+    public Color getColor() {
+        return color;
+    }
+
+    public void setColor(Color color) {
+        this.color = color;
     }
 
     @Override
@@ -29,6 +39,10 @@ public class Rect implements IDrawable {
         }
 
         double circles = bounds.getSize().getShorterDimension() * rate;
+
+        if (color != null) {
+            canvas.setColor(color);
+        }
 
         canvas.fill(Arc.circle(bounds.getStart().add(circles), circles));
         canvas.fill(Arc.circle(bounds.getStart().add(new Point(circles, bounds.getSize().getHeight() - circles)), circles));

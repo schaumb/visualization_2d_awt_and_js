@@ -10,6 +10,7 @@ public class MouseInfo implements IMouseEventListener {
     private boolean leftClicked = false;
 
     private MouseInfo() {
+        SystemSpecific.get().setMouseEventListener(this);
     }
 
     @Override
@@ -37,9 +38,12 @@ public class MouseInfo implements IMouseEventListener {
         return leftClicked;
     }
 
-    private static final MouseInfo INSTANCE = new MouseInfo();
+    private static MouseInfo INSTANCE;
 
     public static MouseInfo get() {
+        if(INSTANCE == null) {
+            INSTANCE = new MouseInfo();
+        }
         return INSTANCE;
     }
 }

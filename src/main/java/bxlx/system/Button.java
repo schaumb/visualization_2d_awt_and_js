@@ -4,22 +4,23 @@ import bxlx.graphics.Color;
 import bxlx.graphics.ICanvas;
 import bxlx.graphics.IDrawable;
 import bxlx.graphics.Point;
+import bxlx.graphics.fill.Rect;
+import bxlx.graphics.fill.Text;
 import bxlx.graphics.shapes.Rectangle;
-import bxlx.pipe.Rect;
-import bxlx.pipe.Text;
 
 /**
  * Created by qqcs on 2017.01.03..
  */
-public abstract class Button implements IMouseEventListener, IDrawable {
+public class Button implements IMouseEventListener, IDrawable {
 
-    private final Rectangle rectangle;
+    private Rectangle lastRectangle = Rectangle.NULL_RECTANGLE;
     private final Rect rect = new Rect();
     private final Text text;
 
-    public Button(Rectangle rectangle, String text) {
-        this.rectangle = rectangle;
+    public Button(String text) {
         this.text = new Text(text);
+
+        SystemSpecific.get().setMouseEventListener(this);
     }
 
     public String getText() {
@@ -32,9 +33,6 @@ public abstract class Button implements IMouseEventListener, IDrawable {
 
     @Override
     public void draw(ICanvas canvas) {
-
-        canvas.clip(rectangle);
-
         if (MouseInfo.get().isLeftClicked() &&
                 rect.isContains(canvas.getBoundingRectangle(), MouseInfo.get().getPosition())) {
             canvas.setColor(Color.DARK_GRAY);
@@ -52,14 +50,12 @@ public abstract class Button implements IMouseEventListener, IDrawable {
         text.draw(canvas);
         canvas.restore();
 
-        canvas.restore();
-
-
+        lastRectangle = canvas.getBoundingRectangle();
     }
 
     @Override
     public void up(Point where, boolean leftButton) {
-        if (leftButton && rect.isContains(rectangle, where)) {
+        if (lastRectangle != null && leftButton && rect.isContains(lastRectangle, where)) {
             onClicked();
         }
     }
@@ -74,5 +70,7 @@ public abstract class Button implements IMouseEventListener, IDrawable {
 
     }
 
-    public abstract void onClicked();
+    public void onClicked() {
+
+    }
 }

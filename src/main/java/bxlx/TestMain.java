@@ -2,10 +2,8 @@ package bxlx;
 
 import bxlx.graphics.Color;
 import bxlx.graphics.ICanvas;
-import bxlx.graphics.shapes.Arc;
-import bxlx.graphics.shapes.Polygon;
-import bxlx.graphics.shapes.Rectangle;
-import bxlx.pipe.Text;
+import bxlx.graphics.fill.Container;
+import bxlx.graphics.fill.Text;
 import bxlx.system.Button;
 import bxlx.system.Consumer;
 import bxlx.system.FPS;
@@ -22,51 +20,40 @@ public class TestMain implements IRenderer, Consumer<String> {
     private Timer timer2 = new Timer(3000);
     private FPS fps = new FPS();
     private String data = null;
-
-    private Button button = new Button(new Rectangle(60, 60, 200, 200), "Click this button") {
-        @Override
-        public void onClicked() {
-            if (data != null) {
-                data += " clicked";
-            }
-        }
-    };
+    private Container container = new Container();
+    private Button r1 = new Button("");
+    private Button r2 = new Button("Gomb2");
+    private Text text = new Text("message");
 
     @Override
     public boolean render(ICanvas c) {
         c.clearCanvas(Color.WHITE);
 
-        Arc arc = new Arc(c.getBoundingRectangle().getCenter(),
-                c.getBoundingRectangle().getSize().getShorterDimension() / 2,
-                timer.percent() * 2 * Math.PI, timer2.percent() * 2 * Math.PI);
-
-        c.setColor(Color.CYAN);
-        c.fill(arc.getBoundingRectangle());
-        c.setColor(Color.GREEN);
-        c.fill(arc);
-
-
-        Polygon p = Polygon.ellipseNGon(3, c.getBoundingRectangle().getCenter(),
-                c.getBoundingRectangle().getSize(), 0);
-        c.setColor(Color.ORANGE);
-        c.fill(p);
-        c.setColor(Color.BLACK);
-        new Text("Contains: " + p.isContains(MouseInfo.get().getPosition())).draw(c);
+        container.draw(c);
 
         fps.draw(c);
         if (timer.elapsed()) {
             timer.setStart();
+        }
+
+        if (timer2.elapsed()) {
             timer2.setStart();
         }
 
-        return true;
+        return false;
     }
 
     public TestMain() {
         SystemSpecific.get().setDrawFunction(this);
-        SystemSpecific.get().setMouseEventListener(MouseInfo.get());
+        MouseInfo.get(); // init mouseinfo
         SystemSpecific.get().readTextFileAsync("test2.txt", this);
-        SystemSpecific.get().setMouseEventListener(button);
+
+        container.add(r1);
+        container.add(text);
+        text.setColor(Color.GREEN);
+        container.add(r2);
+        container.setMargin(5);
+        container.setSpaceBetween(6);
     }
 
     @Override

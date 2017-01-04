@@ -37,12 +37,20 @@ public class JSweetSystemSpecific extends SystemSpecific {
     }
 
     private void draw(double __var) {
+        if (canvasElement == null || renderer == null) {
+            return;
+        }
+
         if (rendering = renderer.render(new HtmlCanvas(canvasElement))) {
             window.requestAnimationFrame(x -> draw(x));
         }
     }
 
     private Object resized(Event event) {
+        if (canvasElement == null || window == null) {
+            return null;
+        }
+
         if (canvasElement.width != window.innerWidth || canvasElement.height != window.innerHeight) {
             canvasElement.width = window.innerWidth;
             canvasElement.height = window.innerHeight;
@@ -136,8 +144,8 @@ public class JSweetSystemSpecific extends SystemSpecific {
         element.style.display = "none";
         element.autoplay = true;
         element.onended = x -> {
-            element.play();
-            return x;
+            element.remove();
+            return null;
         };
 
         document.body.appendChild(element);
