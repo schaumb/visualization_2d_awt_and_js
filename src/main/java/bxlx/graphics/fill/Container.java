@@ -7,6 +7,7 @@ import bxlx.graphics.Point;
 import bxlx.graphics.shapes.Rectangle;
 
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by qqcs on 2017.01.04..
@@ -16,28 +17,45 @@ public class Container extends ArrayList<IDrawable> implements IDrawable {
     private double margin = 0; // < 1 -> percent, >=1 -> pixel
     private double spaceBetween = 0; // < 1 -> percent, >=1 -> pixel
 
+    public Container(boolean xSplit, double margin, double spaceBetween) {
+        this.xSplit = xSplit;
+        this.margin = margin;
+        this.spaceBetween = spaceBetween;
+    }
+
+    public Container(List<IDrawable> elements) {
+        super(elements);
+    }
+
+    public Container() {
+
+    }
+
     public boolean isxSplit() {
         return xSplit;
     }
 
-    public void setxSplit(boolean xSplit) {
+    public Container setxSplit(boolean xSplit) {
         this.xSplit = xSplit;
+        return this;
     }
 
     public double getMargin() {
         return margin;
     }
 
-    public void setMargin(double margin) {
+    public Container setMargin(double margin) {
         this.margin = margin;
+        return this;
     }
 
     public double getSpaceBetween() {
         return spaceBetween;
     }
 
-    public void setSpaceBetween(double spaceBetween) {
+    public Container setSpaceBetween(double spaceBetween) {
         this.spaceBetween = spaceBetween;
+        return this;
     }
 
     @Override
