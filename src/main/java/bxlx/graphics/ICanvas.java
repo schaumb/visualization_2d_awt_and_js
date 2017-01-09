@@ -35,4 +35,8 @@ public interface ICanvas {
     void clipInverse(Shape shape);
 
     void restore();
+
+    void fakeClip(Rectangle rectangle);
+
+    void fakeRestore();
 }

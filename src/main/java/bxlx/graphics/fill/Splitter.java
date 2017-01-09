@@ -39,6 +39,30 @@ public class Splitter extends DrawableContainer {
         this(xSplit, 0.5, null, null);
     }
 
+    public static Splitter threeWaySplit(boolean xSplit, double centerSeparate,
+                                      IDrawable first, IDrawable center, IDrawable last) {
+        double separate1;
+        double separate2;
+
+        if(centerSeparate <= -1) {
+            separate1 = Math.round(-centerSeparate / 2);
+            separate2 = Math.round(centerSeparate / 2);
+        } else if(centerSeparate < 0) {
+            separate1 = -centerSeparate / 2;
+            separate2 = centerSeparate / (2 + centerSeparate);
+        } else if(centerSeparate < 1) {
+            separate1 = (1 + centerSeparate) / -2;
+            separate2 = 2 * centerSeparate / (1 + centerSeparate);
+        } else {
+            separate1 = -centerSeparate;
+            separate2 = centerSeparate;
+        }
+
+        return new Splitter(xSplit, separate1, first,
+                new Splitter(xSplit, separate2, center, last));
+
+    }
+
     public boolean isxSplit() {
         return xSplit;
     }

@@ -153,4 +153,14 @@ public class HtmlCanvas implements ICanvas {
         clips.pop();
         context.restore();
     }
+
+    @Override
+    public void fakeClip(Rectangle rectangle) {
+        clips.push(rectangle);
+    }
+
+    @Override
+    public void fakeRestore() {
+        clips.pop();
+    }
 }

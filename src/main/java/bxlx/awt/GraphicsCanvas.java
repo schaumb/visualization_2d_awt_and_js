@@ -185,4 +185,14 @@ public class GraphicsCanvas implements ICanvas {
         areas.pop();
         graphics.setClip(areas.peek());
     }
+
+    @Override
+    public void fakeClip(Rectangle rectangle) {
+        clips.push(rectangle);
+    }
+
+    @Override
+    public void fakeRestore() {
+        clips.pop();
+    }
 }

@@ -17,15 +17,18 @@ public abstract class DrawableContainer extends ChangeableDrawable {
 
     @Override
     public boolean needRedraw() {
-        boolean childNeedRedraw = false;
-        for (IDrawable drawable : children) {
-            childNeedRedraw |= drawable.needRedraw();
-        }
-
-        return super.needRedraw() || childNeedRedraw;
+        return iChanged() || childrenChanged();
     }
 
     public boolean iChanged() {
         return super.needRedraw();
+    }
+
+    public boolean childrenChanged() {
+        boolean childNeedRedraw = false;
+        for (IDrawable drawable : children) {
+            childNeedRedraw |= drawable.needRedraw();
+        }
+        return childNeedRedraw;
     }
 }

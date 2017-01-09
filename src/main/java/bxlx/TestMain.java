@@ -5,13 +5,12 @@ import bxlx.graphics.ICanvas;
 import bxlx.graphics.Point;
 import bxlx.graphics.drawable.BackgroundDrawable;
 import bxlx.graphics.drawable.ColoredDrawable;
-import bxlx.graphics.drawable.SquareDrawable;
 import bxlx.graphics.fill.DrawNumber;
-import bxlx.graphics.fill.Rect;
 import bxlx.graphics.fill.SplitContainer;
 import bxlx.graphics.fill.Splitter;
 import bxlx.graphics.fill.Text;
 import bxlx.system.Button;
+import bxlx.system.Consumer;
 import bxlx.system.FPS;
 import bxlx.system.IMouseEventListener;
 import bxlx.system.IRenderer;
@@ -19,11 +18,12 @@ import bxlx.system.MouseInfo;
 import bxlx.system.SystemSpecific;
 
 import java.util.Arrays;
+import java.util.function.Supplier;
 
 /**
  * Created by qqcs on 2016.12.24..
  */
-public class TestMain implements IRenderer, IMouseEventListener {
+public class TestMain implements IRenderer, IMouseEventListener, Consumer<String> {
     private FPS fps = new FPS();
     private Splitter container = new Splitter(true, -200, null, null);
     private DrawNumber counterNumber = new DrawNumber();
@@ -50,17 +50,17 @@ public class TestMain implements IRenderer, IMouseEventListener {
     public TestMain() {
         MouseInfo.get(); // init mouseinfo
         SystemSpecific.get().setMouseEventListenerQueue(this);
+        SystemSpecific.get().readTextFileAsync("text2.txt", this);
 
-
-        container.setFirst(new SquareDrawable(new ColoredDrawable(new Rect(), Color.CYAN)))
+        container.setFirst(new ColoredDrawable(new Text(SystemSpecific.get().getArgs()[0]), Color.CYAN))
                 .setSecond(new SplitContainer(Arrays.asList(
                         new SplitContainer(true, Arrays.asList(
-                                new Button("-", null, () -> counterNumber.setNumber(Math.max(0, counterNumber.getNumber() - 1))),
+                                new Button("-", null, () -> counterNumber.setNumber(Math.max(0, counterNumber.getNumber() - 1)), null),
                                 new BackgroundDrawable(new ColoredDrawable(counterNumber, Color.ORANGE), bgColor),
-                                new Button("+", null, () -> counterNumber.setNumber(Math.max(0, counterNumber.getNumber() + 1)))
+                                new Button("+", null, () -> counterNumber.setNumber(Math.max(0, counterNumber.getNumber() + 1)), null)
                         )),
                         new Text("ASD"),
-                        new Button("FILLER", null, null),
+                        new Button("FILLER", null, null, () -> counterNumber.getNumber() > 10),
                         new Text("ASDASD")
                 )));
 
@@ -82,5 +82,10 @@ public class TestMain implements IRenderer, IMouseEventListener {
         if (!leftButton) {
             fps.reset();
         }
+    }
+
+    @Override
+    public void accept(String data) {
+
     }
 }
