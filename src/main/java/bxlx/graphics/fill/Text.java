@@ -1,6 +1,5 @@
 package bxlx.graphics.fill;
 
-import bxlx.graphics.Color;
 import bxlx.graphics.ICanvas;
 import bxlx.graphics.IDrawable;
 import bxlx.graphics.Point;
@@ -11,8 +10,7 @@ import bxlx.graphics.shapes.Rectangle;
  */
 public class Text implements IDrawable {
     private final double XY = 1;
-    private String text;
-    private Color color;
+    private final String text;
 
     public Text(String text) {
         this.text = text;
@@ -22,21 +20,14 @@ public class Text implements IDrawable {
         return text;
     }
 
-    public void setText(String text) {
-        this.text = text;
-    }
-
-    public Color getColor() {
-        return color;
-    }
-
-    public void setColor(Color color) {
-        this.color = color;
+    @Override
+    public boolean needRedraw() {
+        return false;
     }
 
     @Override
-    public void draw(ICanvas canvas) {
-        if(text.isEmpty())
+    public void forceDraw(ICanvas canvas) {
+        if (text.isEmpty())
             return;
 
         Rectangle rectangle = canvas.getBoundingRectangle();
@@ -44,9 +35,6 @@ public class Text implements IDrawable {
         double ySize = rectangle.getSize().getHeight();
         int size = (int) Math.min(xSize, ySize);
 
-        if (color != null) {
-            canvas.setColor(color);
-        }
         canvas.setFont("sans-serif", size, false, false);
         canvas.fillText(text, rectangle.getStart().add(new Point(
                 (rectangle.getSize().getWidth() - size * text.length() / XY) / 2,

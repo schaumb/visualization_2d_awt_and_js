@@ -1,6 +1,5 @@
 package bxlx.graphics.fill;
 
-import bxlx.graphics.Color;
 import bxlx.graphics.ICanvas;
 import bxlx.graphics.IDrawable;
 import bxlx.graphics.Point;
@@ -11,8 +10,7 @@ import bxlx.graphics.shapes.Rectangle;
  * Created by qqcs on 2016.12.24..
  */
 public class Rect implements IDrawable {
-    private double rate;
-    private Color color;
+    private final double rate;
 
     public Rect() {
         this(1 / 3.0);
@@ -22,16 +20,13 @@ public class Rect implements IDrawable {
         this.rate = rate;
     }
 
-    public Color getColor() {
-        return color;
-    }
-
-    public void setColor(Color color) {
-        this.color = color;
+    @Override
+    public boolean needRedraw() {
+        return false;
     }
 
     @Override
-    public void draw(ICanvas canvas) {
+    public void forceDraw(ICanvas canvas) {
         Rectangle bounds = canvas.getBoundingRectangle();
 
         if (bounds.getSize().getWidth() <= 0 || bounds.getSize().getHeight() <= 0) {
@@ -39,10 +34,6 @@ public class Rect implements IDrawable {
         }
 
         double circles = bounds.getSize().getShorterDimension() * rate;
-
-        if (color != null) {
-            canvas.setColor(color);
-        }
 
         canvas.fill(Arc.circle(bounds.getStart().add(circles), circles));
         canvas.fill(Arc.circle(bounds.getStart().add(new Point(circles, bounds.getSize().getHeight() - circles)), circles));

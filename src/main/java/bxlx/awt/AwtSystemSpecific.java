@@ -15,10 +15,12 @@ import javax.swing.JPanel;
 import java.awt.EventQueue;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
+import java.awt.Rectangle;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -70,15 +72,25 @@ public class AwtSystemSpecific extends SystemSpecific {
         } else {
             frame.remove(panel);
         }
-
         frame.add(panel = new JPanel() {
+            private BufferedImage img;
+            private GraphicsCanvas canvas;
+
             @Override
             protected void paintComponent(Graphics graphics) {
                 //super.paintComponent(graphics);
 
-                if (rendering = renderer.render(new GraphicsCanvas((Graphics2D) graphics))) {
+                Rectangle rect = graphics.getClipBounds();
+                if (img == null || img.getWidth() != rect.width || img.getHeight() != rect.height) {
+                    img = new BufferedImage(rect.width, rect.height, BufferedImage.TYPE_INT_ARGB);
+                    canvas = new GraphicsCanvas((Graphics2D) img.getGraphics(), rect);
+                }
+
+                if (rendering = renderer.render(canvas)) {
                     EventQueue.invokeLater(AwtSystemSpecific.this::refresh);
                 }
+
+                graphics.drawImage(img, 0, 0, null);
             }
         });
         if (!isRendering()) {

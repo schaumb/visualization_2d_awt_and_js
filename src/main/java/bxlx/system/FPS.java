@@ -11,16 +11,21 @@ import bxlx.graphics.shapes.Rectangle;
  */
 public class FPS implements IDrawable {
     private Timer timer;
-    private long drawedFrames;
+    private long drewFrames;
 
     @Override
-    public void draw(ICanvas canvas) {
+    public boolean needRedraw() {
+        return true;
+    }
+
+    @Override
+    public void forceDraw(ICanvas canvas) {
         double fps = getFps();
         if (timer == null) {
-            drawedFrames = 0;
+            drewFrames = 0;
             timer = new Timer(60000);
         }
-        ++drawedFrames;
+        ++drewFrames;
         canvas.setColor(Color.BLUE);
         canvas.fill(new Rectangle(0, 0, 115, 30));
         canvas.setColor(Color.RED.getScale(Color.GREEN, (Math.max(10, Math.min(60, fps)) - 10.0) / 50.0));
@@ -32,6 +37,11 @@ public class FPS implements IDrawable {
     }
 
     public double getFps() {
-        return timer == null ? 0.0 : drawedFrames * 1000.0 / timer.elapsedTime();
+        return timer == null ? 0.0 : drewFrames * 1000.0 / timer.elapsedTime();
+    }
+
+    public void reset() {
+        timer = null;
+        drewFrames = 0;
     }
 }

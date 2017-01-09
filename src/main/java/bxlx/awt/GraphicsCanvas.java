@@ -39,11 +39,10 @@ public class GraphicsCanvas implements ICanvas {
         }
     });
 
-    public GraphicsCanvas(Graphics2D graphics) {
+    public GraphicsCanvas(Graphics2D graphics, java.awt.Rectangle rectangle) {
         this.graphics = graphics;
-        java.awt.Rectangle bound = graphics.getClipBounds();
-        this.clips.add(new Rectangle(bound.getX(), bound.getY(), bound.getWidth(), bound.getHeight()));
-        this.graphics.setClip(bound);
+        this.clips.add(new Rectangle(rectangle.getX(), rectangle.getY(), rectangle.getWidth(), rectangle.getHeight()));
+        this.graphics.setClip(rectangle);
         this.areas.push(graphics.getClip());
 
         graphics.setRenderingHint(

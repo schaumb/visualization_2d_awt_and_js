@@ -25,6 +25,7 @@ import static jsweet.dom.Globals.window;
 public class JSweetSystemSpecific extends SystemSpecific {
 
     private HTMLCanvasElement canvasElement;
+    private HtmlCanvas canvas;
     private IRenderer renderer;
     private HashSet<Integer> buttonDowns = new HashSet<>();
 
@@ -41,7 +42,7 @@ public class JSweetSystemSpecific extends SystemSpecific {
             return;
         }
 
-        if (rendering = renderer.render(new HtmlCanvas(canvasElement))) {
+        if (rendering = renderer.render(canvas)) {
             window.requestAnimationFrame(x -> draw(x));
         }
     }
@@ -54,6 +55,8 @@ public class JSweetSystemSpecific extends SystemSpecific {
         if (canvasElement.width != window.innerWidth || canvasElement.height != window.innerHeight) {
             canvasElement.width = window.innerWidth;
             canvasElement.height = window.innerHeight;
+
+            canvas = new HtmlCanvas(canvasElement);
         }
 
         if (!isRendering()) {
@@ -74,6 +77,7 @@ public class JSweetSystemSpecific extends SystemSpecific {
 
             document.body.appendChild(canvasElement);
 
+            canvas = new HtmlCanvas(canvasElement);
             window.onresize = this::resized;
         }
         this.renderer = renderer;

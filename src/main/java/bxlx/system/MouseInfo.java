@@ -41,7 +41,7 @@ public class MouseInfo implements IMouseEventListener {
     private static MouseInfo INSTANCE;
 
     public static MouseInfo get() {
-        if(INSTANCE == null) {
+        if (INSTANCE == null) {
             INSTANCE = new MouseInfo();
         }
         return INSTANCE;
