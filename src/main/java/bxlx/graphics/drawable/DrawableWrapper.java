@@ -6,14 +6,14 @@ import bxlx.graphics.IDrawable;
 /**
  * Created by qqcs on 2017.01.09..
  */
-public abstract class DrawableWrapper implements IDrawable {
-    private final IDrawable wrapped;
+public abstract class DrawableWrapper<T extends IDrawable> implements IDrawable {
+    private final T wrapped;
 
-    public DrawableWrapper(IDrawable wrapped) {
+    public DrawableWrapper(T wrapped) {
         this.wrapped = wrapped;
     }
 
-    public IDrawable getWrapped() {
+    public T getWrapped() {
         return wrapped;
     }
 

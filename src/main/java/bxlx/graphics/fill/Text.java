@@ -1,43 +1,48 @@
 package bxlx.graphics.fill;
 
+import bxlx.graphics.ChangeableDrawable;
 import bxlx.graphics.ICanvas;
-import bxlx.graphics.IDrawable;
 import bxlx.graphics.Point;
 import bxlx.graphics.shapes.Rectangle;
 
 /**
  * Created by qqcs on 2017.01.03..
  */
-public class Text implements IDrawable {
-    private final double XY = 1;
-    private final String text;
+public class Text extends ChangeableDrawable {
+    private String text;
 
     public Text(String text) {
         this.text = text;
+        setRedraw();
     }
 
     public String getText() {
         return text;
     }
 
-    @Override
-    public boolean needRedraw() {
-        return false;
+    public Text setText(String text) {
+        this.text = text;
+        setRedraw();
+        return this;
     }
 
     @Override
-    public void forceDraw(ICanvas canvas) {
+    public void forceRedraw(ICanvas canvas) {
         if (text.isEmpty())
             return;
 
         Rectangle rectangle = canvas.getBoundingRectangle();
-        double xSize = rectangle.getSize().getWidth() * XY / text.length();
-        double ySize = rectangle.getSize().getHeight();
-        int size = (int) Math.min(xSize, ySize);
+        int ySize = (int) rectangle.getSize().getHeight();
 
-        canvas.setFont("sans-serif", size, false, false);
+        int xNeedFitSize = (int) rectangle.getSize().getWidth();
+        int xSize;
+        canvas.setFont("sans-serif", ySize, false, false);
+        while ((xSize = canvas.textWidth(text)) > xNeedFitSize) {
+            canvas.setFont("sans-serif", --ySize, false, false);
+        }
+
         canvas.fillText(text, rectangle.getStart().add(new Point(
-                (rectangle.getSize().getWidth() - size * text.length() / XY) / 2,
-                (rectangle.getSize().getHeight() + size) / 2 - size / 6.0)));
+                (rectangle.getSize().getWidth() - xSize) / 2,
+                (rectangle.getSize().getHeight() + ySize) / 2 - ySize / 6.0)));
     }
 }

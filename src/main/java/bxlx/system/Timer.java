@@ -16,12 +16,14 @@ public class Timer {
         this.length = length;
     }
 
-    public void setStart() {
+    public Timer setStart() {
         this.start = SystemSpecific.get().getTime();
+        return this;
     }
 
-    public void setLength(long length) {
+    public Timer setLength(long length) {
         this.length = length;
+        return this;
     }
 
     public long elapsedTime() {

@@ -1,27 +1,25 @@
 package bxlx.graphics.fill;
 
-import bxlx.graphics.ChangeableDrawable;
 import bxlx.graphics.Direction;
 import bxlx.graphics.ICanvas;
 import bxlx.graphics.IDrawable;
 import bxlx.graphics.Point;
+import bxlx.graphics.drawable.DrawableContainer;
 import bxlx.graphics.shapes.Rectangle;
+
+import java.util.Arrays;
 
 /**
  * Created by qqcs on 2017.01.04..
  */
-public class Splitter extends ChangeableDrawable {
+public class Splitter extends DrawableContainer {
     private boolean xSplit;
     private double separate;
 
-    private IDrawable first;
-    private IDrawable second;
-
     public Splitter(boolean xSplit, double separate, IDrawable first, IDrawable second) {
+        super(Arrays.asList(first, second));
         this.xSplit = xSplit;
         this.separate = separate;
-        this.first = first;
-        this.second = second;
         setRedraw();
     }
 
@@ -30,69 +28,72 @@ public class Splitter extends ChangeableDrawable {
     }
 
     public Splitter(IDrawable first, IDrawable second) {
-        this(0.5, first, second);
+        this(false, 0.5, first, second);
     }
 
     public Splitter() {
-        this(null, null);
+        this(false, 0.5, null, null);
+    }
+
+    public Splitter(boolean xSplit) {
+        this(xSplit, 0.5, null, null);
     }
 
     public boolean isxSplit() {
         return xSplit;
     }
 
-    public void setxSplit(boolean xSplit) {
+    public Splitter setxSplit(boolean xSplit) {
         this.xSplit = xSplit;
         setRedraw();
+        return this;
     }
 
     public double getSeparate() {
         return separate;
     }
 
-    public void setSeparate(double separate) {
+    public Splitter setSeparate(double separate) {
         this.separate = separate;
         setRedraw();
+        return this;
     }
 
     public IDrawable getFirst() {
-        return first;
+        return children.get(0);
     }
 
-    public void setFirst(IDrawable first) {
-        this.first = first;
+    public Splitter setFirst(IDrawable first) {
+        children.set(0, first);
         setRedraw();
+        return this;
     }
 
     public IDrawable getSecond() {
-        return second;
+        return children.get(1);
     }
 
-    public void setSecond(IDrawable second) {
-        this.second = second;
+    public Splitter setSecond(IDrawable second) {
+        children.set(1, second);
         setRedraw();
-    }
-
-    @Override
-    public boolean needRedraw() {
-        return super.needRedraw() || first.needRedraw() || second.needRedraw();
+        return this;
     }
 
     @Override
     public void forceRedraw(ICanvas canvas) {
-        if (first == null) {
-            if (second == null) {
+        if (getFirst() == null) {
+            if (getSecond() == null) {
                 return;
             }
-            second.forceDraw(canvas);
+            getSecond().forceDraw(canvas);
             return;
         }
-        if (second == null) {
-            first.forceDraw(canvas);
+        if (getSecond() == null) {
+            getFirst().forceDraw(canvas);
             return;
         }
 
-        boolean forcedRedraw = !needRedraw();
+        boolean forcedRedraw = !needRedraw() || iChanged();
 
         Rectangle rectangle = canvas.getBoundingRectangle();
 
@@ -114,10 +115,10 @@ public class Splitter extends ChangeableDrawable {
                 rectangle.getStart(),
                 rectangle.getStart().add(dimension.multiple(firstSize))
                         .add(otherDimension.multiple(rectangle.getSize().asPoint()))));
-        if (super.needRedraw() || forcedRedraw) {
-            first.forceDraw(canvas);
+        if (forcedRedraw) {
+            getFirst().forceDraw(canvas);
         } else {
-            first.draw(canvas);
+            getFirst().draw(canvas);
         }
         canvas.restore();
 
@@ -125,10 +126,10 @@ public class Splitter extends ChangeableDrawable {
                 rectangle.getStart().add(dimension.multiple(firstSize)),
                 rectangle.getEnd()));
 
-        if (super.needRedraw()) {
-            second.forceDraw(canvas);
+        if (forcedRedraw) {
+            getSecond().forceDraw(canvas);
         } else {
-            second.draw(canvas);
+            getSecond().draw(canvas);
         }
         canvas.restore();
     }

@@ -90,7 +90,7 @@ public class JSweetSystemSpecific extends SystemSpecific {
     @Override
     public void setMouseEventListeners() {
         if (canvasElement != null) {
-            for(IMouseEventListener listener : listeners) {
+            for (IMouseEventListener listener : listeners) {
                 canvasElement.addEventListener(StringTypes.mousedown,
                         e -> {
                             buttonDowns.add((int) e.button);

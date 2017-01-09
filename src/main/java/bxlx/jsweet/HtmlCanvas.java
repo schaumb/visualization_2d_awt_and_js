@@ -116,6 +116,11 @@ public class HtmlCanvas implements ICanvas {
     }
 
     @Override
+    public int textWidth(String text) {
+        return (int) context.measureText(text).width;
+    }
+
+    @Override
     public void clip(Shape shape) {
         clips.push(shape.getBoundingRectangle().intersect(getBoundingRectangle()));
 

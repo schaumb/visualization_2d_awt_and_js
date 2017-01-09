@@ -25,8 +25,12 @@ public class ColoredDrawable extends DrawableWrapper {
         return nowColor;
     }
 
-    public Color getLastDrewColor() {
+    protected Color getLastDrewColor() {
         return lastDrewColor;
+    }
+
+    protected void drewColor() {
+        lastDrewColor = nowColor;
     }
 
     @Override
@@ -38,7 +42,7 @@ public class ColoredDrawable extends DrawableWrapper {
     public void forceDraw(ICanvas canvas) {
         canvas.setColor(nowColor);
         if (nowColor != lastDrewColor || !super.needRedraw()) {
-            lastDrewColor = nowColor;
+            drewColor();
             super.forceDraw(canvas);
         } else {
             getWrapped().draw(canvas);

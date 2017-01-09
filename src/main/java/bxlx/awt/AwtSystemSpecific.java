@@ -3,12 +3,10 @@ package bxlx.awt;
 import bxlx.graphics.Point;
 import bxlx.system.CommonError;
 import bxlx.system.Consumer;
-import bxlx.system.FPS;
 import bxlx.system.IMouseEventListener;
 import bxlx.system.IRenderer;
 import bxlx.system.SystemSpecific;
 import bxlx.system.Timer;
-import com.sun.org.apache.bcel.internal.generic.IREM;
 
 import javax.media.Manager;
 import javax.media.MediaLocator;
@@ -92,7 +90,7 @@ public class AwtSystemSpecific extends SystemSpecific {
 
                     try {
                         long need = timer.need();
-                        if(need > 0) {
+                        if (need > 0) {
                             Thread.sleep(need);
                         }
                     } catch (InterruptedException e) {

@@ -28,6 +28,8 @@ public interface ICanvas {
 
     void fillText(String text, Point to);
 
+    int textWidth(String text);
+
     void clip(Shape shape);
 
     void clipInverse(Shape shape);

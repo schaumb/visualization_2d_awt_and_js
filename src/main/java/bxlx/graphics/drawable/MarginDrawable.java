@@ -1,11 +1,9 @@
 package bxlx.graphics.drawable;
 
-import bxlx.graphics.Direction;
 import bxlx.graphics.ICanvas;
 import bxlx.graphics.IDrawable;
 import bxlx.graphics.Point;
 import bxlx.graphics.shapes.Rectangle;
-import bxlx.system.SystemSpecific;
 
 /**
  * Created by qqcs on 2017.01.09..
@@ -13,13 +11,13 @@ import bxlx.system.SystemSpecific;
 public class MarginDrawable extends DrawableWrapper {
     private double marginX; // < 1 -> percent, >=1 -> pixel
     private double marginY; // < 1 -> percent, >=1 -> pixel
-    private double lastDrewMarginX;
-    private double lastDrewMarginY;
+    private double lastDrewMarginX = -1;
+    private double lastDrewMarginY = -1;
 
     public MarginDrawable(IDrawable wrapped, double marginX, double marginY) {
         super(wrapped);
-        lastDrewMarginX = this.marginX = marginX;
-        lastDrewMarginY = this.marginY = marginY;
+        this.marginX = marginX;
+        this.marginY = marginY;
     }
 
     public MarginDrawable(IDrawable wrapped, double margin) {
@@ -63,7 +61,7 @@ public class MarginDrawable extends DrawableWrapper {
         );
         rectangle = new Rectangle(rectangle.getStart().add(pixel),
                 rectangle.getEnd().add(pixel.negate()));
-        
+
         canvas.clip(rectangle);
 
         if (marginX != lastDrewMarginX ||

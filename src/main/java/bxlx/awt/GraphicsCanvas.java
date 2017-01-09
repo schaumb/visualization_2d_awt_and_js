@@ -141,6 +141,11 @@ public class GraphicsCanvas implements ICanvas {
     }
 
     @Override
+    public int textWidth(String text) {
+        return graphics.getFontMetrics().stringWidth(text);
+    }
+
+    @Override
     public void clip(Shape shape) {
         Rectangle rectangle = shape.getBoundingRectangle().intersect(getBoundingRectangle());
         clips.push(rectangle);
