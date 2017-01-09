@@ -1,5 +1,8 @@
 package bxlx.system;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * Created by qqcs on 2016.12.23..
  */
@@ -7,6 +10,7 @@ public abstract class SystemSpecific {
     protected static SystemSpecific INSTANCE;
     protected boolean rendering = false;
     protected String[] args;
+    protected List<IMouseEventListener> listeners = new ArrayList<>();
 
     public static SystemSpecific get() {
         if (INSTANCE == null) {
@@ -32,7 +36,12 @@ public abstract class SystemSpecific {
 
     abstract public void setDrawFunction(IRenderer renderer);
 
-    abstract public void setMouseEventListener(IMouseEventListener listener);
+    public final void setMouseEventListenerQueue(IMouseEventListener listener) {
+        listeners.add(listener);
+        setMouseEventListeners();
+    }
+
+    abstract protected void setMouseEventListeners();
 
     abstract public boolean isEqual(double d1, double d2);
 

@@ -21,7 +21,7 @@ public class Button extends ChangeableDrawable implements IMouseEventListener {
     public Button(String text) {
         this.text = new Text(text);
         setRedraw();
-        SystemSpecific.get().setMouseEventListener(this);
+        SystemSpecific.get().setMouseEventListenerQueue(this);
     }
 
     public String getText() {

@@ -7,8 +7,9 @@ import bxlx.graphics.ICanvas;
  */
 public interface IRenderer {
     /**
-     * @param canvas is the canvas
      * @return need more render after this
      */
-    boolean render(ICanvas canvas);
+    boolean render();
+
+    void setCanvas(ICanvas canvas);
 }

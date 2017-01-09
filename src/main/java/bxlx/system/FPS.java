@@ -30,7 +30,7 @@ public class FPS implements IDrawable {
         canvas.fill(new Rectangle(0, 0, 115, 30));
         canvas.setColor(Color.RED.getScale(Color.GREEN, (Math.max(10, Math.min(60, fps)) - 10.0) / 50.0));
         canvas.setFont("sans-serif", 20, false, false);
-        canvas.fillText(((int) (fps * 100)) / 100.0 + " fps", new Point(10, 20));
+        canvas.fillText(((int) (Math.min(100, fps) * 100)) / 100.0 + " fps", new Point(10, 20));
         if (timer.elapsed()) {
             timer = null;
         }

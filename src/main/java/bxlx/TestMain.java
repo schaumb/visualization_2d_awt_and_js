@@ -2,6 +2,8 @@ package bxlx;
 
 import bxlx.graphics.ICanvas;
 import bxlx.graphics.Point;
+import bxlx.graphics.drawable.MarginDrawable;
+import bxlx.graphics.fill.Container;
 import bxlx.system.Button;
 import bxlx.system.FPS;
 import bxlx.system.IMouseEventListener;
@@ -14,35 +16,35 @@ import bxlx.system.SystemSpecific;
  */
 public class TestMain implements IRenderer, IMouseEventListener {
     private FPS fps = new FPS();
-    private Button button;
+    private Button btn;
+    private Container container = new Container();
+    private Container xContainer = new Container().setxSplit(true);
 
-    private ICanvas lastCanvas;
+    private ICanvas c;
 
     @Override
-    public boolean render(ICanvas c) {
-        if (lastCanvas != c) {
-            button.forceDraw(c);
-        } else {
-            button.draw(c);
-        }
-        //container.forceRedraw(c);
+    public boolean render() {
+        container.draw(c);
         fps.draw(c);
-        /*if (timer.elapsed()) {
-            timer.setStart();
-        }
-
-        if (timer2.elapsed()) {
-            timer2.setStart();
-        }*/
-        lastCanvas = c;
         return true;
     }
 
+    @Override
+    public void setCanvas(ICanvas canvas) {
+        c = canvas;
+
+        container.forceDraw(c);
+        fps.forceDraw(c);
+    }
+
     public TestMain() {
-        SystemSpecific.get().setDrawFunction(this);
         MouseInfo.get(); // init mouseinfo
-        SystemSpecific.get().setMouseEventListener(this);
-        button = new Button("Ello");
+        SystemSpecific.get().setMouseEventListenerQueue(this);
+        btn = new Button("Ello");
+        xContainer.add(btn).add(btn);
+        container.add(xContainer).add(new MarginDrawable(btn, 3, 10));
+
+        SystemSpecific.get().setDrawFunction(this);
     }
 
     @Override

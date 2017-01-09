@@ -25,7 +25,6 @@ import static jsweet.dom.Globals.window;
 public class JSweetSystemSpecific extends SystemSpecific {
 
     private HTMLCanvasElement canvasElement;
-    private HtmlCanvas canvas;
     private IRenderer renderer;
     private HashSet<Integer> buttonDowns = new HashSet<>();
 
@@ -42,13 +41,13 @@ public class JSweetSystemSpecific extends SystemSpecific {
             return;
         }
 
-        if (rendering = renderer.render(canvas)) {
+        if (rendering = renderer.render()) {
             window.requestAnimationFrame(x -> draw(x));
         }
     }
 
     private Object resized(Event event) {
-        if (canvasElement == null || window == null) {
+        if (canvasElement == null || window == null || renderer == null) {
             return null;
         }
 
@@ -56,7 +55,7 @@ public class JSweetSystemSpecific extends SystemSpecific {
             canvasElement.width = window.innerWidth;
             canvasElement.height = window.innerHeight;
 
-            canvas = new HtmlCanvas(canvasElement);
+            renderer.setCanvas(new HtmlCanvas(canvasElement));
         }
 
         if (!isRendering()) {
@@ -75,9 +74,10 @@ public class JSweetSystemSpecific extends SystemSpecific {
             canvasElement.style.top = "0";
             canvasElement.style.left = "0";
 
+            setMouseEventListeners();
             document.body.appendChild(canvasElement);
 
-            canvas = new HtmlCanvas(canvasElement);
+            renderer.setCanvas(new HtmlCanvas(canvasElement));
             window.onresize = this::resized;
         }
         this.renderer = renderer;
@@ -88,36 +88,38 @@ public class JSweetSystemSpecific extends SystemSpecific {
     }
 
     @Override
-    public void setMouseEventListener(IMouseEventListener listener) {
+    public void setMouseEventListeners() {
         if (canvasElement != null) {
-            canvasElement.addEventListener(StringTypes.mousedown,
-                    e -> {
-                        buttonDowns.add((int) e.button);
-                        listener.down(new Point(e.pageX, e.pageY), e.button == 0);
-                        return null;
-                    });
+            for(IMouseEventListener listener : listeners) {
+                canvasElement.addEventListener(StringTypes.mousedown,
+                        e -> {
+                            buttonDowns.add((int) e.button);
+                            listener.down(new Point(e.pageX, e.pageY), e.button == 0);
+                            return null;
+                        });
 
-            canvasElement.addEventListener(StringTypes.mouseup,
-                    e -> {
-                        buttonDowns.remove((int) e.button);
-                        listener.up(new Point(e.pageX, e.pageY), e.button == 0);
-                        return null;
-                    });
+                canvasElement.addEventListener(StringTypes.mouseup,
+                        e -> {
+                            buttonDowns.remove((int) e.button);
+                            listener.up(new Point(e.pageX, e.pageY), e.button == 0);
+                            return null;
+                        });
 
-            canvasElement.addEventListener(StringTypes.mousemove,
-                    e -> {
-                        listener.move(new Point(e.pageX, e.pageY));
-                        return null;
-                    });
+                canvasElement.addEventListener(StringTypes.mousemove,
+                        e -> {
+                            listener.move(new Point(e.pageX, e.pageY));
+                            return null;
+                        });
 
-            canvasElement.addEventListener(StringTypes.mouseout,
-                    e -> {
-                        for (Integer button : buttonDowns) {
-                            listener.up(new Point(e.pageX, e.pageY), button == 0);
-                        }
-                        buttonDowns.clear();
-                        return null;
-                    });
+                canvasElement.addEventListener(StringTypes.mouseout,
+                        e -> {
+                            for (Integer button : buttonDowns) {
+                                listener.up(new Point(e.pageX, e.pageY), button == 0);
+                            }
+                            buttonDowns.clear();
+                            return null;
+                        });
+            }
         }
     }
 

@@ -16,13 +16,11 @@ import java.util.List;
 public class Container extends ChangeableDrawable {
     private final ArrayList<IDrawable> list;
     private boolean xSplit = false;
-    private double margin = 0; // < 1 -> percent, >=1 -> pixel
     private double spaceBetween = 0; // < 1 -> percent, >=1 -> pixel
 
-    public Container(boolean xSplit, double margin, double spaceBetween) {
+    public Container(boolean xSplit, double spaceBetween) {
         this();
         this.xSplit = xSplit;
-        this.margin = margin;
         this.spaceBetween = spaceBetween;
     }
 
@@ -41,16 +39,6 @@ public class Container extends ChangeableDrawable {
 
     public Container setxSplit(boolean xSplit) {
         this.xSplit = xSplit;
-        setRedraw();
-        return this;
-    }
-
-    public double getMargin() {
-        return margin;
-    }
-
-    public Container setMargin(double margin) {
-        this.margin = margin;
         setRedraw();
         return this;
     }
@@ -111,15 +99,9 @@ public class Container extends ChangeableDrawable {
             return;
         }
 
-        Rectangle rectangle = canvas.getBoundingRectangle();
+        boolean forcedRedraw = !needRedraw();
 
-        if (margin >= 1) {
-            rectangle = new Rectangle(rectangle.getStart().add(margin),
-                    rectangle.getEnd().add(-margin));
-        } else {
-            rectangle = new Rectangle(rectangle.getStart().add(rectangle.getSize().asPoint().multiple(margin / 2)),
-                    rectangle.getStart().add(rectangle.getSize().asPoint().multiple(1 - margin / 2)));
-        }
+        Rectangle rectangle = canvas.getBoundingRectangle();
 
         Point dimension = xSplit ? Direction.RIGHT.getVector() : Direction.DOWN.getVector();
         Point otherDimension = xSplit ? Direction.DOWN.getVector() : Direction.RIGHT.getVector();
@@ -144,7 +126,8 @@ public class Container extends ChangeableDrawable {
             if (list.get(i).needRedraw()) {
                 setRedraw();
             }
-            if (super.needRedraw()) {
+            if (super.needRedraw() || forcedRedraw) {
+
                 list.get(i).forceDraw(canvas);
             } else {
                 list.get(i).draw(canvas);

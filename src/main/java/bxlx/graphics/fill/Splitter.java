@@ -92,6 +92,8 @@ public class Splitter extends ChangeableDrawable {
             return;
         }
 
+        boolean forcedRedraw = !needRedraw();
+
         Rectangle rectangle = canvas.getBoundingRectangle();
 
         Point dimension = xSplit ? Direction.RIGHT.getVector() : Direction.DOWN.getVector();
@@ -112,7 +114,7 @@ public class Splitter extends ChangeableDrawable {
                 rectangle.getStart(),
                 rectangle.getStart().add(dimension.multiple(firstSize))
                         .add(otherDimension.multiple(rectangle.getSize().asPoint()))));
-        if (super.needRedraw()) {
+        if (super.needRedraw() || forcedRedraw) {
             first.forceDraw(canvas);
         } else {
             first.draw(canvas);

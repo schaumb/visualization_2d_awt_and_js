@@ -3,9 +3,12 @@ package bxlx.awt;
 import bxlx.graphics.Point;
 import bxlx.system.CommonError;
 import bxlx.system.Consumer;
+import bxlx.system.FPS;
 import bxlx.system.IMouseEventListener;
 import bxlx.system.IRenderer;
 import bxlx.system.SystemSpecific;
+import bxlx.system.Timer;
+import com.sun.org.apache.bcel.internal.generic.IREM;
 
 import javax.media.Manager;
 import javax.media.MediaLocator;
@@ -34,6 +37,8 @@ import java.util.stream.Collectors;
 public class AwtSystemSpecific extends SystemSpecific {
     private JFrame frame;
     private JPanel panel;
+    private IRenderer renderer;
+    private boolean newRenderer = true;
 
     private AwtSystemSpecific() {
     }
@@ -45,18 +50,14 @@ public class AwtSystemSpecific extends SystemSpecific {
 
     private void refresh() {
         if (panel != null) {
-            panel.revalidate();
             panel.repaint();
-        }
-        try {
-            Thread.sleep(20);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
         }
     }
 
     @Override
     public void setDrawFunction(IRenderer renderer) {
+        this.newRenderer = this.renderer != renderer;
+        this.renderer = renderer;
         if (frame == null) {
             frame = new JFrame();
             frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -69,65 +70,76 @@ public class AwtSystemSpecific extends SystemSpecific {
                     }
                 }
             });
-        } else {
-            frame.remove(panel);
+
+            frame.add(panel = new JPanel() {
+                private BufferedImage img;
+
+                @Override
+                protected void paintComponent(Graphics graphics) {
+                    Timer timer = new Timer(1000 / 60);
+                    Rectangle rect = graphics.getClipBounds();
+                    if (img == null || img.getWidth() != rect.width || img.getHeight() != rect.height || newRenderer) {
+                        img = new BufferedImage(rect.width, rect.height, BufferedImage.TYPE_INT_ARGB);
+                        renderer.setCanvas(new GraphicsCanvas((Graphics2D) img.getGraphics(), rect));
+                        newRenderer = false;
+                    }
+
+                    if (rendering = renderer.render()) {
+                        EventQueue.invokeLater(AwtSystemSpecific.this::refresh);
+                    }
+
+                    graphics.drawImage(img, 0, 0, null);
+
+                    try {
+                        long need = timer.need();
+                        if(need > 0) {
+                            Thread.sleep(need);
+                        }
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                }
+            });
+            setMouseEventListeners();
         }
-        frame.add(panel = new JPanel() {
-            private BufferedImage img;
-            private GraphicsCanvas canvas;
-
-            @Override
-            protected void paintComponent(Graphics graphics) {
-                //super.paintComponent(graphics);
-
-                Rectangle rect = graphics.getClipBounds();
-                if (img == null || img.getWidth() != rect.width || img.getHeight() != rect.height) {
-                    img = new BufferedImage(rect.width, rect.height, BufferedImage.TYPE_INT_ARGB);
-                    canvas = new GraphicsCanvas((Graphics2D) img.getGraphics(), rect);
-                }
-
-                if (rendering = renderer.render(canvas)) {
-                    EventQueue.invokeLater(AwtSystemSpecific.this::refresh);
-                }
-
-                graphics.drawImage(img, 0, 0, null);
-            }
-        });
         if (!isRendering()) {
             EventQueue.invokeLater(this::refresh);
         }
     }
 
     @Override
-    public void setMouseEventListener(IMouseEventListener listener) {
+    public void setMouseEventListeners() {
         if (panel != null) {
-            MouseAdapter adapter = new MouseAdapter() {
-                @Override
-                public void mousePressed(MouseEvent mouseEvent) {
-                    java.awt.Point p = mouseEvent.getPoint();
-                    listener.down(new Point(p.getX(), p.getY()), mouseEvent.getButton() == MouseEvent.BUTTON1);
-                }
+            for (IMouseEventListener listener : listeners) {
+                MouseAdapter adapter = new MouseAdapter() {
+                    @Override
+                    public void mousePressed(MouseEvent mouseEvent) {
+                        java.awt.Point p = mouseEvent.getPoint();
+                        listener.down(new Point(p.getX(), p.getY()), mouseEvent.getButton() == MouseEvent.BUTTON1);
+                    }
 
-                @Override
-                public void mouseReleased(MouseEvent mouseEvent) {
-                    java.awt.Point p = mouseEvent.getPoint();
-                    listener.up(new Point(p.getX(), p.getY()), mouseEvent.getButton() == MouseEvent.BUTTON1);
-                }
+                    @Override
+                    public void mouseReleased(MouseEvent mouseEvent) {
+                        java.awt.Point p = mouseEvent.getPoint();
+                        listener.up(new Point(p.getX(), p.getY()), mouseEvent.getButton() == MouseEvent.BUTTON1);
+                    }
 
-                @Override
-                public void mouseMoved(MouseEvent mouseEvent) {
-                    java.awt.Point p = mouseEvent.getPoint();
-                    listener.move(new Point(p.getX(), p.getY()));
-                }
+                    @Override
+                    public void mouseMoved(MouseEvent mouseEvent) {
+                        java.awt.Point p = mouseEvent.getPoint();
+                        listener.move(new Point(p.getX(), p.getY()));
+                    }
 
-                @Override
-                public void mouseDragged(MouseEvent mouseEvent) {
-                    java.awt.Point p = mouseEvent.getPoint();
-                    listener.move(new Point(p.getX(), p.getY()));
-                }
-            };
-            panel.addMouseListener(adapter);
-            panel.addMouseMotionListener(adapter);
+                    @Override
+                    public void mouseDragged(MouseEvent mouseEvent) {
+                        java.awt.Point p = mouseEvent.getPoint();
+                        listener.move(new Point(p.getX(), p.getY()));
+                    }
+                };
+                panel.addMouseListener(adapter);
+                panel.addMouseMotionListener(adapter);
+            }
+            listeners.clear();
         }
     }
 

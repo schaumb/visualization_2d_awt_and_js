@@ -37,7 +37,7 @@ public class ColoredDrawable extends DrawableWrapper {
     @Override
     public void forceDraw(ICanvas canvas) {
         canvas.setColor(nowColor);
-        if (nowColor != lastDrewColor) {
+        if (nowColor != lastDrewColor || !super.needRedraw()) {
             lastDrewColor = nowColor;
             super.forceDraw(canvas);
         } else {
