@@ -4,15 +4,22 @@ import bxlx.graphics.ChangeableDrawable;
 import bxlx.graphics.ICanvas;
 import bxlx.graphics.Point;
 import bxlx.graphics.shapes.Rectangle;
+import bxlx.system.SystemSpecific;
 
 /**
  * Created by qqcs on 2017.01.03..
  */
 public class Text extends ChangeableDrawable {
     private String text;
+    private String referenceText;
 
     public Text(String text) {
+        this(text, null);
+    }
+
+    public Text(String text, String referenceText) {
         this.text = text;
+        this.referenceText = referenceText;
         setRedraw();
     }
 
@@ -26,6 +33,16 @@ public class Text extends ChangeableDrawable {
         return this;
     }
 
+    public String getReferenceText() {
+        return referenceText;
+    }
+
+    public Text setReferenceText(String referenceText) {
+        this.referenceText = referenceText;
+        setRedraw();
+        return this;
+    }
+
     @Override
     public void forceRedraw(ICanvas canvas) {
         if (text.isEmpty())
@@ -35,11 +52,11 @@ public class Text extends ChangeableDrawable {
         int ySize = (int) rectangle.getSize().getHeight();
 
         int xNeedFitSize = (int) rectangle.getSize().getWidth();
-        int xSize;
         canvas.setFont("sans-serif", ySize, false, false);
-        while ((xSize = canvas.textWidth(text)) > xNeedFitSize) {
+        while (canvas.textWidth(referenceText != null ? referenceText : text) > xNeedFitSize) {
             canvas.setFont("sans-serif", --ySize, false, false);
         }
+        int xSize = canvas.textWidth(text);
 
         canvas.fillText(text, rectangle.getStart().add(new Point(
                 (rectangle.getSize().getWidth() - xSize) / 2,

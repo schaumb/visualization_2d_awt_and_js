@@ -22,19 +22,19 @@ public class Button extends ChangeableDrawable implements IMouseEventListener {
     private Text text;
     private Runnable atClick;
     private Runnable atHold;
-    private Supplier<Boolean> isDisabled;
+    private Supplier<Boolean> disabled;
     private Timer holdTimer;
 
 
-    public Button(String text, Runnable atClick, Runnable atHold, Supplier<Boolean> isDisabled) {
-        this(new Text(text), atClick, atHold, isDisabled);
+    public Button(String text, Runnable atClick, Runnable atHold, Supplier<Boolean> disabled) {
+        this(new Text(text), atClick, atHold, disabled);
     }
 
-    public Button(Text text, Runnable atClick, Runnable atHold, Supplier<Boolean> isDisabled) {
+    public Button(Text text, Runnable atClick, Runnable atHold, Supplier<Boolean> disabled) {
         this.text = text;
         this.atClick = atClick;
         this.atHold = atHold;
-        this.isDisabled = isDisabled;
+        this.disabled = disabled;
         setRedraw();
         SystemSpecific.get().setMouseEventListenerQueue(this);
     }
@@ -43,13 +43,13 @@ public class Button extends ChangeableDrawable implements IMouseEventListener {
     @Override
     public boolean needRedraw() {
         return super.needRedraw() || text.needRedraw()
-                || wasDisabled ^ disabled()
+                || wasDisabled ^ isDisabled()
                 || (holdTimer != null && holdTimer.elapsed());
     }
 
     @Override
     public void forceRedraw(ICanvas canvas) {
-        if(disabled()) {
+        if(isDisabled()) {
             wasInside = false;
             wasDisabled = true;
             canvas.setColor(Color.LIGHT_GRAY);
@@ -83,8 +83,8 @@ public class Button extends ChangeableDrawable implements IMouseEventListener {
         lastRectangle = canvas.getBoundingRectangle();
     }
 
-    private boolean disabled() {
-        return isDisabled != null && isDisabled.get();
+    private boolean isDisabled() {
+        return disabled != null && disabled.get();
     }
 
     private boolean isInside(Rectangle rectangle, Point where, boolean leftButton) {
@@ -93,7 +93,7 @@ public class Button extends ChangeableDrawable implements IMouseEventListener {
 
     @Override
     public void up(Point where, boolean leftButton) {
-        if (!disabled() && isInside(lastRectangle, where, leftButton)) {
+        if (!isDisabled() && isInside(lastRectangle, where, leftButton)) {
             setRedraw();
             if (atClick != null) {
                 atClick.run();
@@ -115,7 +115,7 @@ public class Button extends ChangeableDrawable implements IMouseEventListener {
 
     @Override
     public void down(Point where, boolean leftButton) {
-        if (!disabled() && isInside(lastRectangle, where, leftButton)) {
+        if (!isDisabled() && isInside(lastRectangle, where, leftButton)) {
             setRedraw();
             if (atHold != null) {
                 atHold.run();

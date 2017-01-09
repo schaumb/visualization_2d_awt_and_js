@@ -5,7 +5,10 @@ import bxlx.graphics.ICanvas;
 import bxlx.graphics.Point;
 import bxlx.graphics.drawable.BackgroundDrawable;
 import bxlx.graphics.drawable.ColoredDrawable;
+import bxlx.graphics.drawable.VisibleDrawable;
+import bxlx.graphics.fill.Container;
 import bxlx.graphics.fill.DrawNumber;
+import bxlx.graphics.fill.Rect;
 import bxlx.graphics.fill.SplitContainer;
 import bxlx.graphics.fill.Splitter;
 import bxlx.graphics.fill.Text;
@@ -52,15 +55,20 @@ public class TestMain implements IRenderer, IMouseEventListener, Consumer<String
         SystemSpecific.get().setMouseEventListenerQueue(this);
         SystemSpecific.get().readTextFileAsync("text2.txt", this);
 
-        container.setFirst(new ColoredDrawable(new Text(SystemSpecific.get().getArgs()[0]), Color.CYAN))
+        VisibleDrawable visibled = new VisibleDrawable(new ColoredDrawable(new Text("Szia"), Color.ORANGE), true);
+        container.setFirst(
+                Splitter.threeWaySplit(false, -140,
+                        new Container(Arrays.asList(new Rect(), visibled)),
+                        new ColoredDrawable(new Text(SystemSpecific.get().getArgs()[0]), Color.CYAN),
+                        new Text("ddf")))
                 .setSecond(new SplitContainer(Arrays.asList(
                         new SplitContainer(true, Arrays.asList(
-                                new Button("-", null, () -> counterNumber.setNumber(Math.max(0, counterNumber.getNumber() - 1)), null),
+                                new Button(new Text("-", "+"), null, () -> counterNumber.setNumber(Math.max(0, counterNumber.getNumber() - 1)), null),
                                 new BackgroundDrawable(new ColoredDrawable(counterNumber, Color.ORANGE), bgColor),
                                 new Button("+", null, () -> counterNumber.setNumber(Math.max(0, counterNumber.getNumber() + 1)), null)
                         )),
                         new Text("ASD"),
-                        new Button("FILLER", null, null, () -> counterNumber.getNumber() > 10),
+                        new Button("FILLER", () -> visibled.setVisible(true), () -> visibled.setVisible(false), () -> counterNumber.getNumber() > 10),
                         new Text("ASDASD")
                 )));
 
