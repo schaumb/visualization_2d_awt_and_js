@@ -24,8 +24,8 @@ public class DrawArc extends ChangeableDrawable {
         this(true, fromRadius, toRadius);
     }
 
-    public static DrawArc circle() {
-        return new DrawArc(0, 2 * Math.PI);
+    public static DrawArc circle(boolean inside) {
+        return new DrawArc(inside, 0, 2 * Math.PI);
     }
 
     public double getFromRadius() {

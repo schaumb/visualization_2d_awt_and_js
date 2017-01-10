@@ -17,7 +17,6 @@ import bxlx.graphics.fill.SplitContainer;
 import bxlx.graphics.fill.Splitter;
 import bxlx.graphics.fill.Stick;
 import bxlx.graphics.fill.Text;
-import bxlx.graphics.shapes.Rectangle;
 import bxlx.system.Button;
 import bxlx.system.Consumer;
 import bxlx.system.FPS;
@@ -38,21 +37,30 @@ public class TestMain implements IRenderer, IMouseEventListener, Consumer<String
     private DrawNumber counterNumber = new DrawNumber(0, "/1000", "1000/1000");
     private final Color bgColor = new Color(240, 240, 240);
     private DrawNGon ng = new DrawNGon(false, true, 4, 0);
-    private Timer timer = new Timer(5000);
+    private Timer timer = new Timer(7000);
+    private Timer timer2 = new Timer(10000);
+    private Timer timer3 = new Timer(11000);
 
 
     private ICanvas c;
 
-    private DrawNGon arr = new DrawNGon(true, false, 3, 0);
-    private Stick stick = new Stick(0, 100, null, arr);
+    private DrawNGon nGon = new DrawNGon(true, false, 3, 0);
+    private Stick stick = new Stick(0, 0.3, 0.33, null, nGon);
     private ColoredDrawable coloredStick = new ColoredDrawable(stick, Color.GREEN);
-    private  SquareDrawable squareDrawable = new SquareDrawable(coloredStick);
+    private DrawRectangle rt = new DrawRectangle(0.5);
+
     @Override
     public boolean render() {
         c.clearCanvas(Color.WHITE);
-        stick.setAngle(timer.percent() * 2 * Math.PI);
-        arr.setStartAngle(timer.percent() * 2 * Math.PI);
-        squareDrawable.draw(c);
+        if (timer != null) {
+            //stick.setAngle(timer.percent() * 2 * Math.PI);
+            stick.setThickness(timer.percent());
+            //nGon.setStartAngle(timer.percent() * 2 * Math.PI);
+        }
+        stick.setLength(timer3.percent());
+        stick.setAngle(timer2.percent() * 2 * Math.PI);
+        nGon.setStartAngle(timer2.percent() * 2 * Math.PI);
+        coloredStick.draw(c);
         /*
         if (timer != null) {
             double angle = timer.percent() * 2 * Math.PI;
@@ -72,8 +80,14 @@ public class TestMain implements IRenderer, IMouseEventListener, Consumer<String
             ng.setStartAngle(0);
         }
         */
-        if(timer.elapsed()) {
+        if (timer != null && timer.elapsed()) {
             timer.setStart();
+        }
+        if (timer2.elapsed()) {
+            timer2.setStart();
+        }
+        if (timer3.elapsed()) {
+            timer3.setStart();
         }
         return true;
     }
@@ -81,8 +95,7 @@ public class TestMain implements IRenderer, IMouseEventListener, Consumer<String
     @Override
     public void setCanvas(ICanvas canvas) {
         c = canvas;
-
-        squareDrawable.forceDraw(c);
+        coloredStick.forceDraw(c);
         /*
         canvas.clearCanvas(bgColor);
 
@@ -138,13 +151,17 @@ public class TestMain implements IRenderer, IMouseEventListener, Consumer<String
 
     @Override
     public void down(Point where, boolean leftButton) {
-
     }
 
     @Override
     public void up(Point where, boolean leftButton) {
         if (!leftButton) {
             fps.reset();
+        }
+        if (leftButton) {
+            timer = null;
+        } else {
+            timer = new Timer(10000, stick.getThickness());
         }
     }
 

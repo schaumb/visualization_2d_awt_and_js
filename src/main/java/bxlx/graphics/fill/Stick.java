@@ -1,6 +1,5 @@
 package bxlx.graphics.fill;
 
-import bxlx.graphics.ChangeableDrawable;
 import bxlx.graphics.Direction;
 import bxlx.graphics.ICanvas;
 import bxlx.graphics.IDrawable;
@@ -10,7 +9,6 @@ import bxlx.graphics.drawable.DrawableContainer;
 import bxlx.graphics.shapes.Arc;
 import bxlx.graphics.shapes.Polygon;
 import bxlx.graphics.shapes.Rectangle;
-import bxlx.system.SystemSpecific;
 
 import java.util.Arrays;
 
@@ -19,11 +17,13 @@ import java.util.Arrays;
  */
 public class Stick extends DrawableContainer {
     private double angle;
+    private double length;
     private double thickness;
 
-    public Stick(double angle, double thickness, IDrawable start, IDrawable end) {
+    public Stick(double angle, double length, double thickness, IDrawable start, IDrawable end) {
         super(Arrays.asList(start, end));
         this.angle = angle;
+        this.length = length;
         this.thickness = thickness;
     }
 
@@ -33,6 +33,16 @@ public class Stick extends DrawableContainer {
 
     public Stick setAngle(double angle) {
         this.angle = angle;
+        setRedraw();
+        return this;
+    }
+
+    public double getLength() {
+        return length;
+    }
+
+    public Stick setLength(double length) {
+        this.length = length;
         setRedraw();
         return this;
     }
@@ -55,36 +65,48 @@ public class Stick extends DrawableContainer {
         Point center = bound.getCenter();
         Size size = bound.getSize();
 
-        double referenceRad = new Direction(Direction.fromRadian(angle).getVector().abs()).toRadian();
-        double sizeRad = new Direction(size.getWidth(), size.getHeight()).toRadian();
+        double sizeRad = new Direction(size.asPoint()).toRadian();
 
-        double stickSize = referenceRad > sizeRad ? size.getWidth() / Math.cos(angle) : size.getHeight() / Math.sin(angle);
-        stickSize = Math.abs(stickSize);
+        double diagonalAngle1 = angle + Math.atan(length);
+        double diagonalAngle2 = -angle + Math.atan(length);
+        double diagonalReferenceRad1 = new Direction(Direction.fromRadian(diagonalAngle1).getVector().abs()).toRadian();
+        double diagonalReferenceRad2 = new Direction(Direction.fromRadian(diagonalAngle2).getVector().abs()).toRadian();
 
-        Point halfStick = Direction.fromRadian(angle).getVector().multiple(stickSize / 4);
+        double stickDiagonalSize1 = diagonalReferenceRad1 > sizeRad ? size.getWidth() / Math.cos(diagonalAngle1) :
+                size.getHeight() / Math.sin(diagonalAngle1);
 
-        Point halfStickThick = new Point(-halfStick.getY(), halfStick.getX()).norm().multiple(thickness / 2);
+        double stickDiagonalSize2 = diagonalReferenceRad2 > sizeRad ? size.getWidth() / Math.cos(diagonalAngle2) :
+                size.getHeight() / Math.sin(diagonalAngle2);
+
+        double stickDiagonalSize = Math.min(Math.abs(stickDiagonalSize1), Math.abs(stickDiagonalSize2));
+        double stickSize = stickDiagonalSize / Math.sqrt(1 + length * length);
+        double stickThick = stickSize * length;
+
+        Point stickVector = Direction.fromRadian(angle).getVector().norm();
+        Point stickThickVector = new Point(-stickVector.getY(), stickVector.getX()).norm();
+
 
         if (forcedRedraw) {
             canvas.fill(new Polygon(Arrays.asList(
-                    center.add(halfStick).add(halfStickThick),
-                    center.add(halfStick).add(halfStickThick.negate()),
-                    center.add(halfStick.negate()).add(halfStickThick.negate()),
-                    center.add(halfStick.negate()).add(halfStickThick)
+                    center.add(stickVector.multiple(stickSize / 2 - stickThick * 2 / 3)).add(stickThickVector.multiple(stickThick * thickness / 2)),
+                    center.add(stickVector.multiple(stickSize / 2 - stickThick * 2 / 3)).add(stickThickVector.multiple(-stickThick * thickness / 2)),
+                    center.add(stickVector.multiple(stickThick * 2 / 3 - stickSize / 2)).add(stickThickVector.multiple(-stickThick * thickness / 2)),
+                    center.add(stickVector.multiple(stickThick * 2 / 3 - stickSize / 2)).add(stickThickVector.multiple(stickThick * thickness / 2))
             )));
         }
 
-        if(children.get(0) == null && forcedRedraw) {
-            canvas.fill(Arc.circle(center.add(halfStick.negate()), thickness / 2));
-        } else if(children.get(0) != null) {
-            canvas.clip(new Polygon(Arrays.asList(
-                    center,
-                    center.add(halfStick.negate().multiple(2)),
-                    center.add(halfStick.negate()).add(halfStickThick.multiple(3.0)),
-                    center.add(halfStick.negate()).add(halfStickThick.multiple(-3.0))
-            )).getBoundingRectangle());
+        if (children.get(0) == null && forcedRedraw) {
+            canvas.fill(Arc.circle(center.add(stickVector.multiple(stickThick * 2 / 3 - stickSize / 2)), stickThick * thickness / 2));
+        } else if (children.get(0) != null) {
+            Polygon p = new Polygon(Arrays.asList(
+                    center.add(stickVector.multiple(-stickSize / 2)).add(stickThickVector.multiple(stickThick / 2)),
+                    center.add(stickVector.multiple(-stickSize / 2)).add(stickThickVector.multiple(-stickThick / 2)),
+                    center.add(stickVector.multiple(-stickSize / 2 + stickThick)).add(stickThickVector.multiple(-stickThick / 2)),
+                    center.add(stickVector.multiple(-stickSize / 2 + stickThick)).add(stickThickVector.multiple(stickThick / 2))
+            ));
+            canvas.clip(p.getBoundingRectangle());
 
-            if(forcedRedraw) {
+            if (forcedRedraw) {
                 children.get(0).forceDraw(canvas);
             } else {
                 children.get(0).draw(canvas);
@@ -92,17 +114,19 @@ public class Stick extends DrawableContainer {
             canvas.restore();
         }
 
-        if(children.get(1) == null && forcedRedraw) {
-            canvas.fill(Arc.circle(center.add(halfStick), thickness / 2));
-        } else if(children.get(1) != null) {
-            canvas.clip(new Polygon(Arrays.asList(
-                    center,
-                    center.add(halfStick.multiple(2)),
-                    center.add(halfStick).add(halfStickThick.multiple(3.0)),
-                    center.add(halfStick).add(halfStickThick.multiple(-3.0))
-            )).getBoundingRectangle());
 
-            if(forcedRedraw) {
+        if (children.get(1) == null && forcedRedraw) {
+            canvas.fill(Arc.circle(center.add(stickVector.multiple(stickSize / 2 - stickThick * 2 / 3)), stickThick * thickness / 2));
+        } else if (children.get(1) != null) {
+            Polygon p = new Polygon(Arrays.asList(
+                    center.add(stickVector.multiple(stickSize / 2)).add(stickThickVector.multiple(stickThick / 2)),
+                    center.add(stickVector.multiple(stickSize / 2)).add(stickThickVector.multiple(-stickThick / 2)),
+                    center.add(stickVector.multiple(stickSize / 2 - stickThick)).add(stickThickVector.multiple(-stickThick / 2)),
+                    center.add(stickVector.multiple(stickSize / 2 - stickThick)).add(stickThickVector.multiple(stickThick / 2))
+            ));
+            canvas.clip(p.getBoundingRectangle());
+
+            if (forcedRedraw) {
                 children.get(1).forceDraw(canvas);
             } else {
                 children.get(1).draw(canvas);
