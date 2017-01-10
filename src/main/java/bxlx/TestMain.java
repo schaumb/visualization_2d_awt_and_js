@@ -15,7 +15,9 @@ import bxlx.graphics.fill.DrawRectangle;
 import bxlx.graphics.fill.Rect;
 import bxlx.graphics.fill.SplitContainer;
 import bxlx.graphics.fill.Splitter;
+import bxlx.graphics.fill.Stick;
 import bxlx.graphics.fill.Text;
+import bxlx.graphics.shapes.Rectangle;
 import bxlx.system.Button;
 import bxlx.system.Consumer;
 import bxlx.system.FPS;
@@ -35,38 +37,58 @@ public class TestMain implements IRenderer, IMouseEventListener, Consumer<String
     private Splitter container = new Splitter(true, -200, null, null);
     private DrawNumber counterNumber = new DrawNumber(0, "/1000", "1000/1000");
     private final Color bgColor = new Color(240, 240, 240);
+    private DrawNGon ng = new DrawNGon(false, true, 4, 0);
+    private Timer timer = new Timer(5000);
+
 
     private ICanvas c;
 
+    private DrawNGon arr = new DrawNGon(true, false, 3, 0);
+    private Stick stick = new Stick(0, 100, null, arr);
+    private ColoredDrawable coloredStick = new ColoredDrawable(stick, Color.GREEN);
+    private  SquareDrawable squareDrawable = new SquareDrawable(coloredStick);
     @Override
     public boolean render() {
+        c.clearCanvas(Color.WHITE);
+        stick.setAngle(timer.percent() * 2 * Math.PI);
+        arr.setStartAngle(timer.percent() * 2 * Math.PI);
+        squareDrawable.draw(c);
+        /*
         if (timer != null) {
             double angle = timer.percent() * 2 * Math.PI;
             if (angle > ng.getStartAngle()) {
                 ng.setStartAngle(angle);
             }
         }
-        container.draw(c);
+        container.draw(c);        if(angle < -Math.PI) {
+            halfStick = halfStick.negate();
+        }
+
+
         fps.draw(c);
         if (timer != null && timer.elapsed()) {
             timer.setLength(2000);
             timer.setStart();
             ng.setStartAngle(0);
         }
+        */
+        if(timer.elapsed()) {
+            timer.setStart();
+        }
         return true;
     }
 
     @Override
     public void setCanvas(ICanvas canvas) {
-        canvas.clearCanvas(bgColor);
         c = canvas;
 
-        container.forceDraw(c);
-        fps.forceDraw(c);
-    }
+        squareDrawable.forceDraw(c);
+        /*
+        canvas.clearCanvas(bgColor);
 
-    DrawNGon ng = new DrawNGon(false, true, 4, 0);
-    Timer timer = new Timer(2000);
+        container.forceDraw(c);
+        fps.forceDraw(c);*/
+    }
 
     public TestMain() {
         MouseInfo.get(); // init mouseinfo
