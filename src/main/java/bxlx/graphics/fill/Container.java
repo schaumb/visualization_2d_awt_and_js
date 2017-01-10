@@ -42,9 +42,13 @@ public class Container extends DrawableContainer {
         boolean forcedRedraw = !needRedraw();
 
         for (int i = 0; i < children.size(); ++i) {
-            if(!iChanged() && children.get(i).needRedraw()) {
+            if (children.get(i) == null) {
+                continue;
+            }
+
+            if (!iChanged() && children.get(i).needRedraw()) {
                 setRedraw();
-                if(i > 0) {
+                if (i > 0) {
                     i = Math.max(-1, i - forceRedrawPrevLayer - 1);
                     continue;
                 }

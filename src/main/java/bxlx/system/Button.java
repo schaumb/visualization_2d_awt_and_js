@@ -3,6 +3,7 @@ package bxlx.system;
 import bxlx.graphics.ChangeableDrawable;
 import bxlx.graphics.Color;
 import bxlx.graphics.ICanvas;
+import bxlx.graphics.IDrawable;
 import bxlx.graphics.Point;
 import bxlx.graphics.fill.Rect;
 import bxlx.graphics.fill.Text;
@@ -19,7 +20,7 @@ public class Button extends ChangeableDrawable implements IMouseEventListener {
     private boolean wasDisabled = false;
     private Rectangle lastRectangle = Rectangle.NULL_RECTANGLE;
     private final Rect rect = new Rect();
-    private Text text;
+    private IDrawable drawable;
     private Runnable atClick;
     private Runnable atHold;
     private Supplier<Boolean> disabled;
@@ -30,8 +31,8 @@ public class Button extends ChangeableDrawable implements IMouseEventListener {
         this(new Text(text), atClick, atHold, disabled);
     }
 
-    public Button(Text text, Runnable atClick, Runnable atHold, Supplier<Boolean> disabled) {
-        this.text = text;
+    public Button(IDrawable drawable, Runnable atClick, Runnable atHold, Supplier<Boolean> disabled) {
+        this.drawable = drawable;
         this.atClick = atClick;
         this.atHold = atHold;
         this.disabled = disabled;
@@ -42,14 +43,14 @@ public class Button extends ChangeableDrawable implements IMouseEventListener {
 
     @Override
     public boolean needRedraw() {
-        return super.needRedraw() || text.needRedraw()
+        return super.needRedraw() || drawable.needRedraw()
                 || wasDisabled ^ isDisabled()
                 || (holdTimer != null && holdTimer.elapsed());
     }
 
     @Override
     public void forceRedraw(ICanvas canvas) {
-        if(isDisabled()) {
+        if (isDisabled()) {
             wasInside = false;
             wasDisabled = true;
             canvas.setColor(Color.LIGHT_GRAY);
@@ -77,7 +78,7 @@ public class Button extends ChangeableDrawable implements IMouseEventListener {
                 canvas.getBoundingRectangle().getStart().add(canvas.getBoundingRectangle().getSize().asPoint().multiple(1 / 16.0)),
                 canvas.getBoundingRectangle().getStart().add(canvas.getBoundingRectangle().getSize().asPoint().multiple(15 / 16.0))
         ));
-        text.forceDraw(canvas);
+        drawable.forceDraw(canvas);
         canvas.restore();
 
         lastRectangle = canvas.getBoundingRectangle();

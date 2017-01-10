@@ -40,17 +40,17 @@ public class Splitter extends DrawableContainer {
     }
 
     public static Splitter threeWaySplit(boolean xSplit, double centerSeparate,
-                                      IDrawable first, IDrawable center, IDrawable last) {
+                                         IDrawable first, IDrawable center, IDrawable last) {
         double separate1;
         double separate2;
 
-        if(centerSeparate <= -1) {
+        if (centerSeparate <= -1) {
             separate1 = Math.round(-centerSeparate / 2);
             separate2 = Math.round(centerSeparate / 2);
-        } else if(centerSeparate < 0) {
+        } else if (centerSeparate < 0) {
             separate1 = -centerSeparate / 2;
             separate2 = centerSeparate / (2 + centerSeparate);
-        } else if(centerSeparate < 1) {
+        } else if (centerSeparate < 1) {
             separate1 = (1 + centerSeparate) / -2;
             separate2 = 2 * centerSeparate / (1 + centerSeparate);
         } else {

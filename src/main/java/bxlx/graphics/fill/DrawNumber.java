@@ -7,14 +7,20 @@ import bxlx.graphics.drawable.DrawableWrapper;
  */
 public class DrawNumber extends DrawableWrapper<Text> {
     private int number;
+    private final String suffix;
 
     public DrawNumber() {
         this(0);
     }
 
     public DrawNumber(int number) {
-        super(new Text(number + ""));
+        this(number, "", null);
+    }
+
+    public DrawNumber(int number, String suffix, String referenceText) {
+        super(new Text(number + suffix, referenceText));
         this.number = number;
+        this.suffix = suffix;
     }
 
     public int getNumber() {
@@ -23,7 +29,7 @@ public class DrawNumber extends DrawableWrapper<Text> {
 
     public DrawNumber setNumber(int number) {
         this.number = number;
-        getWrapped().setText(number + "");
+        getWrapped().setText(number + suffix);
         return this;
     }
 }

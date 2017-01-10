@@ -71,6 +71,10 @@ public class SplitContainer extends DrawableContainer {
         Point elemSize = rectangle.getSize().asPoint().multiple(dimension.multiple(1.0 / children.size()).add(otherDimension));
 
         for (int i = 0; i < children.size(); ++i) {
+            if (children.get(i) == null) {
+                continue;
+            }
+
             Rectangle toDraw = new Rectangle(rectangle.getStart()
                     .add(elemSize.multiple(dimension.multiple(i))),
                     rectangle.getStart()

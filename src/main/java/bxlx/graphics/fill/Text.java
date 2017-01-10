@@ -4,7 +4,6 @@ import bxlx.graphics.ChangeableDrawable;
 import bxlx.graphics.ICanvas;
 import bxlx.graphics.Point;
 import bxlx.graphics.shapes.Rectangle;
-import bxlx.system.SystemSpecific;
 
 /**
  * Created by qqcs on 2017.01.03..

@@ -27,7 +27,9 @@ public abstract class DrawableContainer extends ChangeableDrawable {
     public boolean childrenChanged() {
         boolean childNeedRedraw = false;
         for (IDrawable drawable : children) {
-            childNeedRedraw |= drawable.needRedraw();
+            if (drawable != null) {
+                childNeedRedraw |= drawable.needRedraw();
+            }
         }
         return childNeedRedraw;
     }

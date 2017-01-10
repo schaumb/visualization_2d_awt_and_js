@@ -20,6 +20,7 @@ public class FPS implements IDrawable {
 
     @Override
     public void forceDraw(ICanvas canvas) {
+        Color tmp = canvas.getColor();
         double fps = getFps();
         if (timer == null) {
             drewFrames = 0;
@@ -34,6 +35,8 @@ public class FPS implements IDrawable {
         if (timer.elapsed()) {
             timer = null;
         }
+
+        canvas.setColor(tmp);
     }
 
     public double getFps() {

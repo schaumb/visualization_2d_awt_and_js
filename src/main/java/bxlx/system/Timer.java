@@ -16,6 +16,11 @@ public class Timer {
         this.length = length;
     }
 
+    public Timer(int length, double fromPercent) {
+        start = (long) (SystemSpecific.get().getTime() - length * fromPercent);
+        this.length = length;
+    }
+
     public Timer setStart() {
         this.start = SystemSpecific.get().getTime();
         return this;

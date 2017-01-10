@@ -3,8 +3,6 @@ package bxlx.graphics.drawable;
 import bxlx.graphics.ICanvas;
 import bxlx.graphics.IDrawable;
 
-import java.util.function.Supplier;
-
 /**
  * Created by qqcs on 2017.01.09..
  */
@@ -33,7 +31,7 @@ public class VisibleDrawable extends DrawableWrapper {
 
     @Override
     public void forceDraw(ICanvas canvas) {
-        if(!visible) {
+        if (!visible) {
             lastWasVisible = false;
             return;
         }
