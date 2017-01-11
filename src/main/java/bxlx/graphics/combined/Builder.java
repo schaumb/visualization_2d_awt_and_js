@@ -16,7 +16,7 @@ public class Builder<T extends IDrawable> extends DrawableWrapper<T> {
     }
 
     public static <T extends IDrawable> Builder<T> make(T start) {
-        if(start == null) {
+        if (start == null) {
             return null;
         }
         return new Builder<>(start);

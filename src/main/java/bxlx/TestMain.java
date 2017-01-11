@@ -9,6 +9,7 @@ import bxlx.system.IMouseEventListener;
 import bxlx.system.IRenderer;
 import bxlx.system.MouseInfo;
 import bxlx.system.SystemSpecific;
+import bxlx.system.Timer;
 
 /**
  * Created by qqcs on 2016.12.24..
@@ -17,10 +18,28 @@ public class TestMain implements IRenderer, IMouseEventListener, Consumer<String
 
     private ICanvas c;
     private Navigator navigator = new Navigator(null, null, DrawArc.circle(true), 50);
+    private Timer timer = new Timer(3000);
 
     @Override
     public boolean render() {
+        //c.clearCanvas(Color.WHITE);
+
+        //c.setColor(Color.ORANGE);
+
+        //Point center = c.getBoundingRectangle().getCenter();
+        //Shape test =
+        // new Arc(center, 100, 0, Math.PI / 4 * 3);
+        // new Rectangle(center.add(-50), center.add(new Point(50, 100)));
+        // Polygon.nGon(8, center, 100, 0);
+        // Polygon.ellipseNGon(5, center, c.getBoundingRectangle().getSize().asPoint().multiple(1.0 / 2).asSize(), 0);
+        // c.fill(test.getRotated(timer.percent() * Math.PI * 2));
+        // c.fill(test.getScaled(timer.percent() * 2));
+        // c.fill(test.getTranslated(Point.same(timer.percent() * 100)));
+
         navigator.draw(c);
+        if (timer.elapsed()) {
+            timer.setStart();
+        }
         return true;
     }
 

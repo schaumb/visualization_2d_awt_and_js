@@ -2,10 +2,8 @@ package bxlx.graphics.combined;
 
 import bxlx.graphics.ICanvas;
 import bxlx.graphics.IDrawable;
-import bxlx.graphics.Point;
 import bxlx.graphics.drawable.DrawableWrapper;
 import bxlx.graphics.fill.DrawNGon;
-import bxlx.graphics.fill.DrawRectangle;
 import bxlx.graphics.fill.Magnifying;
 import bxlx.graphics.fill.Splitter;
 import bxlx.graphics.fill.Stick;
@@ -17,7 +15,7 @@ import bxlx.system.Button;
 public class Navigator extends DrawableWrapper<Splitter> {
 
     private IDrawable makeButton(Button button) {
-        if(button == null) {
+        if (button == null) {
             return null;
         }
         return Builder.make(button).makeMargin(3);

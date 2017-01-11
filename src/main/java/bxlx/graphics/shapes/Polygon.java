@@ -90,4 +90,44 @@ public class Polygon extends Shape {
 
         return c;
     }
+
+    @Override
+    public Shape getTranslated(Point vector) {
+        List<Point> newPoints = new ArrayList<>(points.size());
+
+        for (Point p : points) {
+            newPoints.add(p.add(vector));
+        }
+
+        return new Polygon(newPoints);
+    }
+
+    @Override
+    public Shape getScaled(double scale) {
+        Point center = getBoundingRectangle().getCenter();
+        List<Point> newPoints = new ArrayList<>(points.size());
+
+        for (Point p : points) {
+            newPoints.add(center.add(p.add(center.negate()).multiple(scale)));
+        }
+
+        return new Polygon(newPoints);
+    }
+
+    @Override
+    public Shape getRotated(double rotate) {
+        Point center = getBoundingRectangle().getCenter();
+        List<Point> newPoints = new ArrayList<>(points.size());
+
+        for (Point p : points) {
+            Point vector = p.add(center.negate());
+
+            newPoints.add(center.add(
+                    Direction.fromRadian(new Direction(vector).toRadian() + rotate)
+                            .getVector().multiple(vector.length())
+            ));
+        }
+
+        return new Polygon(newPoints);
+    }
 }

@@ -101,4 +101,24 @@ public class Rectangle extends Shape {
         return start.getX() <= point.getX() && point.getX() <= start.getX() + size.getWidth()
                 && start.getY() <= point.getY() && point.getY() <= start.getY() + size.getHeight();
     }
+
+    @Override
+    public Shape getTranslated(Point vector) {
+        return withStart(start.add(vector));
+    }
+
+    @Override
+    public Shape getScaled(double scale) {
+        Point center = getCenter();
+        return new Rectangle(center.add(start.add(center.negate()).multiple(scale)), size.asPoint().multiple(scale).asSize());
+    }
+
+    @Override
+    public Shape getRotated(double rotate) {
+        if ((rotate + 7 * Math.PI / 4) % Math.PI > Math.PI / 2) {
+            return this;
+        }
+        Rectangle r = withSize(new Size(size.getHeight(), size.getWidth()));
+        return r.getTranslated(getCenter().add(r.getCenter().negate()));
+    }
 }

@@ -119,4 +119,19 @@ public class Arc extends Shape {
 
         return toRadian <= i && i < fromRadian;
     }
+
+    @Override
+    public Shape getTranslated(Point vector) {
+        return new Arc(center.add(vector), radius, fromRadian, toRadian);
+    }
+
+    @Override
+    public Shape getScaled(double scale) {
+        return new Arc(center, radius * scale, fromRadian, toRadian);
+    }
+
+    @Override
+    public Shape getRotated(double rotate) {
+        return new Arc(center, radius, fromRadian + rotate, toRadian + rotate);
+    }
 }

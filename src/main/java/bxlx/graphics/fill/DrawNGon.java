@@ -2,8 +2,10 @@ package bxlx.graphics.fill;
 
 import bxlx.graphics.ChangeableDrawable;
 import bxlx.graphics.ICanvas;
+import bxlx.graphics.Point;
 import bxlx.graphics.Size;
 import bxlx.graphics.shapes.Polygon;
+import bxlx.graphics.shapes.Shape;
 
 /**
  * Created by qqcs on 2017.01.09..
@@ -87,13 +89,21 @@ public class DrawNGon extends ChangeableDrawable {
     @Override
     protected void forceRedraw(ICanvas canvas) {
         Size size = canvas.getBoundingRectangle().getSize();
+        Point center = canvas.getBoundingRectangle().getCenter();
 
-        // TODO make centered
+        Shape polygon;
         if (ellipse) {
-            canvas.fill(Polygon.ellipseNGon(n, canvas.getBoundingRectangle().getCenter(), size, startAngle));
+            polygon = Polygon.ellipseNGon(n, center, size, startAngle);
         } else {
             double radius = (inside ? size.getShorterDimension() : size.getLongerDimension()) / 2;
-            canvas.fill(Polygon.nGon(n, canvas.getBoundingRectangle().getCenter(), radius, startAngle));
+            polygon = Polygon.nGon(n, center, radius, startAngle);
         }
+
+        if (makeCentered) {
+            Point nowCenter = polygon.getBoundingRectangle().getCenter();
+            polygon = polygon.getTranslated(center.add(nowCenter.negate()));
+        }
+
+        canvas.fill(polygon);
     }
 }

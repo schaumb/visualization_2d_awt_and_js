@@ -33,4 +33,10 @@ public abstract class Shape {
     public abstract Rectangle getBoundingRectangle();
 
     public abstract boolean isContains(Point point);
+
+    public abstract Shape getTranslated(Point vector);
+
+    public abstract Shape getScaled(double scale);
+
+    public abstract Shape getRotated(double rotate);
 }
