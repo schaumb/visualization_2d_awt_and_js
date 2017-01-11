@@ -13,16 +13,22 @@ public class DrawNGon extends ChangeableDrawable {
     private boolean ellipse;
     private int n;
     private double startAngle;
+    private boolean makeCentered;
 
-    public DrawNGon(boolean inside, boolean ellipse, int n, double startAngle) {
+    public DrawNGon(boolean inside, boolean ellipse, int n, double startAngle, boolean makeCentered) {
         this.inside = inside;
         this.ellipse = ellipse;
         this.n = n;
         this.startAngle = startAngle;
+        this.makeCentered = makeCentered;
+    }
+
+    public DrawNGon(int n, double startAngle, boolean makeCentered) {
+        this(true, false, n, startAngle, makeCentered);
     }
 
     public DrawNGon(int n, double startAngle) {
-        this(true, false, n, startAngle);
+        this(n, startAngle, false);
     }
 
     public DrawNGon(int n) {
@@ -69,10 +75,20 @@ public class DrawNGon extends ChangeableDrawable {
         return this;
     }
 
+    public boolean isMakeCentered() {
+        return makeCentered;
+    }
+
+    public DrawNGon setMakeCentered(boolean makeCentered) {
+        this.makeCentered = makeCentered;
+        return this;
+    }
+
     @Override
     protected void forceRedraw(ICanvas canvas) {
         Size size = canvas.getBoundingRectangle().getSize();
 
+        // TODO make centered
         if (ellipse) {
             canvas.fill(Polygon.ellipseNGon(n, canvas.getBoundingRectangle().getCenter(), size, startAngle));
         } else {

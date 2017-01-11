@@ -105,18 +105,6 @@ public class Splitter extends DrawableContainer {
 
     @Override
     public void forceRedraw(ICanvas canvas) {
-        if (getFirst() == null) {
-            if (getSecond() == null) {
-                return;
-            }
-            getSecond().forceDraw(canvas);
-            return;
-        }
-        if (getSecond() == null) {
-            getFirst().forceDraw(canvas);
-            return;
-        }
-
         boolean forcedRedraw = !needRedraw() || iChanged();
 
         Rectangle rectangle = canvas.getBoundingRectangle();
@@ -135,26 +123,30 @@ public class Splitter extends DrawableContainer {
             firstSize = Math.min(firstSize, separate);
         }
 
-        canvas.clip(new Rectangle(
-                rectangle.getStart(),
-                rectangle.getStart().add(dimension.multiple(firstSize))
-                        .add(otherDimension.multiple(rectangle.getSize().asPoint()))));
-        if (forcedRedraw) {
-            getFirst().forceDraw(canvas);
-        } else {
-            getFirst().draw(canvas);
+        if (getFirst() != null) {
+            canvas.clip(new Rectangle(
+                    rectangle.getStart(),
+                    rectangle.getStart().add(dimension.multiple(firstSize))
+                            .add(otherDimension.multiple(rectangle.getSize().asPoint()))));
+            if (forcedRedraw) {
+                getFirst().forceDraw(canvas);
+            } else {
+                getFirst().draw(canvas);
+            }
+            canvas.restore();
         }
-        canvas.restore();
 
-        canvas.clip(new Rectangle(
-                rectangle.getStart().add(dimension.multiple(firstSize)),
-                rectangle.getEnd()));
+        if(getSecond() != null) {
+            canvas.clip(new Rectangle(
+                    rectangle.getStart().add(dimension.multiple(firstSize)),
+                    rectangle.getEnd()));
 
-        if (forcedRedraw) {
-            getSecond().forceDraw(canvas);
-        } else {
-            getSecond().draw(canvas);
+            if (forcedRedraw) {
+                getSecond().forceDraw(canvas);
+            } else {
+                getSecond().draw(canvas);
+            }
+            canvas.restore();
         }
-        canvas.restore();
     }
 }
