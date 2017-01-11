@@ -1,9 +1,13 @@
 package bxlx;
 
+import bxlx.graphics.Color;
 import bxlx.graphics.ICanvas;
 import bxlx.graphics.Point;
 import bxlx.graphics.combined.Navigator;
+import bxlx.graphics.drawable.ColoredDrawable;
+import bxlx.graphics.fill.Container;
 import bxlx.graphics.fill.DrawArc;
+import bxlx.graphics.fill.DrawRectangle;
 import bxlx.system.Consumer;
 import bxlx.system.IMouseEventListener;
 import bxlx.system.IRenderer;
@@ -11,13 +15,16 @@ import bxlx.system.MouseInfo;
 import bxlx.system.SystemSpecific;
 import bxlx.system.Timer;
 
+import java.util.Arrays;
+
 /**
  * Created by qqcs on 2016.12.24..
  */
 public class TestMain implements IRenderer, IMouseEventListener, Consumer<String> {
 
     private ICanvas c;
-    private Navigator navigator = new Navigator(null, null, DrawArc.circle(true), 50);
+    private Navigator navigator = new Navigator(null, null, new Container(Arrays.asList(new ColoredDrawable(new DrawRectangle(), Color.WHITE),
+            new ColoredDrawable(DrawArc.circle(true), Color.CYAN))), 50);
     private Timer timer = new Timer(3000);
 
     @Override
