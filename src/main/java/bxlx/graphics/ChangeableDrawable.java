@@ -21,5 +21,10 @@ public abstract class ChangeableDrawable implements IDrawable {
         redraw = false;
     }
 
+    @Override
+    public void setOnlyForceDraw() {
+        redraw = false;
+    }
+
     protected abstract void forceRedraw(ICanvas canvas);
 }

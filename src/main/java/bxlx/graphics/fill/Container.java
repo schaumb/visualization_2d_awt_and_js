@@ -13,7 +13,7 @@ public class Container extends DrawableContainer {
     private final int forceRedrawPrevLayer;
 
     public Container(List<IDrawable> children) {
-        this(children, 1);
+        this(children, 0);
     }
 
     public Container(List<IDrawable> children, int forceRedrawPrevLayer) {

@@ -55,6 +55,8 @@ public abstract class SystemSpecific {
 
     abstract public void readTextFileAsync(String fileName, Consumer<String> consumer);
 
+    abstract public void preLoad(String src, boolean img);
+
     public final boolean isRendering() {
         return rendering;
     }

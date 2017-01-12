@@ -23,6 +23,11 @@ public abstract class DrawableWrapper<T extends IDrawable> implements IDrawable 
     }
 
     @Override
+    public void setOnlyForceDraw() {
+        wrapped.setOnlyForceDraw();
+    }
+
+    @Override
     public void forceDraw(ICanvas canvas) {
         wrapped.forceDraw(canvas);
     }

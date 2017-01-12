@@ -1,26 +1,26 @@
 package bxlx.system;
 
-import bxlx.graphics.ChangeableDrawable;
 import bxlx.graphics.Color;
 import bxlx.graphics.ICanvas;
 import bxlx.graphics.IDrawable;
 import bxlx.graphics.Point;
+import bxlx.graphics.drawable.DrawableContainer;
 import bxlx.graphics.fill.Rect;
 import bxlx.graphics.fill.Text;
 import bxlx.graphics.shapes.Rectangle;
 
+import java.util.Collections;
 import java.util.function.Supplier;
 
 /**
  * Created by qqcs on 2017.01.03..
  */
-public class Button extends ChangeableDrawable implements IMouseEventListener {
-
+public class Button extends DrawableContainer implements IMouseEventListener {
+    private boolean onlyForceRedraw = false;
     private boolean wasInside = false;
     private boolean wasDisabled = false;
     private Rectangle lastRectangle = Rectangle.NULL_RECTANGLE;
     private final Rect rect = new Rect();
-    private IDrawable drawable;
     private Runnable atClick;
     private Runnable atHold;
     private Supplier<Boolean> disabled;
@@ -32,7 +32,7 @@ public class Button extends ChangeableDrawable implements IMouseEventListener {
     }
 
     public Button(IDrawable drawable, Runnable atClick, Runnable atHold, Supplier<Boolean> disabled) {
-        this.drawable = drawable;
+        super(Collections.singletonList(drawable));
         this.atClick = atClick;
         this.atHold = atHold;
         this.disabled = disabled;
@@ -43,13 +43,20 @@ public class Button extends ChangeableDrawable implements IMouseEventListener {
 
     @Override
     public boolean needRedraw() {
-        return super.needRedraw() || drawable.needRedraw()
+        return !onlyForceRedraw && (super.needRedraw()
                 || wasDisabled ^ isDisabled()
-                || (holdTimer != null && holdTimer.elapsed());
+                || (holdTimer != null && holdTimer.elapsed()));
+    }
+
+    @Override
+    public void setOnlyForceDraw() {
+        super.setOnlyForceDraw();
+        onlyForceRedraw = true;
     }
 
     @Override
     public void forceRedraw(ICanvas canvas) {
+        onlyForceRedraw = false;
         if (isDisabled()) {
             wasInside = false;
             wasDisabled = true;
@@ -78,7 +85,7 @@ public class Button extends ChangeableDrawable implements IMouseEventListener {
                 canvas.getBoundingRectangle().getStart().add(canvas.getBoundingRectangle().getSize().asPoint().multiple(1 / 16.0)),
                 canvas.getBoundingRectangle().getStart().add(canvas.getBoundingRectangle().getSize().asPoint().multiple(15 / 16.0))
         ));
-        drawable.forceDraw(canvas);
+        children.get(0).forceDraw(canvas);
         canvas.restore();
 
         lastRectangle = canvas.getBoundingRectangle();

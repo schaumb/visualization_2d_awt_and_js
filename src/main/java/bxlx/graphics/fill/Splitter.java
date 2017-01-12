@@ -115,7 +115,7 @@ public class Splitter extends DrawableContainer {
         double firstSize = rectangle.getSize().asPoint().multiple(dimension).asSize().getLongerDimension();
         if (separate <= -1) {
             firstSize = Math.max(0, firstSize + separate);
-        } else if (separate < 0) {
+        } else if (separate <= 0) {
             firstSize *= 1 + separate;
         } else if (separate < 1) {
             firstSize *= separate;

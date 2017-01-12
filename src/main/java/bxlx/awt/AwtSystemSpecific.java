@@ -10,7 +10,6 @@ import bxlx.system.Timer;
 
 import javax.media.Manager;
 import javax.media.MediaLocator;
-import javax.media.Player;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import java.awt.EventQueue;
@@ -165,8 +164,7 @@ public class AwtSystemSpecific extends SystemSpecific {
     public void playMusic(String src) {
         // TODO mp3? only wav files!
         try {
-            Player player = Manager.createPlayer(new MediaLocator(new File(src).toURI().toURL()));
-            player.start();
+            Manager.createPlayer(new MediaLocator(new File(src).toURI().toURL())).start();
         } catch (Exception ex) {
             ex.printStackTrace();
         }
@@ -183,5 +181,12 @@ public class AwtSystemSpecific extends SystemSpecific {
         });
         t.setDaemon(true);
         t.start();
+    }
+
+    @Override
+    public void preLoad(String src, boolean img) {
+        if (img) {
+            GraphicsCanvas.imageCaches.get(src);
+        }
     }
 }

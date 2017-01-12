@@ -24,6 +24,16 @@ public abstract class DrawableContainer extends ChangeableDrawable {
         return super.needRedraw();
     }
 
+    @Override
+    public void setOnlyForceDraw() {
+        super.setOnlyForceDraw();
+        for (IDrawable drawable : children) {
+            if (drawable != null) {
+                drawable.setOnlyForceDraw();
+            }
+        }
+    }
+
     public boolean childrenChanged() {
         boolean childNeedRedraw = false;
         for (IDrawable drawable : children) {

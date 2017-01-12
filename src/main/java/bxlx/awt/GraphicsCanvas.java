@@ -30,7 +30,7 @@ public class GraphicsCanvas implements ICanvas {
     private final Graphics2D graphics;
     private final Stack<Rectangle> clips = new Stack<>();
     private final Stack<java.awt.Shape> areas = new Stack<>();
-    private static final ImageCaches<BufferedImage> imageCaches = new ImageCaches<>(str ->
+    static final ImageCaches<BufferedImage> imageCaches = new ImageCaches<>(str ->
     {
         try {
             return ImageIO.read(new File(str));

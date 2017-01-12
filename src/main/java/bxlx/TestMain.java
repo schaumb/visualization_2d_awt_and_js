@@ -2,12 +2,13 @@ package bxlx;
 
 import bxlx.graphics.Color;
 import bxlx.graphics.ICanvas;
+import bxlx.graphics.IDrawable;
 import bxlx.graphics.Point;
+import bxlx.graphics.combined.Builder;
 import bxlx.graphics.combined.Navigator;
-import bxlx.graphics.drawable.ColoredDrawable;
-import bxlx.graphics.fill.Container;
-import bxlx.graphics.fill.DrawArc;
-import bxlx.graphics.fill.DrawRectangle;
+import bxlx.graphics.fill.DrawImage;
+import bxlx.graphics.fill.Splitter;
+import bxlx.system.Button;
 import bxlx.system.Consumer;
 import bxlx.system.IMouseEventListener;
 import bxlx.system.IRenderer;
@@ -15,16 +16,18 @@ import bxlx.system.MouseInfo;
 import bxlx.system.SystemSpecific;
 import bxlx.system.Timer;
 
-import java.util.Arrays;
-
 /**
  * Created by qqcs on 2016.12.24..
  */
 public class TestMain implements IRenderer, IMouseEventListener, Consumer<String> {
 
     private ICanvas c;
-    private Navigator navigator = new Navigator(null, null, new Container(Arrays.asList(new ColoredDrawable(new DrawRectangle(), Color.WHITE),
-            new ColoredDrawable(DrawArc.circle(true), Color.CYAN))), 50);
+    private Splitter splitter = new Splitter(true, -200, null,
+            Builder.container().getWrapped().add(Builder.background().makeColored(Color.WHITE))
+                    .add(Builder.text("Menu")));
+    private IDrawable bg = splitter;
+    private Button button;
+
     private Timer timer = new Timer(3000);
 
     @Override
@@ -43,7 +46,7 @@ public class TestMain implements IRenderer, IMouseEventListener, Consumer<String
         // c.fill(test.getScaled(timer.percent() * 2));
         // c.fill(test.getTranslated(Point.same(timer.percent() * 100)));
 
-        navigator.draw(c);
+        bg.draw(c);
         if (timer.elapsed()) {
             timer.setStart();
         }
@@ -53,7 +56,7 @@ public class TestMain implements IRenderer, IMouseEventListener, Consumer<String
     @Override
     public void setCanvas(ICanvas canvas) {
         c = canvas;
-        navigator.forceDraw(c);
+        bg.forceDraw(c);
     }
 
     public TestMain() {
@@ -61,6 +64,13 @@ public class TestMain implements IRenderer, IMouseEventListener, Consumer<String
         SystemSpecific.get().setMouseEventListenerQueue(this);
         SystemSpecific.get().readTextFileAsync("text2.txt", this);
 
+        Navigator navigator = new Navigator(null,
+                button = new Button("", () -> {
+                    splitter.setSeparate(-200 - splitter.getSeparate());
+                    button.setOnlyForceDraw();
+                }, null, null),
+                new DrawImage("kep.jpg"), 50, Color.WHITE);
+        splitter.setFirst(navigator);
         SystemSpecific.get().setDrawFunction(this);
     }
 

@@ -1,10 +1,12 @@
 package bxlx.graphics.combined;
 
+import bxlx.graphics.Color;
 import bxlx.graphics.ICanvas;
 import bxlx.graphics.IDrawable;
 import bxlx.graphics.Point;
 import bxlx.graphics.Size;
 import bxlx.graphics.drawable.DrawableWrapper;
+import bxlx.graphics.fill.Container;
 import bxlx.graphics.fill.DrawNGon;
 import bxlx.graphics.fill.Magnifying;
 import bxlx.graphics.fill.Splitter;
@@ -15,7 +17,7 @@ import bxlx.system.Button;
 /**
  * Created by qqcs on 2017.01.11..
  */
-public class Navigator extends DrawableWrapper<Splitter> {
+public class Navigator extends DrawableWrapper<Container> {
 
     private IDrawable makeButton(Button button) {
         if (button == null) {
@@ -29,10 +31,11 @@ public class Navigator extends DrawableWrapper<Splitter> {
     private double shiftX = 0;
     private double shiftY = 0;
 
-    public Navigator(Button upLeft, Button upRight, IDrawable main, double buttonsThick) {
-        super(new Splitter(0, null, null));
+    public Navigator(Button upLeft, Button upRight, IDrawable main, double buttonsThick, Color background) {
+        super(Builder.container().getWrapped());
 
-        getWrapped().setSecond(
+        getWrapped().add(Builder.background().makeColored(background));
+        getWrapped().add(
                 Splitter.threeWaySplit(false, -buttonsThick * 2,
                         Splitter.threeWaySplit(true, -buttonsThick * 2,
                                 makeButton(upLeft),

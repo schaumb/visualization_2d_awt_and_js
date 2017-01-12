@@ -26,7 +26,7 @@ import static jsweet.util.Globals.union;
 public class HtmlCanvas implements ICanvas {
     private final CanvasRenderingContext2D context;
     private final Stack<Rectangle> clips = new Stack<>();
-    private static final ImageCaches<HTMLImageElement> imageCaches =
+    static final ImageCaches<HTMLImageElement> imageCaches =
             new ImageCaches<>(src -> {
                 HTMLImageElement img = document.createElement(StringTypes.img);
                 img.src = src;

@@ -1,5 +1,6 @@
 package bxlx.jsweet;
 
+import bxlx.graphics.ImageCaches;
 import bxlx.graphics.Point;
 import bxlx.system.CommonError;
 import bxlx.system.Consumer;
@@ -27,6 +28,15 @@ public class JSweetSystemSpecific extends SystemSpecific {
     private HTMLCanvasElement canvasElement;
     private IRenderer renderer;
     private HashSet<Integer> buttonDowns = new HashSet<>();
+    private ImageCaches<HTMLAudioElement> musicCache = new ImageCaches<>(src -> {
+        HTMLAudioElement element = document.createElement(StringTypes.audio);
+        element.src = src;
+        element.style.display = "none";
+        element.autoplay = false;
+
+        document.body.appendChild(element);
+        return element;
+    });
 
     private JSweetSystemSpecific() {
     }
@@ -145,16 +155,11 @@ public class JSweetSystemSpecific extends SystemSpecific {
 
     @Override
     public void playMusic(String src) {
-        HTMLAudioElement element = document.createElement(StringTypes.audio);
-        element.src = src;
-        element.style.display = "none";
-        element.autoplay = true;
-        element.onended = x -> {
-            element.remove();
-            return null;
-        };
+        HTMLAudioElement elem = musicCache.get(src);
 
-        document.body.appendChild(element);
+        if (elem.readyState > 0) {
+            elem.play();
+        }
     }
 
     @Override
@@ -172,5 +177,14 @@ public class JSweetSystemSpecific extends SystemSpecific {
         });
         request.open("GET", fileName, true);
         request.send();
+    }
+
+    @Override
+    public void preLoad(String src, boolean img) {
+        if (img) {
+            HtmlCanvas.imageCaches.get(src);
+        } else {
+            musicCache.get(src);
+        }
     }
 }

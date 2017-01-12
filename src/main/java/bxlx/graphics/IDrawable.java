@@ -12,6 +12,9 @@ public interface IDrawable {
         return false;
     }
 
+    default void setOnlyForceDraw() {
+    }
+
     boolean needRedraw();
 
     void forceDraw(ICanvas canvas);

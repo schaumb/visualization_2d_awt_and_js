@@ -6,6 +6,13 @@ import bxlx.graphics.drawable.ColoredDrawable;
 import bxlx.graphics.drawable.DrawableWrapper;
 import bxlx.graphics.drawable.MarginDrawable;
 import bxlx.graphics.drawable.SquareDrawable;
+import bxlx.graphics.fill.Container;
+import bxlx.graphics.fill.DrawArc;
+import bxlx.graphics.fill.DrawRectangle;
+import bxlx.graphics.fill.SplitContainer;
+import bxlx.graphics.fill.Text;
+
+import java.util.ArrayList;
 
 /**
  * Created by qqcs on 2017.01.11..
@@ -36,6 +43,26 @@ public class Builder<T extends IDrawable> extends DrawableWrapper<T> {
 
     public Builder<SquareDrawable> makeSquare(int alignX, int alignY) {
         return new Builder<>(new SquareDrawable(getWrapped(), alignX, alignY));
+    }
+
+    public static Builder<DrawRectangle> background() {
+        return new Builder<>(new DrawRectangle());
+    }
+
+    public static Builder<Text> text(String text) {
+        return new Builder<>(new Text(text));
+    }
+
+    public static Builder<DrawArc> circle(boolean inside) {
+        return new Builder<>(DrawArc.circle(inside));
+    }
+
+    public static Builder<SplitContainer> container(boolean xSplit) {
+        return new Builder<>(new SplitContainer(xSplit));
+    }
+
+    public static Builder<Container> container() {
+        return new Builder<>(new Container(new ArrayList<>()));
     }
 
     // TODO
