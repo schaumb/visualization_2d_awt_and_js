@@ -77,30 +77,30 @@ public class Navigator extends DrawableWrapper<Container> {
     }
 
     private void zoomOut() {
-        shiftX = shiftX / (zoom - 1) * (zoom / 1.1 - 1);
-        shiftY = shiftY / (zoom - 1) * (zoom / 1.1 - 1);
-        zoom /= 1.1;
+        shiftX = Math.max(0, shiftX / (zoom - 1) * (zoom / 1.1 - 1));
+        shiftY = Math.max(0, shiftY / (zoom - 1) * (zoom / 1.1 - 1));
+        zoom = Math.max(1, zoom / 1.1);
         setChanged();
     }
 
     //TODO precízebb lépésközök
     private void up() {
-        shiftY = Math.max(0, shiftY - (zoom - 1) / 10);
+        shiftY = Math.max(0, shiftY - (zoom - 1) / zoom);
         setChanged();
     }
 
     private void down() {
-        shiftY = Math.min(zoom - 1, shiftY + (zoom - 1) / 10);
+        shiftY = Math.min(zoom - 1, shiftY + (zoom - 1) / zoom);
         setChanged();
     }
 
     private void left() {
-        shiftX = Math.max(0, shiftX - (zoom - 1) / 10);
+        shiftX = Math.max(0, shiftX - (zoom - 1) / zoom);
         setChanged();
     }
 
     private void right() {
-        shiftX = Math.min(zoom - 1, shiftX + (zoom - 1) / 10);
+        shiftX = Math.min(zoom - 1, shiftX + (zoom - 1) / zoom);
         setChanged();
     }
 
