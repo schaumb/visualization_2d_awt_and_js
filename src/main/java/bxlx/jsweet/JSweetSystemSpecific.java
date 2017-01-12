@@ -2,6 +2,7 @@ package bxlx.jsweet;
 
 import bxlx.graphics.ImageCaches;
 import bxlx.graphics.Point;
+import bxlx.graphics.Size;
 import bxlx.system.CommonError;
 import bxlx.system.Consumer;
 import bxlx.system.IMouseEventListener;
@@ -10,6 +11,7 @@ import bxlx.system.SystemSpecific;
 import jsweet.dom.Event;
 import jsweet.dom.HTMLAudioElement;
 import jsweet.dom.HTMLCanvasElement;
+import jsweet.dom.HTMLImageElement;
 import jsweet.dom.XMLHttpRequest;
 import jsweet.lang.Date;
 import jsweet.util.StringTypes;
@@ -180,11 +182,13 @@ public class JSweetSystemSpecific extends SystemSpecific {
     }
 
     @Override
-    public void preLoad(String src, boolean img) {
+    public Size preLoad(String src, boolean img) {
         if (img) {
-            HtmlCanvas.imageCaches.get(src);
+            HTMLImageElement htmlImageElement = HtmlCanvas.imageCaches.get(src);
+            return new Size(htmlImageElement.naturalWidth, htmlImageElement.naturalHeight);
         } else {
             musicCache.get(src);
+            return null;
         }
     }
 }

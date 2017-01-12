@@ -1,5 +1,7 @@
 package bxlx.system;
 
+import bxlx.graphics.Size;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -55,7 +57,7 @@ public abstract class SystemSpecific {
 
     abstract public void readTextFileAsync(String fileName, Consumer<String> consumer);
 
-    abstract public void preLoad(String src, boolean img);
+    abstract public Size preLoad(String src, boolean img);
 
     public final boolean isRendering() {
         return rendering;

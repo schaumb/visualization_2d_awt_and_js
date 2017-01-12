@@ -1,6 +1,7 @@
 package bxlx.awt;
 
 import bxlx.graphics.Point;
+import bxlx.graphics.Size;
 import bxlx.system.CommonError;
 import bxlx.system.Consumer;
 import bxlx.system.IMouseEventListener;
@@ -184,9 +185,12 @@ public class AwtSystemSpecific extends SystemSpecific {
     }
 
     @Override
-    public void preLoad(String src, boolean img) {
+    public Size preLoad(String src, boolean img) {
         if (img) {
-            GraphicsCanvas.imageCaches.get(src);
+            BufferedImage imgBuff = GraphicsCanvas.imageCaches.get(src);
+            return new Size(imgBuff.getWidth(), imgBuff.getHeight());
         }
+
+        return null;
     }
 }

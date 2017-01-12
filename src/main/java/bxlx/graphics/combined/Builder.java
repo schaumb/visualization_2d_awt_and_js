@@ -5,7 +5,7 @@ import bxlx.graphics.IDrawable;
 import bxlx.graphics.drawable.ColoredDrawable;
 import bxlx.graphics.drawable.DrawableWrapper;
 import bxlx.graphics.drawable.MarginDrawable;
-import bxlx.graphics.drawable.SquareDrawable;
+import bxlx.graphics.drawable.AspectRatioDrawable;
 import bxlx.graphics.fill.Container;
 import bxlx.graphics.fill.DrawArc;
 import bxlx.graphics.fill.DrawRectangle;
@@ -41,8 +41,8 @@ public class Builder<T extends IDrawable> extends DrawableWrapper<T> {
         return new Builder<>(new MarginDrawable(getWrapped(), marginX, marginY));
     }
 
-    public Builder<SquareDrawable> makeSquare(int alignX, int alignY) {
-        return new Builder<>(new SquareDrawable(getWrapped(), alignX, alignY));
+    public Builder<AspectRatioDrawable> makeSquare(int alignX, int alignY) {
+        return new Builder<>(new AspectRatioDrawable(getWrapped(), alignX, alignY, () -> 1.0));
     }
 
     public static Builder<DrawRectangle> background() {

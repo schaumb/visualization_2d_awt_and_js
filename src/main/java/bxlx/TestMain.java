@@ -6,7 +6,9 @@ import bxlx.graphics.IDrawable;
 import bxlx.graphics.Point;
 import bxlx.graphics.combined.Builder;
 import bxlx.graphics.combined.Navigator;
+import bxlx.graphics.drawable.AspectRatioDrawable;
 import bxlx.graphics.fill.DrawImage;
+import bxlx.graphics.fill.DrawRectangle;
 import bxlx.graphics.fill.Splitter;
 import bxlx.system.Button;
 import bxlx.system.Consumer;
@@ -29,7 +31,8 @@ public class TestMain implements IRenderer, IMouseEventListener, Consumer<String
     private Button button;
 
     private Timer timer = new Timer(3000);
-
+    private DrawImage img = new DrawImage("kep.jpg");
+    private AspectRatioDrawable ard = new AspectRatioDrawable(img, 1, 0, () -> img.getOriginalAspectRatio());
     @Override
     public boolean render() {
         //c.clearCanvas(Color.WHITE);
@@ -45,7 +48,6 @@ public class TestMain implements IRenderer, IMouseEventListener, Consumer<String
         // c.fill(test.getRotated(timer.percent() * Math.PI * 2));
         // c.fill(test.getScaled(timer.percent() * 2));
         // c.fill(test.getTranslated(Point.same(timer.percent() * 100)));
-
         bg.draw(c);
         if (timer.elapsed()) {
             timer.setStart();
@@ -69,7 +71,7 @@ public class TestMain implements IRenderer, IMouseEventListener, Consumer<String
                     splitter.setSeparate(-200 - splitter.getSeparate());
                     button.setOnlyForceDraw();
                 }, null, null),
-                new DrawImage("kep.jpg"), 50, Color.WHITE);
+                ard, 50, Color.WHITE);
         splitter.setFirst(navigator);
         SystemSpecific.get().setDrawFunction(this);
     }
