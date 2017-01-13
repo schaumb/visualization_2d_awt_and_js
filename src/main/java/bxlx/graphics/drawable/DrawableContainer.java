@@ -8,10 +8,10 @@ import java.util.List;
 /**
  * Created by qqcs on 2017.01.09..
  */
-public abstract class DrawableContainer extends ChangeableDrawable {
-    protected final List<IDrawable> children;
+public abstract class DrawableContainer<T extends IDrawable> extends ChangeableDrawable {
+    protected final List<T> children;
 
-    public DrawableContainer(List<IDrawable> children) {
+    public DrawableContainer(List<T> children) {
         this.children = children;
     }
 

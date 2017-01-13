@@ -12,7 +12,7 @@ import java.util.Arrays;
 /**
  * Created by qqcs on 2017.01.04..
  */
-public class Splitter extends DrawableContainer {
+public class Splitter extends DrawableContainer<IDrawable> {
     private boolean xSplit;
     private double separate;
 

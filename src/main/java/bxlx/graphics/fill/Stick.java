@@ -15,7 +15,7 @@ import java.util.Arrays;
 /**
  * Created by qqcs on 2017.01.10..
  */
-public class Stick extends DrawableContainer {
+public class Stick extends DrawableContainer<IDrawable> {
     private double angle;
     private double length;
     private double thickness;

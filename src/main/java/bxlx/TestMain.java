@@ -8,7 +8,6 @@ import bxlx.graphics.combined.Builder;
 import bxlx.graphics.combined.Navigator;
 import bxlx.graphics.drawable.AspectRatioDrawable;
 import bxlx.graphics.fill.DrawImage;
-import bxlx.graphics.fill.DrawRectangle;
 import bxlx.graphics.fill.Splitter;
 import bxlx.system.Button;
 import bxlx.system.Consumer;
@@ -25,7 +24,7 @@ public class TestMain implements IRenderer, IMouseEventListener, Consumer<String
 
     private ICanvas c;
     private Splitter splitter = new Splitter(true, -200, null,
-            Builder.container().getWrapped().add(Builder.background().makeColored(Color.WHITE))
+            Builder.container().getChild().add(Builder.background().makeColored(Color.WHITE))
                     .add(Builder.text("Menu")));
     private IDrawable bg = splitter;
     private Button button;
@@ -33,6 +32,7 @@ public class TestMain implements IRenderer, IMouseEventListener, Consumer<String
     private Timer timer = new Timer(3000);
     private DrawImage img = new DrawImage("kep.jpg");
     private AspectRatioDrawable ard = new AspectRatioDrawable(img, 1, 0, () -> img.getOriginalAspectRatio());
+
     @Override
     public boolean render() {
         //c.clearCanvas(Color.WHITE);

@@ -3,32 +3,28 @@ package bxlx.graphics.drawable;
 import bxlx.graphics.ICanvas;
 import bxlx.graphics.IDrawable;
 
+import java.util.Collections;
+
 /**
- * Created by qqcs on 2017.01.09..
+ * Created by qqcs on 2017.01.13..
  */
-public abstract class DrawableWrapper<T extends IDrawable> implements IDrawable {
-    private final T wrapped;
-
-    public DrawableWrapper(T wrapped) {
-        this.wrapped = wrapped;
+public abstract class DrawableWrapper<T extends IDrawable> extends DrawableContainer<T> {
+    public DrawableWrapper(T child) {
+        super(Collections.singletonList(child));
     }
 
-    public T getWrapped() {
-        return wrapped;
+    public T getChild() {
+        return children.get(0);
     }
 
-    @Override
-    public boolean needRedraw() {
-        return wrapped.needRedraw();
-    }
-
-    @Override
-    public void setOnlyForceDraw() {
-        wrapped.setOnlyForceDraw();
+    public DrawableWrapper<T> setChild(T child) {
+        children.set(0, child);
+        setRedraw();
+        return this;
     }
 
     @Override
-    public void forceDraw(ICanvas canvas) {
-        wrapped.forceDraw(canvas);
+    protected void forceRedraw(ICanvas canvas) {
+        getChild().forceDraw(canvas);
     }
 }

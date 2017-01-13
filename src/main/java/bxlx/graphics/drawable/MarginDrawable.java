@@ -5,17 +5,28 @@ import bxlx.graphics.IDrawable;
 import bxlx.graphics.Point;
 import bxlx.graphics.shapes.Rectangle;
 
+import java.util.function.UnaryOperator;
+
 /**
  * Created by qqcs on 2017.01.09..
  */
-public class MarginDrawable extends DrawableWrapper {
+public class MarginDrawable extends ClippedDrawable {
     private double marginX; // < 1 -> percent, >=1 -> pixel
     private double marginY; // < 1 -> percent, >=1 -> pixel
-    private double lastDrewMarginX = -1;
-    private double lastDrewMarginY = -1;
+
+    private static UnaryOperator<Rectangle> marginMake(double marginX, double marginY) {
+        return rectangle -> {
+            Point pixel = new Point(
+                    marginX >= 1 ? marginX : marginX * rectangle.getSize().getWidth() / 2,
+                    marginY >= 1 ? marginY : marginY * rectangle.getSize().getHeight() / 2
+            );
+            return new Rectangle(rectangle.getStart().add(pixel),
+                    rectangle.getEnd().add(pixel.negate()));
+        };
+    }
 
     public MarginDrawable(IDrawable wrapped, double marginX, double marginY) {
-        super(wrapped);
+        super(wrapped, marginMake(marginX, marginY));
         this.marginX = marginX;
         this.marginY = marginY;
     }
@@ -32,47 +43,28 @@ public class MarginDrawable extends DrawableWrapper {
         return marginX;
     }
 
-    public void setMarginX(double marginX) {
-        this.marginX = marginX;
-    }
-
     public double getMarginY() {
         return marginY;
     }
 
-    public void setMarginY(double marginY) {
+    public MarginDrawable setMarginX(double marginX) {
+        this.marginX = marginX;
+        setClip(marginMake(marginX, marginY));
+        return this;
+    }
+
+    public MarginDrawable setMarginY(double marginY) {
         this.marginY = marginY;
+        setClip(marginMake(marginX, marginY));
+        return this;
     }
 
     @Override
-    public boolean needRedraw() {
-        return super.needRedraw() ||
-                marginX != lastDrewMarginX ||
-                marginY != lastDrewMarginY;
-    }
-
-    @Override
-    public void forceDraw(ICanvas canvas) {
+    public void forceRedraw(ICanvas canvas) {
         Rectangle rectangle = canvas.getBoundingRectangle();
 
-        Point pixel = new Point(
-                marginX >= 1 ? marginX : marginX * rectangle.getSize().getWidth() / 2,
-                marginY >= 1 ? marginY : marginY * rectangle.getSize().getHeight() / 2
-        );
-        rectangle = new Rectangle(rectangle.getStart().add(pixel),
-                rectangle.getEnd().add(pixel.negate()));
-
         canvas.clip(rectangle);
-
-        if (marginX != lastDrewMarginX ||
-                marginY != lastDrewMarginY || !super.needRedraw()) {
-            lastDrewMarginX = marginX;
-            lastDrewMarginY = marginY;
-            super.forceDraw(canvas);
-        } else {
-            getWrapped().draw(canvas);
-        }
-
+        super.forceRedraw(canvas);
         canvas.restore();
     }
 }

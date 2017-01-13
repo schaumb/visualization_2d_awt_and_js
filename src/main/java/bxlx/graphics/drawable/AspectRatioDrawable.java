@@ -7,19 +7,36 @@ import bxlx.graphics.Size;
 import bxlx.graphics.shapes.Rectangle;
 
 import java.util.function.Supplier;
+import java.util.function.UnaryOperator;
 
 
 /**
  * Created by qqcs on 2017.01.09..
  */
-public class AspectRatioDrawable extends DrawableWrapper {
+public class AspectRatioDrawable extends ClippedDrawable {
+    private boolean onlyForceRedraw;
     private int alignX;
     private int alignY;
     private Supplier<Double> ratio;
 
-    private int lastDrewAlignX = -2;
-    private int lastDrewAlignY = -2;
     private double lastDrewRatio = -1;
+
+    private static UnaryOperator<Rectangle> ratioMake(Supplier<Double> ratio, int alignX, int alignY) {
+        return rectangle -> {
+            double nowRatio = ratio.get();
+            if (nowRatio <= 0) {
+                nowRatio = 1;
+            }
+
+            double width = Math.min(rectangle.getSize().getWidth(), rectangle.getSize().getHeight() / nowRatio);
+            Size size = new Size(width, width * nowRatio);
+
+            Point start = rectangle.getSize().asPoint().add(size.asPoint().negate())
+                    .multiple(new Point(alignX, alignY).add(1).multiple(1 / 2.0))
+                    .add(rectangle.getStart());
+            return new Rectangle(start, size);
+        };
+    }
 
     public AspectRatioDrawable(IDrawable wrapped) {
         this(wrapped, () -> 1.0);
@@ -30,7 +47,7 @@ public class AspectRatioDrawable extends DrawableWrapper {
     }
 
     public AspectRatioDrawable(IDrawable wrapped, int alignX, int alignY, Supplier<Double> ratio) {
-        super(wrapped);
+        super(wrapped, ratioMake(ratio, alignX, alignY));
         this.alignX = (int) Math.signum(alignX);
         this.alignY = (int) Math.signum(alignY);
         this.ratio = ratio;
@@ -42,6 +59,7 @@ public class AspectRatioDrawable extends DrawableWrapper {
 
     public AspectRatioDrawable setAlignX(int alignX) {
         this.alignX = (int) Math.signum(alignX);
+        setClip(ratioMake(ratio, alignX, alignY));
         return this;
     }
 
@@ -51,6 +69,7 @@ public class AspectRatioDrawable extends DrawableWrapper {
 
     public AspectRatioDrawable setAlignY(int alignY) {
         this.alignY = (int) Math.signum(alignY);
+        setClip(ratioMake(ratio, alignX, alignY));
         return this;
     }
 
@@ -60,42 +79,26 @@ public class AspectRatioDrawable extends DrawableWrapper {
 
     public AspectRatioDrawable setRatio(Supplier<Double> ratio) {
         this.ratio = ratio;
+        setClip(ratioMake(ratio, alignX, alignY));
         return this;
     }
 
     @Override
     public boolean needRedraw() {
-        return super.needRedraw() || alignX != lastDrewAlignX || alignY != lastDrewAlignY || ratio.get() != lastDrewRatio;
+        return !onlyForceRedraw && (super.needRedraw() || ratio.get() != lastDrewRatio);
     }
 
     @Override
-    public void forceDraw(ICanvas canvas) {
-        Rectangle rectangle = canvas.getBoundingRectangle();
+    public void setOnlyForceDraw() {
+        super.setOnlyForceDraw();
+        onlyForceRedraw = true;
+    }
 
-        double nowRatio = ratio.get();
-        if(nowRatio <= 0) {
-            nowRatio = 1;
-        }
+    @Override
+    public void forceRedraw(ICanvas canvas) {
+        onlyForceRedraw = false;
 
-        boolean forcedRedraw = !needRedraw() || alignX != lastDrewAlignX || alignY != lastDrewAlignY || nowRatio != lastDrewRatio;
-
-        double width = Math.min(rectangle.getSize().getWidth(), rectangle.getSize().getHeight() / nowRatio);
-        Size size = new Size(width, width * nowRatio);
-
-        Point start = rectangle.getSize().asPoint().add(size.asPoint().negate())
-                .multiple(new Point(alignX, alignY).add(1).multiple(1 / 2.0))
-                .add(rectangle.getStart());
-        canvas.clip(new Rectangle(start, size));
-
-        if (forcedRedraw) {
-            lastDrewAlignX = alignX;
-            lastDrewAlignY = alignY;
-            lastDrewRatio = nowRatio;
-            getWrapped().forceDraw(canvas);
-        } else {
-            getWrapped().draw(canvas);
-        }
-
-        canvas.restore();
+        super.forceRedraw(canvas);
+        lastDrewRatio = ratio.get();
     }
 }

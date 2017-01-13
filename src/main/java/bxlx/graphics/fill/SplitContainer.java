@@ -13,7 +13,7 @@ import java.util.List;
 /**
  * Created by qqcs on 2017.01.04..
  */
-public class SplitContainer extends DrawableContainer {
+public class SplitContainer extends DrawableContainer<IDrawable> {
     private boolean xSplit = false;
 
     public SplitContainer(boolean xSplit, List<IDrawable> list) {

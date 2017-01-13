@@ -7,7 +7,6 @@ import bxlx.graphics.IDrawable;
  * Created by qqcs on 2017.01.09..
  */
 public class VisibleDrawable extends DrawableWrapper {
-    private boolean lastWasVisible = true;
     private boolean visible;
 
     public VisibleDrawable(IDrawable wrapped, boolean visible) {
@@ -21,26 +20,15 @@ public class VisibleDrawable extends DrawableWrapper {
 
     public VisibleDrawable setVisible(boolean visible) {
         this.visible = visible;
+        setRedraw();
         return this;
     }
 
     @Override
-    public boolean needRedraw() {
-        return visible ^ lastWasVisible || (visible && super.needRedraw());
-    }
-
-    @Override
-    public void forceDraw(ICanvas canvas) {
+    public void forceRedraw(ICanvas canvas) {
         if (!visible) {
-            lastWasVisible = false;
             return;
         }
-
-        if (!lastWasVisible || !super.needRedraw()) {
-            super.forceDraw(canvas);
-        } else {
-            getWrapped().draw(canvas);
-        }
-        lastWasVisible = true;
+        super.forceRedraw(canvas);
     }
 }

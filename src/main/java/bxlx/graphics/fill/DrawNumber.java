@@ -29,7 +29,7 @@ public class DrawNumber extends DrawableWrapper<Text> {
 
     public DrawNumber setNumber(int number) {
         this.number = number;
-        getWrapped().setText(number + suffix);
+        getChild().setText(number + suffix);
         return this;
     }
 }

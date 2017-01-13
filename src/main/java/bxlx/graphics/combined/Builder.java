@@ -2,10 +2,10 @@ package bxlx.graphics.combined;
 
 import bxlx.graphics.Color;
 import bxlx.graphics.IDrawable;
+import bxlx.graphics.drawable.AspectRatioDrawable;
 import bxlx.graphics.drawable.ColoredDrawable;
 import bxlx.graphics.drawable.DrawableWrapper;
 import bxlx.graphics.drawable.MarginDrawable;
-import bxlx.graphics.drawable.AspectRatioDrawable;
 import bxlx.graphics.fill.Container;
 import bxlx.graphics.fill.DrawArc;
 import bxlx.graphics.fill.DrawRectangle;
@@ -30,19 +30,19 @@ public class Builder<T extends IDrawable> extends DrawableWrapper<T> {
     }
 
     public Builder<ColoredDrawable> makeColored(Color color) {
-        return new Builder<>(new ColoredDrawable(getWrapped(), color));
+        return new Builder<>(new ColoredDrawable(getChild(), color));
     }
 
     public Builder<MarginDrawable> makeMargin(double margin) {
-        return new Builder<>(new MarginDrawable(getWrapped(), margin));
+        return makeMargin(margin, margin);
     }
 
     public Builder<MarginDrawable> makeMargin(double marginX, double marginY) {
-        return new Builder<>(new MarginDrawable(getWrapped(), marginX, marginY));
+        return new Builder<>(new MarginDrawable(getChild(), marginX, marginY));
     }
 
     public Builder<AspectRatioDrawable> makeSquare(int alignX, int alignY) {
-        return new Builder<>(new AspectRatioDrawable(getWrapped(), alignX, alignY, () -> 1.0));
+        return new Builder<>(new AspectRatioDrawable(getChild(), alignX, alignY, () -> 1.0));
     }
 
     public static Builder<DrawRectangle> background() {

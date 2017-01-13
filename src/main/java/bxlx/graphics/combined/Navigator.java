@@ -26,16 +26,16 @@ public class Navigator extends DrawableWrapper<Container> {
         return Builder.make(button).makeMargin(3);
     }
 
-    private boolean changed = false;
+    private final WrapperClass mainWrapper;
     private double zoom = 1;
     private double shiftX = 0;
     private double shiftY = 0;
 
     public Navigator(Button upLeft, Button upRight, IDrawable main, double buttonsThick, Color background) {
-        super(Builder.container().getWrapped());
+        super(Builder.container().getChild());
 
-        getWrapped().add(Builder.background().makeColored(background));
-        getWrapped().add(
+        getChild().add(Builder.background().makeColored(background));
+        getChild().add(
                 Splitter.threeWaySplit(false, -buttonsThick * 2,
                         Splitter.threeWaySplit(true, -buttonsThick * 2,
                                 makeButton(upLeft),
@@ -45,7 +45,7 @@ public class Navigator extends DrawableWrapper<Container> {
                         Splitter.threeWaySplit(true, -buttonsThick * 2,
                                 makeButton(new Button(new DrawNGon(3, Math.PI, true),
                                         null, () -> left(), () -> shiftX <= 0)),
-                                new WrapperClass(main),
+                                mainWrapper = new WrapperClass(main),
                                 makeButton(new Button(new DrawNGon(3, 0, true),
                                         null, () -> right(), () -> zoom - 1 <= shiftX))),
                         Splitter.threeWaySplit(true, -buttonsThick * 2,
@@ -60,7 +60,7 @@ public class Navigator extends DrawableWrapper<Container> {
     }
 
     private void setChanged() {
-        changed = true;
+        mainWrapper.setRedraw();
     }
 
     private void zoomIn() {
@@ -83,7 +83,6 @@ public class Navigator extends DrawableWrapper<Container> {
         setChanged();
     }
 
-    //TODO precízebb lépésközök
     private void up() {
         shiftY = Math.max(0, shiftY - (zoom - 1) / zoom);
         setChanged();
@@ -110,14 +109,7 @@ public class Navigator extends DrawableWrapper<Container> {
         }
 
         @Override
-        public boolean needRedraw() {
-            return changed || super.needRedraw();
-        }
-
-        @Override
-        public void forceDraw(ICanvas canvas) {
-            boolean forcedRedraw = !needRedraw() || changed;
-
+        public void forceRedraw(ICanvas canvas) {
             Rectangle bound = canvas.getBoundingRectangle();
 
             Size size = bound.getSize().asPoint().multiple(zoom).asSize();
@@ -126,14 +118,8 @@ public class Navigator extends DrawableWrapper<Container> {
             Rectangle fakeBound = new Rectangle(start, size);
 
             canvas.fakeClip(fakeBound);
-            if (forcedRedraw) {
-                super.forceDraw(canvas);
-            } else {
-                getWrapped().draw(canvas);
-            }
+            super.forceRedraw(canvas);
             canvas.fakeRestore();
-
-            changed = false;
         }
     }
 }

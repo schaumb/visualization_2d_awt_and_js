@@ -9,7 +9,6 @@ import bxlx.graphics.IDrawable;
  */
 public class ColoredDrawable extends DrawableWrapper {
     private Color nowColor;
-    private Color lastDrewColor;
 
     public ColoredDrawable(IDrawable wrapped, Color color) {
         super(wrapped);
@@ -18,6 +17,7 @@ public class ColoredDrawable extends DrawableWrapper {
 
     public ColoredDrawable setColor(Color color) {
         this.nowColor = color;
+        setRedraw();
         return this;
     }
 
@@ -25,29 +25,11 @@ public class ColoredDrawable extends DrawableWrapper {
         return nowColor;
     }
 
-    protected Color getLastDrewColor() {
-        return lastDrewColor;
-    }
-
-    protected void drewColor() {
-        lastDrewColor = nowColor;
-    }
-
     @Override
-    public boolean needRedraw() {
-        return super.needRedraw() || nowColor != lastDrewColor;
-    }
-
-    @Override
-    public void forceDraw(ICanvas canvas) {
+    public void forceRedraw(ICanvas canvas) {
         Color tmp = canvas.getColor();
         canvas.setColor(nowColor);
-        if (nowColor != lastDrewColor || !super.needRedraw()) {
-            drewColor();
-            super.forceDraw(canvas);
-        } else {
-            getWrapped().draw(canvas);
-        }
+        super.forceRedraw(canvas);
         canvas.setColor(tmp);
     }
 }

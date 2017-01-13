@@ -15,7 +15,7 @@ import java.util.function.Supplier;
 /**
  * Created by qqcs on 2017.01.03..
  */
-public class Button extends DrawableContainer implements IMouseEventListener {
+public class Button extends DrawableContainer<IDrawable> implements IMouseEventListener {
     private boolean onlyForceRedraw = false;
     private boolean wasInside = false;
     private boolean wasDisabled = false;
