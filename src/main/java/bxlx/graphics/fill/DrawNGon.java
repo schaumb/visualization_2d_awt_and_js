@@ -11,18 +11,18 @@ import bxlx.graphics.shapes.Shape;
  * Created by qqcs on 2017.01.09..
  */
 public class DrawNGon extends ChangeableDrawable {
-    private boolean inside;
-    private boolean ellipse;
-    private int n;
-    private double startAngle;
-    private boolean makeCentered;
+    private final ChangeableValue<Boolean> inside;
+    private final ChangeableValue<Boolean> ellipse;
+    private final ChangeableValue<Integer> n;
+    private final ChangeableValue<Double> startAngle;
+    private final ChangeableValue<Boolean> makeCentered;
 
     public DrawNGon(boolean inside, boolean ellipse, int n, double startAngle, boolean makeCentered) {
-        this.inside = inside;
-        this.ellipse = ellipse;
-        this.n = n;
-        this.startAngle = startAngle;
-        this.makeCentered = makeCentered;
+        this.inside = new ChangeableValue<>(this, inside);
+        this.ellipse = new ChangeableValue<>(this, ellipse);
+        this.n = new ChangeableValue<>(this, n);
+        this.startAngle = new ChangeableValue<>(this, startAngle);
+        this.makeCentered = new ChangeableValue<>(this, makeCentered);
     }
 
     public DrawNGon(int n, double startAngle, boolean makeCentered) {
@@ -37,53 +37,24 @@ public class DrawNGon extends ChangeableDrawable {
         this(n, 0);
     }
 
-    public int getN() {
-        return n;
-    }
-
-    public DrawNGon setN(int n) {
-        this.n = n;
-        setRedraw();
-        return this;
-    }
-
-    public double getStartAngle() {
-        return startAngle;
-    }
-
-    public DrawNGon setStartAngle(double startAngle) {
-        this.startAngle = startAngle;
-        setRedraw();
-        return this;
-    }
-
-    public boolean isInside() {
+    public ChangeableValue<Boolean> getInside() {
         return inside;
     }
 
-    public DrawNGon setInside(boolean inside) {
-        this.inside = inside;
-        setRedraw();
-        return this;
-    }
-
-    public boolean isEllipse() {
+    public ChangeableValue<Boolean> getEllipse() {
         return ellipse;
     }
 
-    public DrawNGon setEllipse(boolean ellipse) {
-        this.ellipse = ellipse;
-        setRedraw();
-        return this;
+    public ChangeableValue<Integer> getN() {
+        return n;
     }
 
-    public boolean isMakeCentered() {
+    public ChangeableValue<Double> getStartAngle() {
+        return startAngle;
+    }
+
+    public ChangeableValue<Boolean> getMakeCentered() {
         return makeCentered;
-    }
-
-    public DrawNGon setMakeCentered(boolean makeCentered) {
-        this.makeCentered = makeCentered;
-        return this;
     }
 
     @Override
@@ -92,14 +63,14 @@ public class DrawNGon extends ChangeableDrawable {
         Point center = canvas.getBoundingRectangle().getCenter();
 
         Shape polygon;
-        if (ellipse) {
-            polygon = Polygon.ellipseNGon(n, center, size, startAngle);
+        if (ellipse.get()) {
+            polygon = Polygon.ellipseNGon(n.get(), center, size, startAngle.get());
         } else {
-            double radius = (inside ? size.getShorterDimension() : size.getLongerDimension()) / 2;
-            polygon = Polygon.nGon(n, center, radius, startAngle);
+            double radius = (inside.get() ? size.getShorterDimension() : size.getLongerDimension()) / 2;
+            polygon = Polygon.nGon(n.get(), center, radius, startAngle.get());
         }
 
-        if (makeCentered) {
+        if (makeCentered.get()) {
             Point nowCenter = polygon.getBoundingRectangle().getCenter();
             polygon = polygon.getTranslated(center.add(nowCenter.negate()));
         }

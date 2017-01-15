@@ -14,11 +14,11 @@ import java.util.List;
  * Created by qqcs on 2017.01.04..
  */
 public class SplitContainer extends DrawableContainer<IDrawable> {
-    private boolean xSplit = false;
+    private final ChangeableValue<Boolean> xSplit;
 
     public SplitContainer(boolean xSplit, List<IDrawable> list) {
         super(list);
-        this.xSplit = xSplit;
+        this.xSplit = new ChangeableValue<>(this, xSplit);
     }
 
     public SplitContainer(boolean xSplit) {
@@ -33,14 +33,8 @@ public class SplitContainer extends DrawableContainer<IDrawable> {
         this(false, new ArrayList<>());
     }
 
-    public boolean isxSplit() {
+    public ChangeableValue<Boolean> getxSplit() {
         return xSplit;
-    }
-
-    public SplitContainer setxSplit(boolean xSplit) {
-        this.xSplit = xSplit;
-        setRedraw();
-        return this;
     }
 
     public SplitContainer add(IDrawable drawable) {
@@ -65,8 +59,10 @@ public class SplitContainer extends DrawableContainer<IDrawable> {
 
         Rectangle rectangle = canvas.getBoundingRectangle();
 
-        Point dimension = xSplit ? Direction.RIGHT.getVector() : Direction.DOWN.getVector();
-        Point otherDimension = xSplit ? Direction.DOWN.getVector() : Direction.RIGHT.getVector();
+        boolean nowXSplit = xSplit.get();
+
+        Point dimension = nowXSplit ? Direction.RIGHT.getVector() : Direction.DOWN.getVector();
+        Point otherDimension = nowXSplit ? Direction.DOWN.getVector() : Direction.RIGHT.getVector();
 
         Point elemSize = rectangle.getSize().asPoint().multiple(dimension.multiple(1.0 / children.size()).add(otherDimension));
 

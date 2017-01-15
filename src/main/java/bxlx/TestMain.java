@@ -46,7 +46,7 @@ public class TestMain implements IRenderer, IMouseEventListener, MyConsumer<Stri
 
         splitter.setFirst(Builder.navigator(null,
                 new Button(Builder.text("TODO"), b -> {
-                    splitter.setSeparate(-200 - splitter.getSeparate());
+                    splitter.getSeparate().setElem(-200 - splitter.getSeparate().get());
                     b.setOnlyForceDraw();
                 }, null, null),
                 Builder.imageKeepAspectRatio("kep.jpg", 1, 0), 40, Color.WHITE));

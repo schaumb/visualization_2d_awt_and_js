@@ -3,30 +3,31 @@ package bxlx.graphics.drawable;
 import bxlx.graphics.ICanvas;
 import bxlx.graphics.IDrawable;
 
+import java.util.function.Supplier;
+
 /**
  * Created by qqcs on 2017.01.09..
  */
 public class VisibleDrawable extends DrawableWrapper {
-    private boolean visible;
+    private ChangeableValue<Boolean> visible;
 
     public VisibleDrawable(IDrawable wrapped, boolean visible) {
         super(wrapped);
-        this.visible = visible;
+        this.visible = new ChangeableValue<>(this, visible);
     }
 
-    public boolean isVisible() {
+    public VisibleDrawable(IDrawable wrapped, Supplier<Boolean> visible) {
+        super(wrapped);
+        this.visible = new ChangeableValue<>(this, visible);
+    }
+
+    public ChangeableValue<Boolean> getVisible() {
         return visible;
-    }
-
-    public VisibleDrawable setVisible(boolean visible) {
-        this.visible = visible;
-        setRedraw();
-        return this;
     }
 
     @Override
     public void forceRedraw(ICanvas canvas) {
-        if (!visible) {
+        if (!visible.get()) {
             return;
         }
         super.forceRedraw(canvas);

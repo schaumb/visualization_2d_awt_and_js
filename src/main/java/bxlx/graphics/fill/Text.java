@@ -9,42 +9,32 @@ import bxlx.graphics.shapes.Rectangle;
  * Created by qqcs on 2017.01.03..
  */
 public class Text extends ChangeableDrawable {
-    private String text;
-    private String referenceText;
+    private final ChangeableValue<String> text;
+    private final ChangeableValue<String> referenceText;
 
     public Text(String text) {
         this(text, null);
     }
 
     public Text(String text, String referenceText) {
-        this.text = text;
-        this.referenceText = referenceText;
-        setRedraw();
+        this.text = new ChangeableValue<>(this, text);
+        this.referenceText = new ChangeableValue<>(this, referenceText);
     }
 
-    public String getText() {
+    public ChangeableValue<String> getText() {
         return text;
     }
 
-    public Text setText(String text) {
-        this.text = text;
-        setRedraw();
-        return this;
-    }
-
-    public String getReferenceText() {
+    public ChangeableValue<String> getReferenceText() {
         return referenceText;
-    }
-
-    public Text setReferenceText(String referenceText) {
-        this.referenceText = referenceText;
-        setRedraw();
-        return this;
     }
 
     @Override
     public void forceRedraw(ICanvas canvas) {
-        if (text.isEmpty())
+        String nowText = text.get();
+        String nowReferenceText = referenceText.get();
+
+        if (nowText.isEmpty())
             return;
 
         Rectangle rectangle = canvas.getBoundingRectangle();
@@ -52,12 +42,12 @@ public class Text extends ChangeableDrawable {
 
         int xNeedFitSize = (int) rectangle.getSize().getWidth();
         canvas.setFont("sans-serif", ySize, false, false);
-        while (canvas.textWidth(referenceText != null ? referenceText : text) > xNeedFitSize) {
+        while (canvas.textWidth(nowReferenceText != null ? nowReferenceText : nowText) > xNeedFitSize) {
             canvas.setFont("sans-serif", --ySize, false, false);
         }
-        int xSize = canvas.textWidth(text);
+        int xSize = canvas.textWidth(nowText);
 
-        canvas.fillText(text, rectangle.getStart().add(new Point(
+        canvas.fillText(nowText, rectangle.getStart().add(new Point(
                 (rectangle.getSize().getWidth() - xSize) / 2,
                 (rectangle.getSize().getHeight() + ySize) / 2 - ySize / 6.0)));
     }

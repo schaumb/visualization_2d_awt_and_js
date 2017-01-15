@@ -16,49 +16,35 @@ import java.util.Arrays;
  * Created by qqcs on 2017.01.10..
  */
 public class Stick extends DrawableContainer<IDrawable> {
-    private double angle;
-    private double length;
-    private double thickness;
+    private final ChangeableValue<Double> angle;
+    private final ChangeableValue<Double> length;
+    private final ChangeableValue<Double> thickness;
 
     public Stick(double angle, double length, double thickness, IDrawable start, IDrawable end) {
         super(Arrays.asList(start, end));
-        this.angle = angle;
-        this.length = length;
-        this.thickness = thickness;
+        this.angle = new ChangeableValue<>(this, angle);
+        this.length = new ChangeableValue<>(this, length);
+        this.thickness = new ChangeableValue<>(this, thickness);
     }
 
-    public double getAngle() {
+    public ChangeableValue<Double> getAngle() {
         return angle;
     }
 
-    public Stick setAngle(double angle) {
-        this.angle = angle;
-        setRedraw();
-        return this;
-    }
-
-    public double getLength() {
+    public ChangeableValue<Double> getLength() {
         return length;
     }
 
-    public Stick setLength(double length) {
-        this.length = length;
-        setRedraw();
-        return this;
-    }
-
-    public double getThickness() {
+    public ChangeableValue<Double> getThickness() {
         return thickness;
-    }
-
-    public Stick setThickness(double thickness) {
-        this.thickness = thickness;
-        setRedraw();
-        return this;
     }
 
     @Override
     protected void forceRedraw(ICanvas canvas) {
+        double nowAngle = angle.get();
+        double nowLength = length.get();
+        double nowThickness = thickness.get();
+
         boolean forcedRedraw = !needRedraw() || iChanged();
 
         Rectangle bound = canvas.getBoundingRectangle();
@@ -67,8 +53,8 @@ public class Stick extends DrawableContainer<IDrawable> {
 
         double sizeRad = new Direction(size.asPoint()).toRadian();
 
-        double diagonalAngle1 = angle + Math.atan(length);
-        double diagonalAngle2 = -angle + Math.atan(length);
+        double diagonalAngle1 = nowAngle + Math.atan(nowLength);
+        double diagonalAngle2 = -nowAngle + Math.atan(nowLength);
         double diagonalReferenceRad1 = new Direction(Direction.fromRadian(diagonalAngle1).getVector().abs()).toRadian();
         double diagonalReferenceRad2 = new Direction(Direction.fromRadian(diagonalAngle2).getVector().abs()).toRadian();
 
@@ -79,24 +65,24 @@ public class Stick extends DrawableContainer<IDrawable> {
                 size.getHeight() / Math.sin(diagonalAngle2);
 
         double stickDiagonalSize = Math.min(Math.abs(stickDiagonalSize1), Math.abs(stickDiagonalSize2));
-        double stickSize = stickDiagonalSize / Math.sqrt(1 + length * length);
-        double stickThick = stickSize * length;
+        double stickSize = stickDiagonalSize / Math.sqrt(1 + nowLength * nowLength);
+        double stickThick = stickSize * nowLength;
 
-        Point stickVector = Direction.fromRadian(angle).getVector().norm();
+        Point stickVector = Direction.fromRadian(nowAngle).getVector().norm();
         Point stickThickVector = new Point(-stickVector.getY(), stickVector.getX()).norm();
 
 
         if (forcedRedraw) {
             canvas.fill(new Polygon(Arrays.asList(
-                    center.add(stickVector.multiple(stickSize / 2 - stickThick * 2 / 3)).add(stickThickVector.multiple(stickThick * thickness / 2)),
-                    center.add(stickVector.multiple(stickSize / 2 - stickThick * 2 / 3)).add(stickThickVector.multiple(-stickThick * thickness / 2)),
-                    center.add(stickVector.multiple(stickThick * 2 / 3 - stickSize / 2)).add(stickThickVector.multiple(-stickThick * thickness / 2)),
-                    center.add(stickVector.multiple(stickThick * 2 / 3 - stickSize / 2)).add(stickThickVector.multiple(stickThick * thickness / 2))
+                    center.add(stickVector.multiple(stickSize / 2 - stickThick * 2 / 3)).add(stickThickVector.multiple(stickThick * nowThickness / 2)),
+                    center.add(stickVector.multiple(stickSize / 2 - stickThick * 2 / 3)).add(stickThickVector.multiple(-stickThick * nowThickness / 2)),
+                    center.add(stickVector.multiple(stickThick * 2 / 3 - stickSize / 2)).add(stickThickVector.multiple(-stickThick * nowThickness / 2)),
+                    center.add(stickVector.multiple(stickThick * 2 / 3 - stickSize / 2)).add(stickThickVector.multiple(stickThick * nowThickness / 2))
             )));
         }
 
         if (children.get(0) == null && forcedRedraw) {
-            canvas.fill(Arc.circle(center.add(stickVector.multiple(stickThick * 2 / 3 - stickSize / 2)), stickThick * thickness / 2));
+            canvas.fill(Arc.circle(center.add(stickVector.multiple(stickThick * 2 / 3 - stickSize / 2)), stickThick * nowThickness / 2));
         } else if (children.get(0) != null) {
             Polygon p = new Polygon(Arrays.asList(
                     center.add(stickVector.multiple(-stickSize / 2)).add(stickThickVector.multiple(stickThick / 2)),
@@ -116,7 +102,7 @@ public class Stick extends DrawableContainer<IDrawable> {
 
 
         if (children.get(1) == null && forcedRedraw) {
-            canvas.fill(Arc.circle(center.add(stickVector.multiple(stickSize / 2 - stickThick * 2 / 3)), stickThick * thickness / 2));
+            canvas.fill(Arc.circle(center.add(stickVector.multiple(stickSize / 2 - stickThick * 2 / 3)), stickThick * nowThickness / 2));
         } else if (children.get(1) != null) {
             Polygon p = new Polygon(Arrays.asList(
                     center.add(stickVector.multiple(stickSize / 2)).add(stickThickVector.multiple(stickThick / 2)),

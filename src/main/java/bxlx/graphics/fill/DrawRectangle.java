@@ -8,25 +8,16 @@ import bxlx.graphics.shapes.Rectangle;
  * Created by qqcs on 2017.01.09..
  */
 public class DrawRectangle extends ChangeableDrawable {
-    private double percent;
+    private final ChangeableValue<Double> percent;
 
     public DrawRectangle() {
         this(1);
     }
 
     public DrawRectangle(double percent) {
-        this.percent = percent;
+        this.percent = new ChangeableValue<>(this, percent);
     }
 
-    public double getPercent() {
-        return percent;
-    }
-
-    public DrawRectangle setPercent(double percent) {
-        this.percent = percent;
-        setRedraw();
-        return this;
-    }
 
     @Override
     public void forceRedraw(ICanvas canvas) {
@@ -34,9 +25,10 @@ public class DrawRectangle extends ChangeableDrawable {
     }
 
     public Rectangle getRectangle(Rectangle rectangle) {
+        double nowPercent = percent.get();
         return new Rectangle(
-                rectangle.getStart().add(rectangle.getSize().asPoint().multiple((1 - percent) / 2)),
-                rectangle.getEnd().add(rectangle.getSize().asPoint().multiple((percent - 1) / 2))
+                rectangle.getStart().add(rectangle.getSize().asPoint().multiple((1 - nowPercent) / 2)),
+                rectangle.getEnd().add(rectangle.getSize().asPoint().multiple((nowPercent - 1) / 2))
         );
     }
 }

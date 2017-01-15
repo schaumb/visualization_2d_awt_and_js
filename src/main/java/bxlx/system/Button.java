@@ -16,68 +16,65 @@ import java.util.function.Supplier;
  * Created by qqcs on 2017.01.03..
  */
 public class Button extends DrawableContainer<IDrawable> implements IMouseEventListener {
-    private boolean onlyForceRedraw = false;
-    private boolean wasInside = false;
-    private boolean wasDisabled = false;
     private Rectangle lastRectangle = Rectangle.NULL_RECTANGLE;
-    private final Rect rect = new Rect();
-    private Consumer<Button> atClick;
-    private Consumer<Button> atHold;
-    private Supplier<Boolean> disabled;
+    private final ChangeableValue<Consumer<Button>> atClick;
+    private final ChangeableValue<Consumer<Button>> atHold;
+    private final ChangeableValue<Boolean> inside;
+    private final ChangeableValue<Boolean> hover;
+    private final ChangeableValue<Boolean> disabled;
     private Timer holdTimer;
 
     public Button(IDrawable drawable, Consumer<Button> atClick, Consumer<Button> atHold, Supplier<Boolean> disabled) {
         super(new ArrayList<>());
+
+        Rect rect = new Rect();
+
         children.add(rect);
         children.add(drawable);
-        this.atClick = atClick;
-        this.atHold = atHold;
-        this.disabled = disabled;
-        setRedraw();
+
+        this.atClick = new ChangeableValue<>(this, atClick);
+        this.atHold = new ChangeableValue<>(this, atHold);
+        this.disabled = new ChangeableValue<>(this, disabled);
+        this.hover = new ChangeableValue<>(this, () -> lastRectangle != null &&
+                rect.isContains(lastRectangle, MouseInfo.get().getPosition()));
+        this.inside = new ChangeableValue<>(this, () -> hover.get() && MouseInfo.get().isLeftClicked());
+
         SystemSpecific.get().setMouseEventListenerQueue(this);
     }
 
 
     @Override
     public boolean needRedraw() {
-        return !onlyForceRedraw && (super.needRedraw()
-                || wasDisabled ^ isDisabled()
-                || (holdTimer != null && holdTimer.elapsed()));
-    }
-
-    @Override
-    public void setOnlyForceDraw() {
-        super.setOnlyForceDraw();
-        onlyForceRedraw = true;
+        return !isOnlyForceDraw() && (super.needRedraw() || (holdTimer != null && holdTimer.elapsed()));
     }
 
     @Override
     public void forceRedraw(ICanvas canvas) {
-        onlyForceRedraw = false;
-        if (isDisabled()) {
-            wasInside = false;
-            wasDisabled = true;
+        Boolean nowDisabledNPTS = disabled.get();
+        boolean nowDisabled = nowDisabledNPTS != null && nowDisabledNPTS;
+        boolean nowInside = inside.get();
+
+        if (nowDisabled) {
             canvas.setColor(Color.LIGHT_GRAY);
         } else {
-            wasDisabled = false;
-            if (wasInside = isInside(canvas.getBoundingRectangle(), MouseInfo.get().getPosition(), MouseInfo.get().isLeftClicked())) {
+            if (nowInside) {
                 canvas.setColor(Color.DARK_GRAY);
             } else {
                 canvas.setColor(Color.GRAY);
             }
         }
-        if (!wasInside) {
+        if (!nowInside) {
             holdTimer = null;
         }
 
         if (holdTimer != null && holdTimer.elapsed()) {
             holdTimer.setLength(100).setStart();
-            atHold.accept(this);
+            atHold.get().accept(this);
         }
 
         children.get(0).forceDraw(canvas);
 
-        canvas.setColor(wasDisabled ? Color.WHITE : Color.BLACK);
+        canvas.setColor(nowDisabled ? Color.WHITE : Color.BLACK);
         canvas.clip(new Rectangle(
                 canvas.getBoundingRectangle().getStart().add(canvas.getBoundingRectangle().getSize().asPoint().multiple(1 / 16.0)),
                 canvas.getBoundingRectangle().getStart().add(canvas.getBoundingRectangle().getSize().asPoint().multiple(15 / 16.0))
@@ -88,20 +85,13 @@ public class Button extends DrawableContainer<IDrawable> implements IMouseEventL
         lastRectangle = canvas.getBoundingRectangle();
     }
 
-    private boolean isDisabled() {
-        return disabled != null && disabled.get();
-    }
-
-    private boolean isInside(Rectangle rectangle, Point where, boolean leftButton) {
-        return rectangle != null && leftButton && rect.isContains(rectangle, where);
-    }
-
     @Override
     public void up(Point where, boolean leftButton) {
-        if (!isDisabled() && isInside(lastRectangle, where, leftButton)) {
+        if (leftButton && hover.get() && !disabled.get()) {
             setRedraw();
-            if (atClick != null) {
-                atClick.accept(this);
+            Consumer<Button> click = atClick.get();
+            if (click != null) {
+                click.accept(this);
             }
             holdTimer = null;
         }
@@ -109,21 +99,19 @@ public class Button extends DrawableContainer<IDrawable> implements IMouseEventL
 
     @Override
     public void move(Point position) {
-        boolean inside = isInside(lastRectangle, position, MouseInfo.get().isLeftClicked());
-        if (wasInside ^ inside) {
-            setRedraw();
-        }
-        if (!inside) {
+        if (holdTimer != null && !hover.get()) {
             holdTimer = null;
         }
     }
 
     @Override
     public void down(Point where, boolean leftButton) {
-        if (!isDisabled() && isInside(lastRectangle, where, leftButton)) {
+        if (inside.get() && !disabled.get()) {
             setRedraw();
-            if (atHold != null) {
-                atHold.accept(this);
+
+            Consumer<Button> hold = atHold.get();
+            if (hold != null) {
+                hold.accept(this);
                 holdTimer = new Timer(300);
             }
         }

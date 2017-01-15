@@ -4,30 +4,31 @@ import bxlx.graphics.IDrawable;
 import bxlx.graphics.Point;
 import bxlx.graphics.shapes.Rectangle;
 
-import java.util.function.UnaryOperator;
-
 /**
  * Created by qqcs on 2017.01.09..
  */
 public class MarginDrawable extends ClippedDrawable {
-    private double marginX; // < 1 -> percent, >=1 -> pixel
-    private double marginY; // < 1 -> percent, >=1 -> pixel
+    private ChangeableValue<Double> marginX; // < 1 -> percent, >=1 -> pixel
+    private ChangeableValue<Double> marginY; // < 1 -> percent, >=1 -> pixel
 
-    private static UnaryOperator<Rectangle> marginMake(double marginX, double marginY) {
-        return rectangle -> {
+    private void setTheClip() {
+        getClip().setElem(rectangle -> {
+            double nowMarginX = marginX.get();
+            double nowMarginY = marginY.get();
             Point pixel = new Point(
-                    marginX >= 1 ? marginX : marginX * rectangle.getSize().getWidth() / 2,
-                    marginY >= 1 ? marginY : marginY * rectangle.getSize().getHeight() / 2
+                    nowMarginX >= 1 ? nowMarginX : nowMarginX * rectangle.getSize().getWidth() / 2,
+                    nowMarginY >= 1 ? nowMarginY : nowMarginY * rectangle.getSize().getHeight() / 2
             );
             return new Rectangle(rectangle.getStart().add(pixel),
                     rectangle.getEnd().add(pixel.negate()));
-        };
+        });
     }
 
     public MarginDrawable(IDrawable wrapped, double marginX, double marginY) {
-        super(wrapped, marginMake(marginX, marginY));
-        this.marginX = marginX;
-        this.marginY = marginY;
+        super(wrapped, null);
+        this.marginX = new ChangeableValue<>(this, marginX);
+        this.marginY = new ChangeableValue<>(this, marginY);
+        setTheClip();
     }
 
     public MarginDrawable(IDrawable wrapped, double margin) {
@@ -38,23 +39,11 @@ public class MarginDrawable extends ClippedDrawable {
         this(wrapped, 0);
     }
 
-    public double getMarginX() {
+    public ChangeableValue<Double> getMarginX() {
         return marginX;
     }
 
-    public double getMarginY() {
+    public ChangeableValue<Double> getMarginY() {
         return marginY;
-    }
-
-    public MarginDrawable setMarginX(double marginX) {
-        this.marginX = marginX;
-        setClip(marginMake(marginX, marginY));
-        return this;
-    }
-
-    public MarginDrawable setMarginY(double marginY) {
-        this.marginY = marginY;
-        setClip(marginMake(marginX, marginY));
-        return this;
     }
 }

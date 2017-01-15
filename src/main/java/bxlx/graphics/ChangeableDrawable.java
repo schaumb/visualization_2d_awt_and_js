@@ -10,12 +10,7 @@ import java.util.function.Supplier;
  * Created by qqcs on 2017.01.09..
  */
 public abstract class ChangeableDrawable implements IDrawable {
-    protected static class ChangeableValue<T> extends ValueOrSupplier<T> {
-        public ChangeableValue(ChangeableDrawable parent, ValueOrSupplier<T> supplier) {
-            super(supplier);
-            parent.values.add(this);
-        }
-
+    public static class ChangeableValue<T> extends ValueOrSupplier<T> {
         public ChangeableValue(ChangeableDrawable parent, Supplier<T> supplier) {
             super(supplier);
             parent.values.add(this);
@@ -62,6 +57,10 @@ public abstract class ChangeableDrawable implements IDrawable {
     @Override
     public void setOnlyForceDraw() {
         onlyForceDraw = true;
+    }
+
+    public boolean isOnlyForceDraw() {
+        return onlyForceDraw;
     }
 
     protected abstract void forceRedraw(ICanvas canvas);

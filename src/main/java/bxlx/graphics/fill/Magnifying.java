@@ -1,28 +1,27 @@
 package bxlx.graphics.fill;
 
+import bxlx.graphics.ChangeableDrawable;
 import bxlx.graphics.Color;
 import bxlx.graphics.ICanvas;
-import bxlx.graphics.IDrawable;
 
 /**
  * Created by qqcs on 2017.01.11..
  */
-public class Magnifying implements IDrawable {
+public class Magnifying extends ChangeableDrawable {
     private final DrawArc arc = DrawArc.circle(true);
     private final DrawRectangle clipRect = new DrawRectangle(0.8);
-    private final Text text;
+    private final ChangeableValue<Boolean> plus;
 
     public Magnifying(boolean plus) {
-        this.text = new Text(plus ? "+" : "-", "+");
+        this.plus = new ChangeableValue<>(this, plus);
+    }
+
+    public ChangeableValue<Boolean> getPlus() {
+        return plus;
     }
 
     @Override
-    public boolean needRedraw() {
-        return false;
-    }
-
-    @Override
-    public void forceDraw(ICanvas canvas) {
+    public void forceRedraw(ICanvas canvas) {
         arc.forceDraw(canvas);
 
         canvas.clip(clipRect.getRectangle(canvas.getBoundingRectangle()));
@@ -31,6 +30,6 @@ public class Magnifying implements IDrawable {
         arc.forceDraw(canvas);
         canvas.restore();
         canvas.setColor(color);
-        text.forceDraw(canvas);
+        new Text(plus.get() ? "+" : "-", "+").forceDraw(canvas);
     }
 }

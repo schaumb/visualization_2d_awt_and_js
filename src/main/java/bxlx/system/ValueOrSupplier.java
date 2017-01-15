@@ -7,20 +7,12 @@ public class ValueOrSupplier<T> {
     private Supplier<T> supplier;
     private T elem;
 
-    public ValueOrSupplier(ValueOrSupplier<T> supplier) {
-        this.supplier = supplier.getAsSupplier();
-    }
-
     public ValueOrSupplier(Supplier<T> supplier) {
         this.supplier = supplier;
     }
 
     public ValueOrSupplier(T elem) {
         this.elem = elem;
-    }
-
-    public ValueOrSupplier<T> setSupplier(ValueOrSupplier<T> supplier) {
-        return setSupplier(supplier.getAsSupplier());
     }
 
     public ValueOrSupplier<T> setSupplier(Supplier<T> supplier) {

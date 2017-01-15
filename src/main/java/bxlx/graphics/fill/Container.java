@@ -11,7 +11,7 @@ import java.util.List;
  * Created by qqcs on 2017.01.09..
  */
 public class Container extends DrawableContainer<IDrawable> {
-    private final int forceRedrawPrevLayer;
+    private final ChangeableValue<Integer> forceRedrawPrevLayer;
 
     public Container() {
         this(new ArrayList<>());
@@ -23,7 +23,7 @@ public class Container extends DrawableContainer<IDrawable> {
 
     public Container(List<IDrawable> children, int forceRedrawPrevLayer) {
         super(children);
-        this.forceRedrawPrevLayer = forceRedrawPrevLayer;
+        this.forceRedrawPrevLayer = new ChangeableValue<>(this, forceRedrawPrevLayer);
     }
 
     public Container add(IDrawable drawable) {
@@ -54,7 +54,7 @@ public class Container extends DrawableContainer<IDrawable> {
             if (!iChanged() && children.get(i).needRedraw()) {
                 setRedraw();
                 if (i > 0) {
-                    i = Math.max(-1, i - forceRedrawPrevLayer - 1);
+                    i = Math.max(-1, i - forceRedrawPrevLayer.get() - 1);
                     continue;
                 }
             }

@@ -13,14 +13,13 @@ import java.util.Arrays;
  * Created by qqcs on 2017.01.04..
  */
 public class Splitter extends DrawableContainer<IDrawable> {
-    private boolean xSplit;
-    private double separate;
+    private final ChangeableValue<Boolean> xSplit;
+    private final ChangeableValue<Double> separate;
 
     public Splitter(boolean xSplit, double separate, IDrawable first, IDrawable second) {
         super(Arrays.asList(first, second));
-        this.xSplit = xSplit;
-        this.separate = separate;
-        setRedraw();
+        this.xSplit = new ChangeableValue<>(this, xSplit);
+        this.separate = new ChangeableValue<>(this, separate);
     }
 
     public Splitter(double separate, IDrawable first, IDrawable second) {
@@ -63,24 +62,12 @@ public class Splitter extends DrawableContainer<IDrawable> {
 
     }
 
-    public boolean isxSplit() {
+    public ChangeableValue<Boolean> getxSplit() {
         return xSplit;
     }
 
-    public Splitter setxSplit(boolean xSplit) {
-        this.xSplit = xSplit;
-        setRedraw();
-        return this;
-    }
-
-    public double getSeparate() {
+    public ChangeableValue<Double> getSeparate() {
         return separate;
-    }
-
-    public Splitter setSeparate(double separate) {
-        this.separate = separate;
-        setRedraw();
-        return this;
     }
 
     public IDrawable getFirst() {
@@ -109,18 +96,21 @@ public class Splitter extends DrawableContainer<IDrawable> {
 
         Rectangle rectangle = canvas.getBoundingRectangle();
 
-        Point dimension = xSplit ? Direction.RIGHT.getVector() : Direction.DOWN.getVector();
-        Point otherDimension = xSplit ? Direction.DOWN.getVector() : Direction.RIGHT.getVector();
+        boolean nowXSplit = xSplit.get();
+        double nowSeparate = separate.get();
+
+        Point dimension = nowXSplit ? Direction.RIGHT.getVector() : Direction.DOWN.getVector();
+        Point otherDimension = nowXSplit ? Direction.DOWN.getVector() : Direction.RIGHT.getVector();
 
         double firstSize = rectangle.getSize().asPoint().multiple(dimension).asSize().getLongerDimension();
-        if (separate <= -1) {
-            firstSize = Math.max(0, firstSize + separate);
-        } else if (separate <= 0) {
-            firstSize *= 1 + separate;
-        } else if (separate < 1) {
-            firstSize *= separate;
+        if (nowSeparate <= -1) {
+            firstSize = Math.max(0, firstSize + nowSeparate);
+        } else if (nowSeparate <= 0) {
+            firstSize *= 1 + nowSeparate;
+        } else if (nowSeparate < 1) {
+            firstSize *= nowSeparate;
         } else {
-            firstSize = Math.min(firstSize, separate);
+            firstSize = Math.min(firstSize, nowSeparate);
         }
 
         if (getFirst() != null) {

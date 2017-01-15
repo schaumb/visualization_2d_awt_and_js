@@ -10,26 +10,20 @@ import java.util.function.UnaryOperator;
  * Created by qqcs on 2017.01.11..
  */
 public class ClippedDrawable extends DrawableWrapper {
-    private UnaryOperator<Rectangle> clip;
+    private final ChangeableValue<UnaryOperator<Rectangle>> clip;
 
     public ClippedDrawable(IDrawable drawable, UnaryOperator<Rectangle> clip) {
         super(drawable);
-        this.clip = clip;
+        this.clip = new ChangeableValue<>(this, clip);
     }
 
-    public UnaryOperator<Rectangle> getClip() {
+    public ChangeableValue<UnaryOperator<Rectangle>> getClip() {
         return clip;
-    }
-
-    public ClippedDrawable setClip(UnaryOperator<Rectangle> clip) {
-        this.clip = clip;
-        setRedraw();
-        return this;
     }
 
     @Override
     protected void forceRedraw(ICanvas canvas) {
-        canvas.clip(clip.apply(canvas.getBoundingRectangle()));
+        canvas.clip(clip.get().apply(canvas.getBoundingRectangle()));
         super.forceRedraw(canvas);
         canvas.restore();
     }
