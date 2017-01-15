@@ -3,16 +3,23 @@ package bxlx.graphics.drawable;
 import bxlx.graphics.ChangeableDrawable;
 import bxlx.graphics.IDrawable;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Supplier;
 
 /**
  * Created by qqcs on 2017.01.09..
  */
 public abstract class DrawableContainer<T extends IDrawable> extends ChangeableDrawable {
-    protected final List<T> children;
+    private final List<ChangeableValue<T>> children = new ArrayList<>();
+
+    public DrawableContainer() {
+    }
 
     public DrawableContainer(List<T> children) {
-        this.children = children;
+        for (T drawable : children) {
+            this.children.add(new ChangeableValue<>(this, drawable));
+        }
     }
 
     @Override
@@ -24,21 +31,40 @@ public abstract class DrawableContainer<T extends IDrawable> extends ChangeableD
         return super.needRedraw();
     }
 
+    protected void add(T elem) {
+        children.add(new ChangeableValue<>(this, elem));
+    }
+
+    protected void add(Supplier<T> elem) {
+        children.add(new ChangeableValue<>(this, elem));
+    }
+
+    protected ChangeableValue<T> get(int index) {
+        return children.get(index);
+    }
+
+    protected int size() {
+        return children.size();
+    }
+
     @Override
     public void setOnlyForceDraw() {
         super.setOnlyForceDraw();
-        for (IDrawable drawable : children) {
-            if (drawable != null) {
-                drawable.setOnlyForceDraw();
+        for (ChangeableValue<T> drawable : children) {
+            T draw = drawable.get();
+            if (draw != null) {
+                draw.setOnlyForceDraw();
             }
         }
     }
 
     public boolean childrenChanged() {
         boolean childNeedRedraw = false;
-        for (IDrawable drawable : children) {
-            if (drawable != null) {
-                childNeedRedraw |= drawable.needRedraw();
+        for (ChangeableValue<T> drawable : children) {
+            childNeedRedraw |= drawable.isChanged();
+            T draw = drawable.get();
+            if (draw != null) {
+                childNeedRedraw |= draw.needRedraw();
             }
         }
         return childNeedRedraw;

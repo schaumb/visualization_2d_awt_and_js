@@ -5,7 +5,6 @@ import bxlx.graphics.IDrawable;
 import bxlx.graphics.drawable.AspectRatioDrawable;
 import bxlx.graphics.drawable.ClippedDrawable;
 import bxlx.graphics.drawable.ColoredDrawable;
-import bxlx.graphics.drawable.DrawableWrapper;
 import bxlx.graphics.drawable.MarginDrawable;
 import bxlx.graphics.drawable.VisibleDrawable;
 import bxlx.graphics.fill.Container;
@@ -21,15 +20,22 @@ import bxlx.graphics.fill.Text;
 import bxlx.graphics.shapes.Rectangle;
 import bxlx.system.Button;
 
+import java.util.function.Consumer;
 import java.util.function.Supplier;
 import java.util.function.UnaryOperator;
 
 /**
  * Created by qqcs on 2017.01.11..
  */
-public class Builder<T extends IDrawable> extends DrawableWrapper<T> {
+public class Builder<T extends IDrawable> {
+    private T wrapped;
+
     private Builder(T wrapped) {
-        super(wrapped);
+        this.wrapped = wrapped;
+    }
+
+    public T getChild() {
+        return wrapped;
     }
 
     public static <T extends IDrawable> Builder<T> make(T start) {
@@ -67,14 +73,22 @@ public class Builder<T extends IDrawable> extends DrawableWrapper<T> {
         return new Builder<>(new ClippedDrawable(getChild(), clip));
     }
 
-    public Builder<VisibleDrawable> makeVisible(boolean visibility) {
-        return new Builder<>(new VisibleDrawable(getChild(), visibility));
+    public static <T extends VisibleDrawable.VisibleDraw> Builder<VisibleDrawable> makeVisible(
+            Builder<T> builder,
+            boolean visibility) {
+        return new Builder<>(new VisibleDrawable(builder.getChild(), visibility));
+    }
+
+    public static <T extends VisibleDrawable.VisibleDraw> Builder<VisibleDrawable> makeVisible(
+            Builder<T> builder,
+            Supplier<Boolean> visibility) {
+        return new Builder<>(new VisibleDrawable(builder.getChild(), visibility));
     }
 
     public Builder<Container> makeBackgrounded(Color color) {
         Builder<Container> result = container();
-        result.getChild().add(background().makeColored(color))
-                .add(getChild());
+        result.getChild().add(background().makeColored(color).getChild());
+        result.getChild().add(getChild());
         return result;
     }
 
@@ -84,6 +98,10 @@ public class Builder<T extends IDrawable> extends DrawableWrapper<T> {
 
     public static Builder<Text> text(String text) {
         return new Builder<>(new Text(text));
+    }
+
+    public static Builder<Text> text(String text, String referenceText) {
+        return new Builder<>(new Text(text, referenceText));
     }
 
     public static Builder<DrawArc> circle(boolean inside) {
@@ -127,17 +145,12 @@ public class Builder<T extends IDrawable> extends DrawableWrapper<T> {
         return new Builder<>(Splitter.threeWaySplit(xSplit, centerSeparate, first, center, last));
     }
 
-    /*
-        public static Builder<Button> button(IDrawable drawable, MyConsumer<Button> atClick, MyConsumer<Button> atHold, Supplier<Boolean> disabled) {
-            return new Builder<>(new Button(drawable, atClick, atHold, disabled));
-        }
-    */
-    public static Builder<Navigator> navigator(Builder<Button> upLeft, Builder<Button> upRight, IDrawable main, double buttonsThick, Color background) {
-        return navigator(upLeft == null ? null : upLeft.getChild(), upRight == null ? null : upRight.getChild(), main, buttonsThick, background);
+    public static Builder<Button> button(IDrawable drawable, Consumer<Button> atClick, Consumer<Button> atHold, Supplier<Boolean> disabled) {
+        return new Builder<>(new Button(drawable, atClick, atHold, disabled));
     }
 
-    public static Builder<Navigator> navigator(Button upLeft, Button upRight, IDrawable main, double buttonsThick, Color background) {
-        return new Builder<>(new Navigator(upLeft, upRight, main, buttonsThick, background));
+    public static Builder<Navigator> navigator(Button upLeft, Button upRight, IDrawable main, Supplier<Boolean> visibility, double buttonsThick, Color background) {
+        return new Builder<>(new Navigator(upLeft, upRight, main, visibility, buttonsThick, background));
     }
 
     public static Builder<DrawImage> image(String src) {

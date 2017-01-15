@@ -37,21 +37,19 @@ public class SplitContainer extends DrawableContainer<IDrawable> {
         return xSplit;
     }
 
-    public SplitContainer add(IDrawable drawable) {
-        children.add(drawable);
-        setRedraw();
-        return this;
+    @Override
+    public void add(IDrawable drawable) {
+        super.add(drawable);
     }
 
-    public SplitContainer remove(IDrawable drawable) {
-        children.remove(drawable);
-        setRedraw();
-        return this;
+    @Override
+    public ChangeableValue<IDrawable> get(int index) {
+        return super.get(index);
     }
 
     @Override
     public void forceRedraw(ICanvas canvas) {
-        if (children.isEmpty()) {
+        if (size() == 0) {
             return;
         }
 
@@ -64,10 +62,11 @@ public class SplitContainer extends DrawableContainer<IDrawable> {
         Point dimension = nowXSplit ? Direction.RIGHT.getVector() : Direction.DOWN.getVector();
         Point otherDimension = nowXSplit ? Direction.DOWN.getVector() : Direction.RIGHT.getVector();
 
-        Point elemSize = rectangle.getSize().asPoint().multiple(dimension.multiple(1.0 / children.size()).add(otherDimension));
+        Point elemSize = rectangle.getSize().asPoint().multiple(dimension.multiple(1.0 / size()).add(otherDimension));
 
-        for (int i = 0; i < children.size(); ++i) {
-            if (children.get(i) == null) {
+        for (int i = 0; i < size(); ++i) {
+            IDrawable child = get(i).get();
+            if (child == null) {
                 continue;
             }
 
@@ -76,10 +75,10 @@ public class SplitContainer extends DrawableContainer<IDrawable> {
                     rectangle.getStart()
                             .add(elemSize.multiple(dimension.multiple(i + 1).add(otherDimension))));
             canvas.clip(toDraw);
-            if (forcedRedraw) {
-                children.get(i).forceDraw(canvas);
+            if (forcedRedraw || get(i).isChanged()) {
+                child.forceDraw(canvas);
             } else {
-                children.get(i).draw(canvas);
+                child.draw(canvas);
             }
             canvas.restore();
         }

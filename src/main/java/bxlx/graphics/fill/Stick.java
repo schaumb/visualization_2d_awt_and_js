@@ -81,9 +81,10 @@ public class Stick extends DrawableContainer<IDrawable> {
             )));
         }
 
-        if (children.get(0) == null && forcedRedraw) {
+        IDrawable child0 = get(0).get();
+        if (child0 == null && forcedRedraw) {
             canvas.fill(Arc.circle(center.add(stickVector.multiple(stickThick * 2 / 3 - stickSize / 2)), stickThick * nowThickness / 2));
-        } else if (children.get(0) != null) {
+        } else if (child0 != null) {
             Polygon p = new Polygon(Arrays.asList(
                     center.add(stickVector.multiple(-stickSize / 2)).add(stickThickVector.multiple(stickThick / 2)),
                     center.add(stickVector.multiple(-stickSize / 2)).add(stickThickVector.multiple(-stickThick / 2)),
@@ -92,18 +93,18 @@ public class Stick extends DrawableContainer<IDrawable> {
             ));
             canvas.clip(p.getBoundingRectangle());
 
-            if (forcedRedraw) {
-                children.get(0).forceDraw(canvas);
+            if (forcedRedraw || get(0).isChanged()) {
+                child0.forceDraw(canvas);
             } else {
-                children.get(0).draw(canvas);
+                child0.draw(canvas);
             }
             canvas.restore();
         }
 
-
-        if (children.get(1) == null && forcedRedraw) {
+        IDrawable child1 = get(1).get();
+        if (child1 == null && forcedRedraw) {
             canvas.fill(Arc.circle(center.add(stickVector.multiple(stickSize / 2 - stickThick * 2 / 3)), stickThick * nowThickness / 2));
-        } else if (children.get(1) != null) {
+        } else if (child1 != null) {
             Polygon p = new Polygon(Arrays.asList(
                     center.add(stickVector.multiple(stickSize / 2)).add(stickThickVector.multiple(stickThick / 2)),
                     center.add(stickVector.multiple(stickSize / 2)).add(stickThickVector.multiple(-stickThick / 2)),
@@ -112,10 +113,10 @@ public class Stick extends DrawableContainer<IDrawable> {
             ));
             canvas.clip(p.getBoundingRectangle());
 
-            if (forcedRedraw) {
-                children.get(1).forceDraw(canvas);
+            if (forcedRedraw || get(1).isChanged()) {
+                child1.forceDraw(canvas);
             } else {
-                children.get(1).draw(canvas);
+                child1.draw(canvas);
             }
             canvas.restore();
         }

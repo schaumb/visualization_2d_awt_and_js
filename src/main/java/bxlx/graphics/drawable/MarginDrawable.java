@@ -8,8 +8,8 @@ import bxlx.graphics.shapes.Rectangle;
  * Created by qqcs on 2017.01.09..
  */
 public class MarginDrawable extends ClippedDrawable {
-    private ChangeableValue<Double> marginX; // < 1 -> percent, >=1 -> pixel
-    private ChangeableValue<Double> marginY; // < 1 -> percent, >=1 -> pixel
+    private final ChangeableValue<Double> marginX; // < 1 -> percent, >=1 -> pixel
+    private final ChangeableValue<Double> marginY; // < 1 -> percent, >=1 -> pixel
 
     private void setTheClip() {
         getClip().setElem(rectangle -> {

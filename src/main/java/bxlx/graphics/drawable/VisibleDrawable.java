@@ -8,15 +8,15 @@ import java.util.function.Supplier;
 /**
  * Created by qqcs on 2017.01.09..
  */
-public class VisibleDrawable extends DrawableWrapper {
-    private ChangeableValue<Boolean> visible;
+public class VisibleDrawable extends DrawableWrapper<VisibleDrawable.VisibleDraw> {
+    private final ChangeableValue<Boolean> visible;
 
-    public VisibleDrawable(IDrawable wrapped, boolean visible) {
+    public VisibleDrawable(VisibleDraw wrapped, boolean visible) {
         super(wrapped);
         this.visible = new ChangeableValue<>(this, visible);
     }
 
-    public VisibleDrawable(IDrawable wrapped, Supplier<Boolean> visible) {
+    public VisibleDrawable(VisibleDraw wrapped, Supplier<Boolean> visible) {
         super(wrapped);
         this.visible = new ChangeableValue<>(this, visible);
     }
@@ -27,9 +27,17 @@ public class VisibleDrawable extends DrawableWrapper {
 
     @Override
     public void forceRedraw(ICanvas canvas) {
-        if (!visible.get()) {
+        if (getChild().get() == null)
             return;
+
+        if (visible.get()) {
+            super.forceRedraw(canvas);
+        } else {
+            getChild().get().noVisibleDraw(canvas);
         }
-        super.forceRedraw(canvas);
+    }
+
+    public interface VisibleDraw extends IDrawable {
+        void noVisibleDraw(ICanvas canvas);
     }
 }

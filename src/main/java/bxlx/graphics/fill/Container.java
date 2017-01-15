@@ -26,32 +26,31 @@ public class Container extends DrawableContainer<IDrawable> {
         this.forceRedrawPrevLayer = new ChangeableValue<>(this, forceRedrawPrevLayer);
     }
 
-    public Container add(IDrawable drawable) {
-        children.add(drawable);
-        setRedraw();
-        return this;
+    @Override
+    public void add(IDrawable elem) {
+        super.add(elem);
     }
 
-    public Container remove(IDrawable drawable) {
-        children.remove(drawable);
-        setRedraw();
-        return this;
+    @Override
+    public ChangeableValue<IDrawable> get(int index) {
+        return super.get(index);
     }
 
     @Override
     protected void forceRedraw(ICanvas canvas) {
-        if (children.isEmpty()) {
+        if (size() == 0) {
             return;
         }
 
         boolean forcedRedraw = !needRedraw();
 
-        for (int i = 0; i < children.size(); ++i) {
-            if (children.get(i) == null) {
+        for (int i = 0; i < size(); ++i) {
+            IDrawable child = get(i).get();
+            if (child == null) {
                 continue;
             }
 
-            if (!iChanged() && children.get(i).needRedraw()) {
+            if (!iChanged() && child.needRedraw()) {
                 setRedraw();
                 if (i > 0) {
                     i = Math.max(-1, i - forceRedrawPrevLayer.get() - 1);
@@ -60,9 +59,12 @@ public class Container extends DrawableContainer<IDrawable> {
             }
 
             if (forcedRedraw || iChanged()) {
-                children.get(i).forceDraw(canvas);
+                child.forceDraw(canvas);
+            } else if (get(i).isChanged()) {
+                child.setOnlyForceDraw();
+                child.forceDraw(canvas);
             } else {
-                children.get(i).draw(canvas);
+                child.draw(canvas);
             }
         }
     }

@@ -50,7 +50,7 @@ public abstract class ChangeableDrawable implements IDrawable {
         onlyForceDraw = false;
 
         for (ChangeableValue changeableValue : values) {
-            changeableValue.setChangedToFalse();
+            changeableValue.commit();
         }
     }
 

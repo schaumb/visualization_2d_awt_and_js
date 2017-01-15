@@ -26,6 +26,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.Date;
+import java.util.Objects;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
@@ -196,6 +197,6 @@ public class AwtSystemSpecific extends SystemSpecific {
 
     @Override
     public <T> boolean equals(T first, T second) {
-        return first.equals(second);
+        return Objects.equals(first, second);
     }
 }

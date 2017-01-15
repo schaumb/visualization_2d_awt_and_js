@@ -13,18 +13,12 @@ public abstract class DrawableWrapper<T extends IDrawable> extends DrawableConta
         super(Collections.singletonList(child));
     }
 
-    public T getChild() {
-        return children.get(0);
-    }
-
-    public DrawableWrapper<T> setChild(T child) {
-        children.set(0, child);
-        setRedraw();
-        return this;
+    public ChangeableValue<T> getChild() {
+        return get(0);
     }
 
     @Override
     protected void forceRedraw(ICanvas canvas) {
-        getChild().forceDraw(canvas);
+        getChild().get().forceDraw(canvas);
     }
 }

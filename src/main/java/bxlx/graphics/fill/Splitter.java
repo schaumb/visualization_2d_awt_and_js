@@ -6,8 +6,10 @@ import bxlx.graphics.IDrawable;
 import bxlx.graphics.Point;
 import bxlx.graphics.drawable.DrawableContainer;
 import bxlx.graphics.shapes.Rectangle;
+import bxlx.system.ValueOrSupplier;
 
 import java.util.Arrays;
+import java.util.function.Supplier;
 
 /**
  * Created by qqcs on 2017.01.04..
@@ -17,6 +19,12 @@ public class Splitter extends DrawableContainer<IDrawable> {
     private final ChangeableValue<Double> separate;
 
     public Splitter(boolean xSplit, double separate, IDrawable first, IDrawable second) {
+        super(Arrays.asList(first, second));
+        this.xSplit = new ChangeableValue<>(this, xSplit);
+        this.separate = new ChangeableValue<>(this, separate);
+    }
+
+    public Splitter(boolean xSplit, Supplier<Double> separate, IDrawable first, IDrawable second) {
         super(Arrays.asList(first, second));
         this.xSplit = new ChangeableValue<>(this, xSplit);
         this.separate = new ChangeableValue<>(this, separate);
@@ -62,6 +70,39 @@ public class Splitter extends DrawableContainer<IDrawable> {
 
     }
 
+    public static Splitter threeWaySplit(boolean xSplit, Supplier<Double> centerSeparate,
+                                         IDrawable first, IDrawable center, IDrawable last) {
+        Supplier<Double> sep1 = new ValueOrSupplier<>(centerSeparate)
+                .transform(cSep -> {
+                    if (cSep <= -1) {
+                        return (double) Math.round(-cSep / 2);
+                    } else if (cSep < 0) {
+                        return -cSep / 2;
+                    } else if (cSep < 1) {
+                        return (1 + cSep) / -2;
+                    } else {
+                        return -cSep;
+                    }
+                });
+
+
+        Supplier<Double> sep2 = new ValueOrSupplier<>(centerSeparate)
+                .transform(cSep -> {
+                    if (cSep <= -1) {
+                        return (double) Math.round(cSep / 2);
+                    } else if (cSep < 0) {
+                        return cSep / (2 + cSep);
+                    } else if (cSep < 1) {
+                        return 2 * cSep / (1 + cSep);
+                    } else {
+                        return cSep;
+                    }
+                });
+
+        return new Splitter(xSplit, sep1, first,
+                new Splitter(xSplit, sep2, center, last));
+    }
+
     public ChangeableValue<Boolean> getxSplit() {
         return xSplit;
     }
@@ -70,24 +111,12 @@ public class Splitter extends DrawableContainer<IDrawable> {
         return separate;
     }
 
-    public IDrawable getFirst() {
-        return children.get(0);
+    public ChangeableValue<IDrawable> getFirst() {
+        return get(0);
     }
 
-    public Splitter setFirst(IDrawable first) {
-        children.set(0, first);
-        setRedraw();
-        return this;
-    }
-
-    public IDrawable getSecond() {
-        return children.get(1);
-    }
-
-    public Splitter setSecond(IDrawable second) {
-        children.set(1, second);
-        setRedraw();
-        return this;
+    public ChangeableValue<IDrawable> getSecond() {
+        return get(1);
     }
 
     @Override
@@ -113,28 +142,30 @@ public class Splitter extends DrawableContainer<IDrawable> {
             firstSize = Math.min(firstSize, nowSeparate);
         }
 
-        if (getFirst() != null) {
+        IDrawable child0 = getFirst().get();
+        if (child0 != null) {
             canvas.clip(new Rectangle(
                     rectangle.getStart(),
                     rectangle.getStart().add(dimension.multiple(firstSize))
                             .add(otherDimension.multiple(rectangle.getSize().asPoint()))));
-            if (forcedRedraw) {
-                getFirst().forceDraw(canvas);
+            if (forcedRedraw || getFirst().isChanged()) {
+                child0.forceDraw(canvas);
             } else {
-                getFirst().draw(canvas);
+                child0.draw(canvas);
             }
             canvas.restore();
         }
 
-        if (getSecond() != null) {
+        IDrawable child1 = getSecond().get();
+        if (child1 != null) {
             canvas.clip(new Rectangle(
                     rectangle.getStart().add(dimension.multiple(firstSize)),
                     rectangle.getEnd()));
 
-            if (forcedRedraw) {
-                getSecond().forceDraw(canvas);
+            if (forcedRedraw || getSecond().isChanged()) {
+                child1.forceDraw(canvas);
             } else {
-                getSecond().draw(canvas);
+                child1.draw(canvas);
             }
             canvas.restore();
         }

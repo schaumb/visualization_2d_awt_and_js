@@ -12,6 +12,7 @@ import bxlx.system.MouseInfo;
 import bxlx.system.MyConsumer;
 import bxlx.system.SystemSpecific;
 import bxlx.system.Timer;
+import bxlx.system.ValueOrSupplier;
 
 /**
  * Created by qqcs on 2016.12.24..
@@ -20,7 +21,7 @@ public class TestMain implements IRenderer, IMouseEventListener, MyConsumer<Stri
 
     private ICanvas c;
     private Splitter splitter = new Splitter(true, -200, null,
-            Builder.text("Menu").makeBackgrounded(Color.WHITE));
+            Builder.text("Menu").makeColored(Color.BLUE).makeBackgrounded(Color.WHITE).getChild());
 
     private Timer timer = new Timer(3000);
 
@@ -44,12 +45,21 @@ public class TestMain implements IRenderer, IMouseEventListener, MyConsumer<Stri
         SystemSpecific.get().setMouseEventListenerQueue(this);
         SystemSpecific.get().readTextFileAsync("text2.txt", getAsConsumer());
 
-        splitter.setFirst(Builder.navigator(null,
-                new Button(Builder.text("TODO"), b -> {
-                    splitter.getSeparate().setElem(-200 - splitter.getSeparate().get());
-                    b.setOnlyForceDraw();
-                }, null, null),
-                Builder.imageKeepAspectRatio("kep.jpg", 1, 0), 40, Color.WHITE));
+        ValueOrSupplier<Boolean> visibleNavi = new ValueOrSupplier<>(true);
+
+        Button visibleButton = new Button(Builder.text("HIDE", "MENU").getChild(), b -> {
+            visibleNavi.setElem(!visibleNavi.get());
+            splitter.getFirst().get().setOnlyForceDraw();
+            splitter.setRedraw();
+        }, null, null);
+
+        Button menuButton = new Button(Builder.text("MENU").getChild(), b -> {
+            splitter.getSeparate().setElem(-200 - splitter.getSeparate().get());
+            splitter.getFirst().get().setOnlyForceDraw();
+        }, null, null);
+
+        splitter.getFirst().setElem(Builder.navigator(visibleButton, menuButton,
+                Builder.imageKeepAspectRatio("kep.jpg", 1, 0).getChild(), visibleNavi.getAsSupplier(), 40, Color.WHITE).getChild());
         SystemSpecific.get().setDrawFunction(this);
     }
 
