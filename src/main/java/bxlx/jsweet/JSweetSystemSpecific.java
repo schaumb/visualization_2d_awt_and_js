@@ -4,7 +4,6 @@ import bxlx.graphics.ImageCaches;
 import bxlx.graphics.Point;
 import bxlx.graphics.Size;
 import bxlx.system.CommonError;
-import bxlx.system.Consumer;
 import bxlx.system.IMouseEventListener;
 import bxlx.system.IRenderer;
 import bxlx.system.SystemSpecific;
@@ -17,6 +16,7 @@ import jsweet.lang.Date;
 import jsweet.util.StringTypes;
 
 import java.util.HashSet;
+import java.util.function.Consumer;
 
 import static jsweet.dom.Globals.console;
 import static jsweet.dom.Globals.document;
@@ -190,5 +190,10 @@ public class JSweetSystemSpecific extends SystemSpecific {
             musicCache.get(src);
             return null;
         }
+    }
+
+    @Override
+    public <T> boolean equals(T first, T second) {
+        return first == second;
     }
 }

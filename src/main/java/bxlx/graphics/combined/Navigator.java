@@ -5,9 +5,12 @@ import bxlx.graphics.ICanvas;
 import bxlx.graphics.IDrawable;
 import bxlx.graphics.Point;
 import bxlx.graphics.Size;
+import bxlx.graphics.drawable.ColoredDrawable;
 import bxlx.graphics.drawable.DrawableWrapper;
+import bxlx.graphics.drawable.MarginDrawable;
 import bxlx.graphics.fill.Container;
 import bxlx.graphics.fill.DrawNGon;
+import bxlx.graphics.fill.DrawRectangle;
 import bxlx.graphics.fill.Magnifying;
 import bxlx.graphics.fill.Splitter;
 import bxlx.graphics.fill.Stick;
@@ -23,7 +26,7 @@ public class Navigator extends DrawableWrapper<Container> {
         if (button == null) {
             return null;
         }
-        return Builder.make(button).makeMargin(3);
+        return new MarginDrawable(button, 3);
     }
 
     private final WrapperClass mainWrapper;
@@ -32,29 +35,29 @@ public class Navigator extends DrawableWrapper<Container> {
     private double shiftY = 0;
 
     public Navigator(Button upLeft, Button upRight, IDrawable main, double buttonsThick, Color background) {
-        super(Builder.container().getChild());
+        super(new Container());
 
-        getChild().add(Builder.background().makeColored(background));
+        getChild().add(new ColoredDrawable(new DrawRectangle(), background));
         getChild().add(
                 Splitter.threeWaySplit(false, -buttonsThick * 2,
                         Splitter.threeWaySplit(true, -buttonsThick * 2,
                                 makeButton(upLeft),
                                 makeButton(new Button(new DrawNGon(3, Math.PI / 2, true),
-                                        null, () -> up(), () -> shiftY <= 0)),
+                                        null, b -> up(), () -> shiftY <= 0)),
                                 makeButton(upRight)),
                         Splitter.threeWaySplit(true, -buttonsThick * 2,
                                 makeButton(new Button(new DrawNGon(3, Math.PI, true),
-                                        null, () -> left(), () -> shiftX <= 0)),
+                                        null, b -> left(), () -> shiftX <= 0)),
                                 mainWrapper = new WrapperClass(main),
                                 makeButton(new Button(new DrawNGon(3, 0, true),
-                                        null, () -> right(), () -> zoom - 1 <= shiftX))),
+                                        null, b -> right(), () -> zoom - 1 <= shiftX))),
                         Splitter.threeWaySplit(true, -buttonsThick * 2,
                                 makeButton(new Button(new Stick(Math.PI / 3, 0.4, 0.7, null, new Magnifying(false)),
-                                        null, () -> zoomOut(), () -> zoom <= 1)),
+                                        null, b -> zoomOut(), () -> zoom <= 1)),
                                 makeButton(new Button(new DrawNGon(3, -Math.PI / 2, true),
-                                        null, () -> down(), () -> zoom - 1 <= shiftY)),
+                                        null, b -> down(), () -> zoom - 1 <= shiftY)),
                                 makeButton(new Button(new Stick(Math.PI / 3, 0.4, 0.7, null, new Magnifying(true)),
-                                        null, () -> zoomIn(), null)))
+                                        null, b -> zoomIn(), null)))
                 )
         );
     }

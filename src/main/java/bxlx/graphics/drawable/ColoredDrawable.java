@@ -1,34 +1,36 @@
 package bxlx.graphics.drawable;
 
+import bxlx.graphics.ChangeableDrawable;
 import bxlx.graphics.Color;
 import bxlx.graphics.ICanvas;
 import bxlx.graphics.IDrawable;
+
+import java.util.function.Supplier;
 
 /**
  * Created by qqcs on 2017.01.09..
  */
 public class ColoredDrawable extends DrawableWrapper {
-    private Color nowColor;
+    private ChangeableDrawable.ChangeableValue<Color> color;
 
     public ColoredDrawable(IDrawable wrapped, Color color) {
         super(wrapped);
-        nowColor = color;
+        this.color = new ChangeableDrawable.ChangeableValue<>(this, color);
     }
 
-    public ColoredDrawable setColor(Color color) {
-        this.nowColor = color;
-        setRedraw();
-        return this;
+    public ColoredDrawable(IDrawable wrapped, Supplier<Color> color) {
+        super(wrapped);
+        this.color = new ChangeableDrawable.ChangeableValue<>(this, color);
     }
 
-    public Color getColor() {
-        return nowColor;
+    public ChangeableDrawable.ChangeableValue<Color> getColor() {
+        return color;
     }
 
     @Override
     public void forceRedraw(ICanvas canvas) {
         Color tmp = canvas.getColor();
-        canvas.setColor(nowColor);
+        canvas.setColor(color.get());
         super.forceRedraw(canvas);
         canvas.setColor(tmp);
     }

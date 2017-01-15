@@ -42,6 +42,10 @@ public class AspectRatioDrawable extends ClippedDrawable {
         this(wrapped, () -> 1.0);
     }
 
+    public AspectRatioDrawable(IDrawable wrapped, double ratio) {
+        this(wrapped, () -> ratio);
+    }
+
     public AspectRatioDrawable(IDrawable wrapped, Supplier<Double> ratio) {
         this(wrapped, 0, 0, ratio);
     }

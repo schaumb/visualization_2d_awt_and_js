@@ -4,6 +4,7 @@ import bxlx.graphics.ICanvas;
 import bxlx.graphics.IDrawable;
 import bxlx.graphics.drawable.DrawableContainer;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -11,6 +12,10 @@ import java.util.List;
  */
 public class Container extends DrawableContainer<IDrawable> {
     private final int forceRedrawPrevLayer;
+
+    public Container() {
+        this(new ArrayList<>());
+    }
 
     public Container(List<IDrawable> children) {
         this(children, 0);

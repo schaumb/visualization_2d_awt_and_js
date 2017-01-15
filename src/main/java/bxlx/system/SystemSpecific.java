@@ -4,6 +4,7 @@ import bxlx.graphics.Size;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Consumer;
 
 /**
  * Created by qqcs on 2016.12.23..
@@ -62,4 +63,6 @@ public abstract class SystemSpecific {
     public final boolean isRendering() {
         return rendering;
     }
+
+    abstract public <T> boolean equals(T first, T second);
 }

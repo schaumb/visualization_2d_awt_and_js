@@ -1,6 +1,5 @@
 package bxlx.graphics.drawable;
 
-import bxlx.graphics.ICanvas;
 import bxlx.graphics.IDrawable;
 import bxlx.graphics.Point;
 import bxlx.graphics.shapes.Rectangle;
@@ -57,14 +56,5 @@ public class MarginDrawable extends ClippedDrawable {
         this.marginY = marginY;
         setClip(marginMake(marginX, marginY));
         return this;
-    }
-
-    @Override
-    public void forceRedraw(ICanvas canvas) {
-        Rectangle rectangle = canvas.getBoundingRectangle();
-
-        canvas.clip(rectangle);
-        super.forceRedraw(canvas);
-        canvas.restore();
     }
 }

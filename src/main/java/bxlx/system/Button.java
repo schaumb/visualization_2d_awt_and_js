@@ -6,10 +6,10 @@ import bxlx.graphics.IDrawable;
 import bxlx.graphics.Point;
 import bxlx.graphics.drawable.DrawableContainer;
 import bxlx.graphics.fill.Rect;
-import bxlx.graphics.fill.Text;
 import bxlx.graphics.shapes.Rectangle;
 
-import java.util.Collections;
+import java.util.ArrayList;
+import java.util.function.Consumer;
 import java.util.function.Supplier;
 
 /**
@@ -21,18 +21,15 @@ public class Button extends DrawableContainer<IDrawable> implements IMouseEventL
     private boolean wasDisabled = false;
     private Rectangle lastRectangle = Rectangle.NULL_RECTANGLE;
     private final Rect rect = new Rect();
-    private Runnable atClick;
-    private Runnable atHold;
+    private Consumer<Button> atClick;
+    private Consumer<Button> atHold;
     private Supplier<Boolean> disabled;
     private Timer holdTimer;
 
-
-    public Button(String text, Runnable atClick, Runnable atHold, Supplier<Boolean> disabled) {
-        this(new Text(text), atClick, atHold, disabled);
-    }
-
-    public Button(IDrawable drawable, Runnable atClick, Runnable atHold, Supplier<Boolean> disabled) {
-        super(Collections.singletonList(drawable));
+    public Button(IDrawable drawable, Consumer<Button> atClick, Consumer<Button> atHold, Supplier<Boolean> disabled) {
+        super(new ArrayList<>());
+        children.add(rect);
+        children.add(drawable);
         this.atClick = atClick;
         this.atHold = atHold;
         this.disabled = disabled;
@@ -75,17 +72,17 @@ public class Button extends DrawableContainer<IDrawable> implements IMouseEventL
 
         if (holdTimer != null && holdTimer.elapsed()) {
             holdTimer.setLength(100).setStart();
-            atHold.run();
+            atHold.accept(this);
         }
 
-        rect.forceDraw(canvas);
+        children.get(0).forceDraw(canvas);
 
         canvas.setColor(wasDisabled ? Color.WHITE : Color.BLACK);
         canvas.clip(new Rectangle(
                 canvas.getBoundingRectangle().getStart().add(canvas.getBoundingRectangle().getSize().asPoint().multiple(1 / 16.0)),
                 canvas.getBoundingRectangle().getStart().add(canvas.getBoundingRectangle().getSize().asPoint().multiple(15 / 16.0))
         ));
-        children.get(0).forceDraw(canvas);
+        children.get(1).forceDraw(canvas);
         canvas.restore();
 
         lastRectangle = canvas.getBoundingRectangle();
@@ -104,7 +101,7 @@ public class Button extends DrawableContainer<IDrawable> implements IMouseEventL
         if (!isDisabled() && isInside(lastRectangle, where, leftButton)) {
             setRedraw();
             if (atClick != null) {
-                atClick.run();
+                atClick.accept(this);
             }
             holdTimer = null;
         }
@@ -126,7 +123,7 @@ public class Button extends DrawableContainer<IDrawable> implements IMouseEventL
         if (!isDisabled() && isInside(lastRectangle, where, leftButton)) {
             setRedraw();
             if (atHold != null) {
-                atHold.run();
+                atHold.accept(this);
                 holdTimer = new Timer(300);
             }
         }

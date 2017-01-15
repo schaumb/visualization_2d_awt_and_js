@@ -3,7 +3,6 @@ package bxlx.awt;
 import bxlx.graphics.Point;
 import bxlx.graphics.Size;
 import bxlx.system.CommonError;
-import bxlx.system.Consumer;
 import bxlx.system.IMouseEventListener;
 import bxlx.system.IRenderer;
 import bxlx.system.SystemSpecific;
@@ -27,6 +26,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.Date;
+import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 /**
@@ -192,5 +192,10 @@ public class AwtSystemSpecific extends SystemSpecific {
         }
 
         return null;
+    }
+
+    @Override
+    public <T> boolean equals(T first, T second) {
+        return first.equals(second);
     }
 }
