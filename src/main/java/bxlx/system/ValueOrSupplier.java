@@ -45,11 +45,14 @@ public class ValueOrSupplier<T> {
 
     public Supplier<T> transform(Function<T, T> trans) {
         return new ValueOrSupplier<T>((T) null) {
-            private T cache = trans.apply(ValueOrSupplier.this.get());
+            private T lastGet = ValueOrSupplier.this.get();
+            private T tmpGet;
+            private T cache = trans.apply(lastGet);
 
             @Override
             public T get() {
-                return ValueOrSupplier.this.isChanged() ? cache = trans.apply(ValueOrSupplier.this.get()) : cache;
+                return !SystemSpecific.get().equals(lastGet, tmpGet = ValueOrSupplier.this.get()) ?
+                        cache = trans.apply(lastGet = tmpGet) : cache;
             }
         }.getAsSupplier();
     }

@@ -26,12 +26,21 @@ public class VisibleDrawable extends DrawableWrapper<VisibleDrawable.VisibleDraw
     }
 
     @Override
+    public boolean childrenChanged() {
+        return visible.get() && super.childrenChanged();
+    }
+
+    @Override
     public void forceRedraw(ICanvas canvas) {
         if (getChild().get() == null)
             return;
 
         if (visible.get()) {
-            super.forceRedraw(canvas);
+            if(!needRedraw() || iChanged()) {
+                super.forceRedraw(canvas);
+            } else {
+                getChild().get().draw(canvas);
+            }
         } else {
             getChild().get().noVisibleDraw(canvas);
         }

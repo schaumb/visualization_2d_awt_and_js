@@ -73,6 +73,14 @@ public class Button extends DrawableContainer<IDrawable> implements IMouseEventL
         boolean nowDisabled = disabled.get();
         boolean nowInside = inside.get();
 
+        if((!nowDisabled && inside.isChanged()) || disabled.isChanged() || !needRedraw() || childrenChanged()) {
+            get(0).get().forceDraw(canvas);
+            get(1).get().forceDraw(canvas);
+        }
+
+        lastRectangle = canvas.getBoundingRectangle();
+        isVisible = true;
+
         if (!nowDisabled && nowInside) {
             Consumer<Button> hold = atHold.get();
             if (hold != null && holdTimer != null && holdTimer.elapsed()) {
@@ -82,12 +90,6 @@ public class Button extends DrawableContainer<IDrawable> implements IMouseEventL
         } else {
             holdTimer = null;
         }
-
-        get(0).get().forceDraw(canvas);
-        get(1).get().forceDraw(canvas);
-
-        lastRectangle = canvas.getBoundingRectangle();
-        isVisible = true;
     }
 
     public Supplier<Rectangle> getLastRectangle() {

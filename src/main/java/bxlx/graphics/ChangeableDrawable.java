@@ -51,12 +51,14 @@ public abstract class ChangeableDrawable implements IDrawable {
                 !VisibleDrawable.class.isInstance(this) &&
                 !AspectRatioDrawable.class.isInstance(this) &&
                 !MarginDrawable.class.isInstance(this) &&
-                !ColoredDrawable.class.isInstance(this) &&
                 !ClippedDrawable.class.isInstance(this) &&
                 !Navigator.class.getDeclaredClasses()[0].isInstance(this)) {
             String msg = "";
             if (Text.class.isInstance(this)) {
                 msg += ((Text) this).getText().get();
+            }
+            if(ColoredDrawable.class.isInstance(this)) {
+                msg += ((ColoredDrawable) this).getColor().get().toString();
             }
             SystemSpecific.get().log("ForceRedraw " + this.getClass().getName() + " " + msg);
         }

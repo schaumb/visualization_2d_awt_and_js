@@ -1,7 +1,7 @@
 package bxlx.graphics.fill;
 
+import bxlx.graphics.ChangeableDrawable;
 import bxlx.graphics.ICanvas;
-import bxlx.graphics.IDrawable;
 import bxlx.graphics.Point;
 import bxlx.graphics.shapes.Arc;
 import bxlx.graphics.shapes.Rectangle;
@@ -9,31 +9,30 @@ import bxlx.graphics.shapes.Rectangle;
 /**
  * Created by qqcs on 2016.12.24..
  */
-public class Rect implements IDrawable {
-    private final double rate;
+public class Rect extends ChangeableDrawable {
+    private final ChangeableValue<Double> rate;
 
     public Rect() {
         this(1 / 3.0);
     }
 
     public Rect(double rate) {
-        this.rate = rate;
+        this.rate = new ChangeableValue<>(this, rate);
+    }
+
+    public ChangeableValue<Double> getRate() {
+        return rate;
     }
 
     @Override
-    public boolean needRedraw() {
-        return false;
-    }
-
-    @Override
-    public void forceDraw(ICanvas canvas) {
+    public void forceRedraw(ICanvas canvas) {
         Rectangle bounds = canvas.getBoundingRectangle();
 
         if (bounds.getSize().getWidth() <= 0 || bounds.getSize().getHeight() <= 0) {
             return;
         }
 
-        double circles = bounds.getSize().getShorterDimension() * rate;
+        double circles = bounds.getSize().getShorterDimension() * rate.get();
 
         canvas.fill(Arc.circle(bounds.getStart().add(circles), circles));
         canvas.fill(Arc.circle(bounds.getStart().add(new Point(circles, bounds.getSize().getHeight() - circles)), circles));
@@ -50,7 +49,7 @@ public class Rect implements IDrawable {
             return false;
         }
 
-        double circles = bounds.getSize().getShorterDimension() * rate;
+        double circles = bounds.getSize().getShorterDimension() * rate.get();
 
         return new Rectangle(bounds.getStart().add(new Point(circles, 0)), bounds.getStart().add(bounds.getSize().asPoint()).add(new Point(-circles, 0))).isContains(point)
                 || new Rectangle(bounds.getStart().add(new Point(0, circles)), bounds.getStart().add(bounds.getSize().asPoint()).add(new Point(0, -circles))).isContains(point)
