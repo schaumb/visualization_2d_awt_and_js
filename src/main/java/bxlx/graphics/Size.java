@@ -12,6 +12,8 @@ public class Size {
         this.height = height;
     }
 
+    public static final Size NULL = square(0);
+
     public static Size square(double size) {
         return new Size(size, size);
     }

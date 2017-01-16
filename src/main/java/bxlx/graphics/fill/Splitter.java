@@ -157,7 +157,7 @@ public class Splitter extends DrawableContainer<IDrawable> {
         }
 
         IDrawable child1 = getSecond().get();
-        if (child1 != null) {
+        if (nowSeparate != 0 && child1 != null) {
             canvas.clip(new Rectangle(
                     rectangle.getStart().add(dimension.multiple(firstSize)),
                     rectangle.getEnd()));

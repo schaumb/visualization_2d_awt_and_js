@@ -12,6 +12,7 @@ import javax.media.Manager;
 import javax.media.MediaLocator;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
+import javax.swing.WindowConstants;
 import java.awt.EventQueue;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
@@ -59,9 +60,8 @@ public class AwtSystemSpecific extends SystemSpecific {
         this.renderer = renderer;
         if (frame == null) {
             frame = new JFrame();
-            frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+            frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
             frame.setSize(400, 500);
-            frame.setVisible(true);
             frame.addComponentListener(new ComponentAdapter() {
                 public void componentResized(ComponentEvent e) {
                     if (!isRendering()) {
@@ -99,6 +99,7 @@ public class AwtSystemSpecific extends SystemSpecific {
                     }
                 }
             });
+            frame.setVisible(true);
             setMouseEventListeners();
         }
         if (!isRendering()) {
@@ -189,6 +190,9 @@ public class AwtSystemSpecific extends SystemSpecific {
     public Size preLoad(String src, boolean img) {
         if (img) {
             BufferedImage imgBuff = GraphicsCanvas.imageCaches.get(src);
+            if (imgBuff == null) {
+                return Size.NULL;
+            }
             return new Size(imgBuff.getWidth(), imgBuff.getHeight());
         }
 
