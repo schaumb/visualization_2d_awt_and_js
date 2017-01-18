@@ -43,17 +43,20 @@ public class ValueOrSupplier<T> {
         return supplier == null ? lastGetElem : (lastGetElem = supplier.get());
     }
 
-    public Supplier<T> transform(Function<T, T> trans) {
-        return new ValueOrSupplier<T>((T) null) {
-            private T lastGet = ValueOrSupplier.this.get();
-            private T tmpGet;
-            private T cache = trans.apply(lastGet);
+    public static class Transform<T, U> {
+        public Supplier<U> transform(ValueOrSupplier<T> supplier, Function<T, U> trans) {
+            final Supplier<T> suppl = supplier.getAsSupplier();
+            return new ValueOrSupplier<U>((U) null) {
+                private T lastGet = suppl.get();
+                private T tmpGet;
+                private U cache = trans.apply(lastGet);
 
-            @Override
-            public T get() {
-                return !SystemSpecific.get().equals(lastGet, tmpGet = ValueOrSupplier.this.get()) ?
-                        cache = trans.apply(lastGet = tmpGet) : cache;
-            }
-        }.getAsSupplier();
+                @Override
+                public U get() {
+                    return !SystemSpecific.get().equals(lastGet, tmpGet = suppl.get()) ?
+                            cache = trans.apply(lastGet = tmpGet) : cache;
+                }
+            }.getAsSupplier();
+        }
     }
 }

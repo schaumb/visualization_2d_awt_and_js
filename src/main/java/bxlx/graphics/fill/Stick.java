@@ -25,6 +25,7 @@ public class Stick extends DrawableContainer<IDrawable> {
         this.angle = new ChangeableValue<>(this, angle);
         this.length = new ChangeableValue<>(this, length);
         this.thickness = new ChangeableValue<>(this, thickness);
+
     }
 
     public ChangeableValue<Double> getAngle() {
@@ -121,6 +122,40 @@ public class Stick extends DrawableContainer<IDrawable> {
             }
             canvas.restore();
         }
+    }
+
+    public Rectangle getBoundingRectangle(Rectangle bound) {
+        double nowAngle = angle.get();
+        double nowLength = length.get();
+
+        Point center = bound.getCenter();
+        Size size = bound.getSize();
+
+        double sizeRad = new Direction(size.asPoint()).toRadian();
+
+        double diagonalAngle1 = nowAngle + Math.atan(nowLength);
+        double diagonalAngle2 = -nowAngle + Math.atan(nowLength);
+        double diagonalReferenceRad1 = new Direction(Direction.fromRadian(diagonalAngle1).getVector().abs()).toRadian();
+        double diagonalReferenceRad2 = new Direction(Direction.fromRadian(diagonalAngle2).getVector().abs()).toRadian();
+
+        double stickDiagonalSize1 = diagonalReferenceRad1 > sizeRad ? size.getWidth() / Math.cos(diagonalAngle1) :
+                size.getHeight() / Math.sin(diagonalAngle1);
+
+        double stickDiagonalSize2 = diagonalReferenceRad2 > sizeRad ? size.getWidth() / Math.cos(diagonalAngle2) :
+                size.getHeight() / Math.sin(diagonalAngle2);
+
+        double stickDiagonalSize = Math.min(Math.abs(stickDiagonalSize1), Math.abs(stickDiagonalSize2));
+        double stickSize = stickDiagonalSize / Math.sqrt(1 + nowLength * nowLength);
+        double stickThick = stickSize * nowLength;
+
+        Point stickVector = Direction.fromRadian(nowAngle).getVector().norm();
+        Point stickThickVector = new Point(-stickVector.getY(), stickVector.getX()).norm();
+
+        return new Polygon(Arrays.asList(
+                center.add(stickVector.multiple(stickSize / 2)).add(stickThickVector.multiple(stickThick / 2)),
+                center.add(stickVector.multiple(stickSize / 2)).add(stickThickVector.multiple(-stickThick / 2)),
+                center.add(stickVector.multiple(-stickSize / 2)).add(stickThickVector.multiple(stickThick / 2)),
+                center.add(stickVector.multiple(-stickSize / 2)).add(stickThickVector.multiple(-stickThick / 2)))).getBoundingRectangle();
     }
 
     @Override

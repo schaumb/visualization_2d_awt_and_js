@@ -27,8 +27,9 @@ public class Container extends DrawableContainer<IDrawable> {
     }
 
     @Override
-    public void add(IDrawable elem) {
+    public Container add(IDrawable elem) {
         super.add(elem);
+        return this;
     }
 
     @Override
@@ -38,7 +39,7 @@ public class Container extends DrawableContainer<IDrawable> {
 
     @Override
     protected boolean parentRedrawSatisfy() {
-        return true;
+        return forceRedrawPrevLayer.get() > 0;
     }
 
     @Override

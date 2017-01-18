@@ -18,8 +18,11 @@ import bxlx.graphics.fill.Splitter;
 import bxlx.graphics.fill.Stick;
 import bxlx.graphics.fill.Text;
 import bxlx.graphics.shapes.Rectangle;
-import bxlx.system.Button;
+import bxlx.system.input.Button;
+import bxlx.system.input.DiscreteSlider;
+import bxlx.system.input.Slider;
 
+import java.util.ArrayList;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 import java.util.function.UnaryOperator;
@@ -30,7 +33,7 @@ import java.util.function.UnaryOperator;
 public class Builder<T extends IDrawable> {
     private T wrapped;
 
-    private Builder(T wrapped) {
+    public Builder(T wrapped) {
         this.wrapped = wrapped;
     }
 
@@ -46,7 +49,11 @@ public class Builder<T extends IDrawable> {
     }
 
     public Builder<ColoredDrawable> makeColored(Color color) {
-        return new Builder<>(new ColoredDrawable(get(), color));
+        return new Builder<>(new ColoredDrawable<>(get(), color));
+    }
+
+    public Builder<ColoredDrawable> makeColored(Supplier<Color> color) {
+        return new Builder<>(new ColoredDrawable<>(get(), color));
     }
 
     public Builder<MarginDrawable> makeMargin(double margin) {
@@ -54,7 +61,11 @@ public class Builder<T extends IDrawable> {
     }
 
     public Builder<MarginDrawable> makeMargin(double marginX, double marginY) {
-        return new Builder<>(new MarginDrawable(get(), marginX, marginY));
+        return new Builder<>(new MarginDrawable<>(get(), marginX, marginY));
+    }
+
+    public Builder<MarginDrawable> makeMargin(Supplier<Double> marginX, Supplier<Double> marginY) {
+        return new Builder<>(new MarginDrawable<>(get(), marginX, marginY));
     }
 
     public Builder<AspectRatioDrawable> makeSquare(int alignX, int alignY) {
@@ -66,27 +77,27 @@ public class Builder<T extends IDrawable> {
     }
 
     public Builder<AspectRatioDrawable> makeAspect(int alignX, int alignY, Supplier<Double> ratio) {
-        return new Builder<>(new AspectRatioDrawable(get(), alignX, alignY, ratio));
+        return new Builder<>(new AspectRatioDrawable<>(get(), false, alignX, alignY, ratio));
     }
 
     public Builder<ClippedDrawable> makeClipped(UnaryOperator<Rectangle> clip) {
-        return new Builder<>(new ClippedDrawable(get(), clip));
+        return new Builder<>(new ClippedDrawable<>(get(), false, clip));
     }
 
     public static <T extends VisibleDrawable.VisibleDraw> Builder<VisibleDrawable> makeVisible(
             Builder<T> builder,
             boolean visibility) {
-        return new Builder<>(new VisibleDrawable(builder.get(), visibility));
+        return new Builder<>(new VisibleDrawable<>(builder.get(), visibility));
     }
 
     public static <T extends VisibleDrawable.VisibleDraw> Builder<VisibleDrawable> makeVisible(
             Builder<T> builder,
             Supplier<Boolean> visibility) {
-        return new Builder<>(new VisibleDrawable(builder.get(), visibility));
+        return new Builder<>(new VisibleDrawable<>(builder.get(), visibility));
     }
 
     public Builder<Container> makeBackgrounded(Color color) {
-        Builder<Container> result = container();
+        Builder<Container> result = new Builder<>(new Container(new ArrayList<>(), 1));
         result.get().add(background().makeColored(color).get());
         result.get().add(get());
         return result;
@@ -149,6 +160,14 @@ public class Builder<T extends IDrawable> {
         return new Builder<>(new Button(drawable, atClick, atHold, disabled));
     }
 
+    public static Builder<Slider> slider(boolean xDraw, double start, Color bg, Supplier<Boolean> disabled) {
+        return new Builder<>(new Slider(xDraw, start, bg, disabled));
+    }
+
+    public static Builder<DiscreteSlider> discreteSlider(boolean xDraw, Color bg, int from, int to, int now, Supplier<Boolean> disabled) {
+        return new Builder<>(new DiscreteSlider(xDraw, bg, from, to, now, disabled));
+    }
+
     public static Builder<Navigator> navigator(Button upLeft, Button upRight, IDrawable main, Supplier<Boolean> visibility, double buttonsThick, Color background) {
         return new Builder<>(new Navigator(upLeft, upRight, main, visibility, buttonsThick, background));
     }
@@ -159,6 +178,6 @@ public class Builder<T extends IDrawable> {
 
     public static Builder<AspectRatioDrawable> imageKeepAspectRatio(String src, int alignX, int alignY) {
         DrawImage img = new DrawImage(src);
-        return new Builder<>(new AspectRatioDrawable(img, alignX, alignY, () -> img.getOriginalAspectRatio()));
+        return new Builder<>(new AspectRatioDrawable<>(img, false, alignX, alignY, () -> img.getOriginalAspectRatio()));
     }
 }

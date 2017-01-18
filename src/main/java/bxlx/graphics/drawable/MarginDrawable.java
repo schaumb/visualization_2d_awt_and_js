@@ -4,10 +4,12 @@ import bxlx.graphics.IDrawable;
 import bxlx.graphics.Point;
 import bxlx.graphics.shapes.Rectangle;
 
+import java.util.function.Supplier;
+
 /**
  * Created by qqcs on 2017.01.09..
  */
-public class MarginDrawable extends ClippedDrawable {
+public class MarginDrawable<T extends IDrawable> extends ClippedDrawable<T> {
     private final ChangeableValue<Double> marginX; // < 1 -> percent, >=1 -> pixel
     private final ChangeableValue<Double> marginY; // < 1 -> percent, >=1 -> pixel
 
@@ -24,18 +26,25 @@ public class MarginDrawable extends ClippedDrawable {
         });
     }
 
-    public MarginDrawable(IDrawable wrapped, double marginX, double marginY) {
-        super(wrapped, null);
+    public MarginDrawable(T wrapped, Supplier<Double> marginX, Supplier<Double> marginY) {
+        super(wrapped, false, null);
         this.marginX = new ChangeableValue<>(this, marginX);
         this.marginY = new ChangeableValue<>(this, marginY);
         setTheClip();
     }
 
-    public MarginDrawable(IDrawable wrapped, double margin) {
+    public MarginDrawable(T wrapped, double marginX, double marginY) {
+        super(wrapped, false, null);
+        this.marginX = new ChangeableValue<>(this, marginX);
+        this.marginY = new ChangeableValue<>(this, marginY);
+        setTheClip();
+    }
+
+    public MarginDrawable(T wrapped, double margin) {
         this(wrapped, margin, margin);
     }
 
-    public MarginDrawable(IDrawable wrapped) {
+    public MarginDrawable(T wrapped) {
         this(wrapped, 0);
     }
 

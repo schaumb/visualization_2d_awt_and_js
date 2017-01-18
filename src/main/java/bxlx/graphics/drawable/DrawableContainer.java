@@ -31,12 +31,14 @@ public abstract class DrawableContainer<T extends IDrawable> extends ChangeableD
         return super.needRedraw();
     }
 
-    protected void add(T elem) {
+    protected DrawableContainer<T> add(T elem) {
         children.add(new ChangeableValue<>(this, elem));
+        return this;
     }
 
-    protected void add(Supplier<T> elem) {
+    protected DrawableContainer<T> add(Supplier<T> elem) {
         children.add(new ChangeableValue<>(this, elem));
+        return this;
     }
 
     protected ChangeableValue<T> get(int index) {

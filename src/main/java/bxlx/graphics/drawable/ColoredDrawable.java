@@ -9,15 +9,15 @@ import java.util.function.Supplier;
 /**
  * Created by qqcs on 2017.01.09..
  */
-public class ColoredDrawable extends DrawableWrapper {
+public class ColoredDrawable<T extends IDrawable> extends DrawableWrapper<T> {
     private final ChangeableValue<Color> color;
 
-    public ColoredDrawable(IDrawable wrapped, Color color) {
+    public ColoredDrawable(T wrapped, Color color) {
         super(wrapped);
         this.color = new ChangeableValue<>(this, color);
     }
 
-    public ColoredDrawable(IDrawable wrapped, Supplier<Color> color) {
+    public ColoredDrawable(T wrapped, Supplier<Color> color) {
         super(wrapped);
         this.color = new ChangeableValue<>(this, color);
     }

@@ -1,17 +1,15 @@
 package bxlx.graphics.combined;
 
-import bxlx.graphics.ChangeableDrawable;
 import bxlx.graphics.Color;
 import bxlx.graphics.Direction;
-import bxlx.graphics.ICanvas;
 import bxlx.graphics.IDrawable;
 import bxlx.graphics.Point;
 import bxlx.graphics.Size;
 import bxlx.graphics.drawable.ColoredDrawable;
 import bxlx.graphics.drawable.DrawableWrapper;
-import bxlx.graphics.drawable.FakeZoomDrawable;
 import bxlx.graphics.drawable.MarginDrawable;
 import bxlx.graphics.drawable.VisibleDrawable;
+import bxlx.graphics.drawable.ZoomDrawable;
 import bxlx.graphics.fill.Container;
 import bxlx.graphics.fill.DrawNGon;
 import bxlx.graphics.fill.DrawRectangle;
@@ -19,8 +17,8 @@ import bxlx.graphics.fill.Magnifying;
 import bxlx.graphics.fill.Splitter;
 import bxlx.graphics.fill.Stick;
 import bxlx.graphics.shapes.Rectangle;
-import bxlx.system.Button;
 import bxlx.system.MouseInfo;
+import bxlx.system.input.Button;
 
 import java.util.ArrayList;
 import java.util.function.Supplier;
@@ -34,19 +32,23 @@ public class Navigator extends DrawableWrapper<Container> {
         if (drawable == null) {
             return null;
         }
-        return new MarginDrawable(drawable, 3);
+        return new MarginDrawable<>(drawable, 3);
     }
 
     private double zoom = 1;
     private double shiftX = 0;
     private double shiftY = 0;
 
+    private final DrawableWrapper<IDrawable> mainWrapper;
+    private final DrawableWrapper<Button> upLeftWrapper;
+    private final DrawableWrapper<Button> upRightWrapper;
+
     public Navigator(Button upLeft, Button upRight, IDrawable main, Supplier<Boolean> visibility, double buttonsThick, Color background) {
         super(new Container(new ArrayList<>(), 2));
 
         Supplier<Double> buttThick = () -> visibility.get() ? -buttonsThick * 2 : 0;
 
-        getChild().get().add(new ColoredDrawable(new DrawRectangle(), background));
+        getChild().get().add(new ColoredDrawable<>(new DrawRectangle(), background));
         getChild().get().add(
                 Splitter.threeWaySplit(false, buttThick,
                         Splitter.threeWaySplit(true, buttThick,
@@ -57,7 +59,7 @@ public class Navigator extends DrawableWrapper<Container> {
                         Splitter.threeWaySplit(true, buttThick,
                                 makeMargin(new Button(new DrawNGon(3, Math.PI, true),
                                         null, b -> left(), () -> shiftX <= 0)),
-                                new FakeZoomDrawable(main, () -> zoom, () -> shiftX, () -> shiftY),
+                                mainWrapper = new ZoomDrawable<>(main, true, () -> zoom, () -> -shiftX, () -> -shiftY),
                                 makeMargin(new Button(new DrawNGon(3, 0, true),
                                         null, b -> right(), () -> zoom - 1 <= shiftX))),
                         Splitter.threeWaySplit(true, buttThick,
@@ -71,7 +73,7 @@ public class Navigator extends DrawableWrapper<Container> {
         );
         getChild().get().add(Splitter.threeWaySplit(false, -buttonsThick * 2,
                 Splitter.threeWaySplit(true, -buttonsThick * 2,
-                        makeMargin(new VisibleDrawable(upLeft, () -> {
+                        makeMargin(upLeftWrapper = new VisibleDrawable<>(upLeft, () -> {
                             if (upLeft == null) return false;
                             Rectangle r = upLeft.getLastRectangle().get();
                             if (r == null || visibility.get()) return true;
@@ -81,7 +83,7 @@ public class Navigator extends DrawableWrapper<Container> {
                             return r.isContains(MouseInfo.get().getPosition());
                         })),
                         null,
-                        makeMargin(new VisibleDrawable(upRight, () -> {
+                        makeMargin(upRightWrapper = new VisibleDrawable<>(upRight, () -> {
                             if (upRight == null) return false;
                             Rectangle r = upRight.getLastRectangle().get();
                             if (r == null || visibility.get()) return true;
@@ -92,6 +94,18 @@ public class Navigator extends DrawableWrapper<Container> {
                             return new Rectangle(start, size).isContains(MouseInfo.get().getPosition());
                         }))),
                 null, null));
+    }
+
+    public ChangeableValue<IDrawable> getMain() {
+        return mainWrapper.getChild();
+    }
+
+    public ChangeableValue<Button> getUpLeft() {
+        return upLeftWrapper.getChild();
+    }
+
+    public ChangeableValue<Button> getUpRight() {
+        return upRightWrapper.getChild();
     }
 
     private void zoomIn() {

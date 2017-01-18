@@ -1,5 +1,7 @@
 package bxlx.system;
 
+import java.util.function.Supplier;
+
 /**
  * Created by qqcs on 2017.01.02..
  */
@@ -49,5 +51,9 @@ public class Timer {
 
     public double percent() {
         return length > 0 ? Math.max(0, Math.min(1, elapsedTime() * 1.0 / length)) : 1.0;
+    }
+
+    public Supplier<Double> asSupplier(double from, double to) {
+        return () -> percent() * (to - from) + from;
     }
 }

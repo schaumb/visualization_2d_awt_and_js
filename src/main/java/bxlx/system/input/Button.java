@@ -1,4 +1,4 @@
-package bxlx.system;
+package bxlx.system.input;
 
 import bxlx.graphics.ChangeableDrawable;
 import bxlx.graphics.Color;
@@ -11,6 +11,11 @@ import bxlx.graphics.drawable.DrawableContainer;
 import bxlx.graphics.drawable.VisibleDrawable;
 import bxlx.graphics.fill.Rect;
 import bxlx.graphics.shapes.Rectangle;
+import bxlx.system.IMouseEventListener;
+import bxlx.system.MouseInfo;
+import bxlx.system.SystemSpecific;
+import bxlx.system.Timer;
+import bxlx.system.ValueOrSupplier;
 
 import java.util.ArrayList;
 import java.util.function.Consumer;
@@ -31,6 +36,7 @@ public class Button extends DrawableContainer<IDrawable> implements IMouseEventL
 
     public Button(IDrawable drawable, Consumer<Button> atClick, Consumer<Button> atHold, Supplier<Boolean> disabledSuppl) {
         super(new ArrayList<>());
+        MouseInfo.get();
 
         Rect rect = new Rect();
 
@@ -52,6 +58,14 @@ public class Button extends DrawableContainer<IDrawable> implements IMouseEventL
         return super.needRedraw().setIf(holdTimer != null && holdTimer.elapsed(), Redraw.I_NEED_REDRAW);
     }
 
+    public boolean isInsideNow() {
+        return inside.get();
+    }
+
+    public ChangeableValue<Boolean> getDisabled() {
+        return disabled;
+    }
+
     @Override
     protected boolean parentRedrawSatisfy() {
         return true;
@@ -62,11 +76,12 @@ public class Button extends DrawableContainer<IDrawable> implements IMouseEventL
     }
 
     public void setDrawable(Supplier<IDrawable> drawable) {
-        get(1).setSupplier(new ValueOrSupplier<>(drawable).transform(u -> transformSign(u)));
+        get(1).setSupplier(new ValueOrSupplier.Transform<IDrawable, IDrawable>().transform(new ValueOrSupplier<>(drawable), u -> transformSign(u)));
     }
 
     private IDrawable transformSign(IDrawable drawable) {
-        return new ClippedDrawable(new ColoredDrawable(drawable, () -> disabled.get() ? Color.WHITE : Color.BLACK),
+        if (drawable == null) return null;
+        return new ClippedDrawable<>(new ColoredDrawable<>(drawable, () -> disabled.get() ? Color.WHITE : Color.BLACK), false,
                 rectangle -> new Rectangle(
                         rectangle.getStart().add(rectangle.getSize().asPoint().multiple(1 / 16.0)),
                         rectangle.getStart().add(rectangle.getSize().asPoint().multiple(15 / 16.0))
@@ -81,7 +96,10 @@ public class Button extends DrawableContainer<IDrawable> implements IMouseEventL
 
         if ((!nowDisabled && inside.isChanged()) || disabled.isChanged() || redraw.noNeedRedraw() || redraw.childNeedRedraw()) {
             get(0).get().forceDraw(canvas);
-            get(1).get().forceDraw(canvas);
+            IDrawable drawable = get(1).get();
+            if (drawable != null) {
+                drawable.forceDraw(canvas);
+            }
         }
 
         lastRectangle = canvas.getBoundingRectangle();

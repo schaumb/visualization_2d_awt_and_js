@@ -38,8 +38,9 @@ public class SplitContainer extends DrawableContainer<IDrawable> {
     }
 
     @Override
-    public void add(IDrawable drawable) {
+    public SplitContainer add(IDrawable drawable) {
         super.add(drawable);
+        return this;
     }
 
     @Override

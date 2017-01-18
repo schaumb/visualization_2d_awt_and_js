@@ -11,21 +11,21 @@ import java.util.function.Supplier;
 /**
  * Created by qqcs on 2017.01.09..
  */
-public class AspectRatioDrawable extends ClippedDrawable {
+public class AspectRatioDrawable<T extends IDrawable> extends ClippedDrawable<T> {
     private final ChangeableValue<Integer> alignX;
     private final ChangeableValue<Integer> alignY;
     private final ChangeableValue<Double> ratio;
 
-    public AspectRatioDrawable(IDrawable wrapped, int alignX, int alignY, double ratio) {
-        super(wrapped, null);
+    public AspectRatioDrawable(T wrapped, boolean fake, int alignX, int alignY, double ratio) {
+        super(wrapped, fake, null);
         this.alignX = new ChangeableValue<>(this, alignX);
         this.alignY = new ChangeableValue<>(this, alignY);
         this.ratio = new ChangeableValue<>(this, ratio);
         setTheClip();
     }
 
-    public AspectRatioDrawable(IDrawable wrapped, int alignX, int alignY, Supplier<Double> ratio) {
-        super(wrapped, null);
+    public AspectRatioDrawable(T wrapped, boolean fake, int alignX, int alignY, Supplier<Double> ratio) {
+        super(wrapped, fake, null);
         this.alignX = new ChangeableValue<>(this, alignX);
         this.alignY = new ChangeableValue<>(this, alignY);
         this.ratio = new ChangeableValue<>(this, ratio);

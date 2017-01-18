@@ -8,15 +8,15 @@ import java.util.function.Supplier;
 /**
  * Created by qqcs on 2017.01.09..
  */
-public class VisibleDrawable extends DrawableWrapper<VisibleDrawable.VisibleDraw> {
+public class VisibleDrawable<T extends VisibleDrawable.VisibleDraw> extends DrawableWrapper<T> {
     private final ChangeableValue<Boolean> visible;
 
-    public VisibleDrawable(VisibleDraw wrapped, boolean visible) {
+    public VisibleDrawable(T wrapped, boolean visible) {
         super(wrapped);
         this.visible = new ChangeableValue<>(this, visible);
     }
 
-    public VisibleDrawable(VisibleDraw wrapped, Supplier<Boolean> visible) {
+    public VisibleDrawable(T wrapped, Supplier<Boolean> visible) {
         super(wrapped);
         this.visible = new ChangeableValue<>(this, visible);
     }

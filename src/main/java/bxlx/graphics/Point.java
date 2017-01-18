@@ -48,6 +48,10 @@ public class Point {
         return new Point(-x, -y);
     }
 
+    public Point inverse() {
+        return new Point(1.0 / x, 1.0 / y);
+    }
+
     public Point abs() {
         return new Point(x < 0 ? -x : x,
                 y < 0 ? -y : y);

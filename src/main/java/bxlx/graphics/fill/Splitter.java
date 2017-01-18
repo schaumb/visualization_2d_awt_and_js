@@ -77,8 +77,8 @@ public class Splitter extends DrawableContainer<IDrawable> {
 
     public static Splitter threeWaySplit(boolean xSplit, Supplier<Double> centerSeparate,
                                          IDrawable first, IDrawable center, IDrawable last) {
-        Supplier<Double> sep1 = new ValueOrSupplier<>(centerSeparate)
-                .transform(cSep -> {
+        Supplier<Double> sep1 = new ValueOrSupplier.Transform<Double, Double>()
+                .transform(new ValueOrSupplier<>(centerSeparate), cSep -> {
                     if (cSep <= -1) {
                         return (double) Math.round(-cSep / 2);
                     } else if (cSep < 0) {
@@ -93,8 +93,8 @@ public class Splitter extends DrawableContainer<IDrawable> {
                 });
 
 
-        Supplier<Double> sep2 = new ValueOrSupplier<>(centerSeparate)
-                .transform(cSep -> {
+        Supplier<Double> sep2 = new ValueOrSupplier.Transform<Double, Double>()
+                .transform(new ValueOrSupplier<>(centerSeparate), cSep -> {
                     if (cSep <= -1) {
                         return (double) Math.round(cSep / 2);
                     } else if (cSep < 0) {
