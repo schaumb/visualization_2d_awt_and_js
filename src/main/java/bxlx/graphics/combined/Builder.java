@@ -34,7 +34,7 @@ public class Builder<T extends IDrawable> {
         this.wrapped = wrapped;
     }
 
-    public T getChild() {
+    public T get() {
         return wrapped;
     }
 
@@ -46,7 +46,7 @@ public class Builder<T extends IDrawable> {
     }
 
     public Builder<ColoredDrawable> makeColored(Color color) {
-        return new Builder<>(new ColoredDrawable(getChild(), color));
+        return new Builder<>(new ColoredDrawable(get(), color));
     }
 
     public Builder<MarginDrawable> makeMargin(double margin) {
@@ -54,7 +54,7 @@ public class Builder<T extends IDrawable> {
     }
 
     public Builder<MarginDrawable> makeMargin(double marginX, double marginY) {
-        return new Builder<>(new MarginDrawable(getChild(), marginX, marginY));
+        return new Builder<>(new MarginDrawable(get(), marginX, marginY));
     }
 
     public Builder<AspectRatioDrawable> makeSquare(int alignX, int alignY) {
@@ -66,29 +66,29 @@ public class Builder<T extends IDrawable> {
     }
 
     public Builder<AspectRatioDrawable> makeAspect(int alignX, int alignY, Supplier<Double> ratio) {
-        return new Builder<>(new AspectRatioDrawable(getChild(), alignX, alignY, ratio));
+        return new Builder<>(new AspectRatioDrawable(get(), alignX, alignY, ratio));
     }
 
     public Builder<ClippedDrawable> makeClipped(UnaryOperator<Rectangle> clip) {
-        return new Builder<>(new ClippedDrawable(getChild(), clip));
+        return new Builder<>(new ClippedDrawable(get(), clip));
     }
 
     public static <T extends VisibleDrawable.VisibleDraw> Builder<VisibleDrawable> makeVisible(
             Builder<T> builder,
             boolean visibility) {
-        return new Builder<>(new VisibleDrawable(builder.getChild(), visibility));
+        return new Builder<>(new VisibleDrawable(builder.get(), visibility));
     }
 
     public static <T extends VisibleDrawable.VisibleDraw> Builder<VisibleDrawable> makeVisible(
             Builder<T> builder,
             Supplier<Boolean> visibility) {
-        return new Builder<>(new VisibleDrawable(builder.getChild(), visibility));
+        return new Builder<>(new VisibleDrawable(builder.get(), visibility));
     }
 
     public Builder<Container> makeBackgrounded(Color color) {
         Builder<Container> result = container();
-        result.getChild().add(background().makeColored(color).getChild());
-        result.getChild().add(getChild());
+        result.get().add(background().makeColored(color).get());
+        result.get().add(get());
         return result;
     }
 

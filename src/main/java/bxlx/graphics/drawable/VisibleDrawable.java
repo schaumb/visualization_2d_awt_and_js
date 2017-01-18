@@ -25,9 +25,15 @@ public class VisibleDrawable extends DrawableWrapper<VisibleDrawable.VisibleDraw
         return visible;
     }
 
+
     @Override
-    public boolean childrenChanged() {
-        return visible.get() && super.childrenChanged();
+    public Redraw needRedraw() {
+        return super.needRedraw().setIf(!visible.get() && visible.isChanged(), Redraw.PARENT_NEED_REDRAW);
+    }
+
+    @Override
+    public Redraw childrenChanged() {
+        return new Redraw().orIf(visible.get(), super.childrenChanged());
     }
 
     @Override
@@ -35,8 +41,10 @@ public class VisibleDrawable extends DrawableWrapper<VisibleDrawable.VisibleDraw
         if (getChild().get() == null)
             return;
 
+        Redraw redraw = needRedraw();
+
         if (visible.get()) {
-            if(!needRedraw() || iChanged()) {
+            if (redraw.noNeedRedraw() || redraw.iNeedRedraw()) {
                 super.forceRedraw(canvas);
             } else {
                 getChild().get().draw(canvas);

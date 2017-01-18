@@ -21,6 +21,8 @@ import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
@@ -63,7 +65,21 @@ public class AwtSystemSpecific extends SystemSpecific {
             frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
             frame.setSize(400, 500);
             frame.addComponentListener(new ComponentAdapter() {
+                @Override
                 public void componentResized(ComponentEvent e) {
+                    if (!isRendering()) {
+                        EventQueue.invokeLater(AwtSystemSpecific.this::refresh);
+                    }
+                }
+            });
+            frame.addWindowListener(new WindowAdapter() {
+                @Override
+                public void windowIconified(WindowEvent windowEvent) {
+                    rendering = false;
+                }
+
+                @Override
+                public void windowDeiconified(WindowEvent windowEvent) {
                     if (!isRendering()) {
                         EventQueue.invokeLater(AwtSystemSpecific.this::refresh);
                     }

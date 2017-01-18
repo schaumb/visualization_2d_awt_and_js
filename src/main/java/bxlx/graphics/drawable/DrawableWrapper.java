@@ -21,4 +21,9 @@ public abstract class DrawableWrapper<T extends IDrawable> extends DrawableConta
     protected void forceRedraw(ICanvas canvas) {
         getChild().get().forceDraw(canvas);
     }
+
+    @Override
+    protected boolean parentRedrawSatisfy() {
+        return false;
+    }
 }

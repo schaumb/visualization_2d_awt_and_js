@@ -42,6 +42,11 @@ public class Splitter extends DrawableContainer<IDrawable> {
         this(false, 0.5, null, null);
     }
 
+    @Override
+    protected boolean parentRedrawSatisfy() {
+        return false;
+    }
+
     public Splitter(boolean xSplit) {
         this(xSplit, 0.5, null, null);
     }
@@ -78,6 +83,8 @@ public class Splitter extends DrawableContainer<IDrawable> {
                         return (double) Math.round(-cSep / 2);
                     } else if (cSep < 0) {
                         return -cSep / 2;
+                    } else if (cSep == 0) {
+                        return Double.MIN_VALUE;
                     } else if (cSep < 1) {
                         return (1 + cSep) / -2;
                     } else {
@@ -121,7 +128,8 @@ public class Splitter extends DrawableContainer<IDrawable> {
 
     @Override
     public void forceRedraw(ICanvas canvas) {
-        boolean forcedRedraw = !needRedraw() || iChanged();
+        Redraw redraw = needRedraw();
+        boolean forcedRedraw = redraw.noNeedRedraw() || redraw.iNeedRedraw();
 
         Rectangle rectangle = canvas.getBoundingRectangle();
 
@@ -157,7 +165,7 @@ public class Splitter extends DrawableContainer<IDrawable> {
         }
 
         IDrawable child1 = getSecond().get();
-        if (nowSeparate != 0 && child1 != null) {
+        if (child1 != null) {
             canvas.clip(new Rectangle(
                     rectangle.getStart().add(dimension.multiple(firstSize)),
                     rectangle.getEnd()));

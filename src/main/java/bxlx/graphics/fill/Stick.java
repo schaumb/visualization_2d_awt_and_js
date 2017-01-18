@@ -45,7 +45,8 @@ public class Stick extends DrawableContainer<IDrawable> {
         double nowLength = length.get();
         double nowThickness = thickness.get();
 
-        boolean forcedRedraw = !needRedraw() || iChanged();
+        Redraw redraw = needRedraw();
+        boolean forcedRedraw = redraw.noNeedRedraw() || redraw.iNeedRedraw();
 
         Rectangle bound = canvas.getBoundingRectangle();
         Point center = bound.getCenter();
@@ -120,5 +121,10 @@ public class Stick extends DrawableContainer<IDrawable> {
             }
             canvas.restore();
         }
+    }
+
+    @Override
+    protected boolean parentRedrawSatisfy() {
+        return false;
     }
 }

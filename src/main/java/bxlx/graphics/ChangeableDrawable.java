@@ -31,16 +31,17 @@ public abstract class ChangeableDrawable implements IDrawable {
     }
 
     @Override
-    public boolean needRedraw() {
-        return !onlyForceDraw && (redraw || valueChanged());
+    public Redraw needRedraw() {
+        return new Redraw().setIf(!onlyForceDraw && (redraw || valueChanged()), Redraw.I_NEED_REDRAW);
     }
 
     private boolean valueChanged() {
-        boolean changed = false;
         for (ChangeableValue changeableValue : values) {
-            changed |= changeableValue.isChanged();
+            if (changeableValue.isChanged()) {
+                return true;
+            }
         }
-        return changed;
+        return false;
     }
 
     @Override
@@ -52,6 +53,7 @@ public abstract class ChangeableDrawable implements IDrawable {
                 !AspectRatioDrawable.class.isInstance(this) &&
                 !MarginDrawable.class.isInstance(this) &&
                 !ClippedDrawable.class.isInstance(this) &&
+                !ColoredDrawable.class.isInstance(this) &&
                 !Navigator.class.getDeclaredClasses()[0].isInstance(this)) {
             String msg = "";
             if (Text.class.isInstance(this)) {

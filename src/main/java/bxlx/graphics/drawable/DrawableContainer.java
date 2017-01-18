@@ -23,11 +23,11 @@ public abstract class DrawableContainer<T extends IDrawable> extends ChangeableD
     }
 
     @Override
-    public boolean needRedraw() {
-        return iChanged() || childrenChanged();
+    public Redraw needRedraw() {
+        return new Redraw(iChanged()).orIf(!isOnlyForceDraw(), childrenChanged());
     }
 
-    public boolean iChanged() {
+    public Redraw iChanged() {
         return super.needRedraw();
     }
 
@@ -58,15 +58,28 @@ public abstract class DrawableContainer<T extends IDrawable> extends ChangeableD
         }
     }
 
-    public boolean childrenChanged() {
-        boolean childNeedRedraw = false;
+    public Redraw childrenChanged() {
+        boolean parent = parentRedrawSatisfy();
+        Redraw result = new Redraw();
         for (ChangeableValue<T> drawable : children) {
-            childNeedRedraw |= drawable.isChanged();
-            T draw = drawable.get();
-            if (draw != null) {
-                childNeedRedraw |= draw.needRedraw();
+            T child = drawable.get();
+            if (child != null) {
+                Redraw childNeedRedraw = child.needRedraw();
+
+                if (parent && childNeedRedraw.needRedraw()) {
+                    return new Redraw(Redraw.CHILD_NEED_REDRAW);
+                } else if (childNeedRedraw.needRedraw()) {
+                    if (childNeedRedraw.parentNeedRedraw()) {
+                        result.setParentNeedRedraw();
+                    }
+                    if (childNeedRedraw.needRedrawExcept(Redraw.PARENT_NEED_REDRAW)) {
+                        result.setChildNeedRedraw();
+                    }
+                }
             }
         }
-        return childNeedRedraw;
+        return result;
     }
+
+    protected abstract boolean parentRedrawSatisfy();
 }

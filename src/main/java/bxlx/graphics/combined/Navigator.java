@@ -20,7 +20,7 @@ import bxlx.graphics.shapes.Rectangle;
 import bxlx.system.Button;
 import bxlx.system.MouseInfo;
 
-import java.util.Arrays;
+import java.util.ArrayList;
 import java.util.function.Supplier;
 
 /**
@@ -47,35 +47,8 @@ public class Navigator extends DrawableWrapper<Container> {
         mainWrapper = new WrapperClass(main, background);
         vis = new ChangeableValue<>(this, visibility);
         Supplier<Double> buttThick = () -> visibility.get() ? -buttonsThick * 2 : 0;
-        Supplier<Boolean> novisibility = () -> !visibility.get();
-        Container container = new Container();
+        Container container = new Container(new ArrayList<>(), 2);
         container.add(new ColoredDrawable(new DrawRectangle(), background));
-        container.add(new Container(Arrays.asList(
-                new VisibleDrawable(mainWrapper, novisibility),
-                Splitter.threeWaySplit(false, -buttonsThick * 2,
-                        Splitter.threeWaySplit(true, -buttonsThick * 2,
-                                makeMargin(new VisibleDrawable(upLeft, () -> {
-                                    if (upLeft == null) return false;
-                                    Rectangle r = upLeft.getLastRectangle().get();
-                                    if (r == null || visibility.get()) return true;
-
-                                    r = r.withSize(r.getSize().asPoint().multiple(2).asSize());
-
-                                    return r.isContains(MouseInfo.get().getPosition());
-                                })),
-                                null,
-                                makeMargin(new VisibleDrawable(upRight, () -> {
-                                    if (upRight == null) return false;
-                                    Rectangle r = upRight.getLastRectangle().get();
-                                    if (r == null || visibility.get()) return true;
-
-                                    Size size = r.getSize().asPoint().multiple(2).asSize();
-                                    Point start = r.getStart().add(Direction.LEFT.getVector().multiple(r.getSize().asPoint()));
-
-                                    return new Rectangle(start, size).isContains(MouseInfo.get().getPosition());
-                                }))),
-                        null, null)), 1
-        ));
         container.add(
                 Splitter.threeWaySplit(false, buttThick,
                         Splitter.threeWaySplit(true, buttThick,
@@ -86,7 +59,7 @@ public class Navigator extends DrawableWrapper<Container> {
                         Splitter.threeWaySplit(true, buttThick,
                                 makeMargin(new VisibleDrawable(new Button(new DrawNGon(3, Math.PI, true),
                                         null, b -> left(), () -> shiftX <= 0), visibility)),
-                                new VisibleDrawable(mainWrapper, visibility),
+                                mainWrapper,
                                 makeMargin(new VisibleDrawable(new Button(new DrawNGon(3, 0, true),
                                         null, b -> right(), () -> zoom - 1 <= shiftX), visibility))),
                         Splitter.threeWaySplit(true, buttThick,
@@ -98,6 +71,29 @@ public class Navigator extends DrawableWrapper<Container> {
                                         null, b -> zoomIn(), null), visibility)))
                 )
         );
+        container.add(Splitter.threeWaySplit(false, -buttonsThick * 2,
+                Splitter.threeWaySplit(true, -buttonsThick * 2,
+                        makeMargin(new VisibleDrawable(upLeft, () -> {
+                            if (upLeft == null) return false;
+                            Rectangle r = upLeft.getLastRectangle().get();
+                            if (r == null || visibility.get()) return true;
+
+                            r = r.withSize(r.getSize().asPoint().multiple(2).asSize());
+
+                            return r.isContains(MouseInfo.get().getPosition());
+                        })),
+                        null,
+                        makeMargin(new VisibleDrawable(upRight, () -> {
+                            if (upRight == null) return false;
+                            Rectangle r = upRight.getLastRectangle().get();
+                            if (r == null || visibility.get()) return true;
+
+                            Size size = r.getSize().asPoint().multiple(2).asSize();
+                            Point start = r.getStart().add(Direction.LEFT.getVector().multiple(r.getSize().asPoint()));
+
+                            return new Rectangle(start, size).isContains(MouseInfo.get().getPosition());
+                        }))),
+                null, null));
 
         getChild().setElem(container);
     }

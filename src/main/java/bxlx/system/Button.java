@@ -48,8 +48,13 @@ public class Button extends DrawableContainer<IDrawable> implements IMouseEventL
     }
 
     @Override
-    public boolean needRedraw() {
-        return !isOnlyForceDraw() && (super.needRedraw() || (holdTimer != null && holdTimer.elapsed()));
+    public Redraw needRedraw() {
+        return super.needRedraw().setIf(holdTimer != null && holdTimer.elapsed(), Redraw.I_NEED_REDRAW);
+    }
+
+    @Override
+    protected boolean parentRedrawSatisfy() {
+        return true;
     }
 
     public void setDrawable(IDrawable drawable) {
@@ -70,10 +75,11 @@ public class Button extends DrawableContainer<IDrawable> implements IMouseEventL
 
     @Override
     public void forceRedraw(ICanvas canvas) {
+        Redraw redraw = needRedraw();
         boolean nowDisabled = disabled.get();
         boolean nowInside = inside.get();
 
-        if((!nowDisabled && inside.isChanged()) || disabled.isChanged() || !needRedraw() || childrenChanged()) {
+        if ((!nowDisabled && inside.isChanged()) || disabled.isChanged() || redraw.noNeedRedraw() || redraw.childNeedRedraw()) {
             get(0).get().forceDraw(canvas);
             get(1).get().forceDraw(canvas);
         }

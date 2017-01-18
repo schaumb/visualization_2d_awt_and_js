@@ -48,12 +48,18 @@ public class SplitContainer extends DrawableContainer<IDrawable> {
     }
 
     @Override
+    protected boolean parentRedrawSatisfy() {
+        return false;
+    }
+
+    @Override
     public void forceRedraw(ICanvas canvas) {
         if (size() == 0) {
             return;
         }
 
-        boolean forcedRedraw = !needRedraw() || iChanged();
+        Redraw redraw = needRedraw();
+        boolean forcedRedraw = redraw.noNeedRedraw() || redraw.iNeedRedraw();
 
         Rectangle rectangle = canvas.getBoundingRectangle();
 
