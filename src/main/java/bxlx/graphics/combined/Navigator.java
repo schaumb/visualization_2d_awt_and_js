@@ -1,5 +1,6 @@
 package bxlx.graphics.combined;
 
+import bxlx.graphics.ChangeableDrawable;
 import bxlx.graphics.Color;
 import bxlx.graphics.Direction;
 import bxlx.graphics.ICanvas;
@@ -8,6 +9,7 @@ import bxlx.graphics.Point;
 import bxlx.graphics.Size;
 import bxlx.graphics.drawable.ColoredDrawable;
 import bxlx.graphics.drawable.DrawableWrapper;
+import bxlx.graphics.drawable.FakeZoomDrawable;
 import bxlx.graphics.drawable.MarginDrawable;
 import bxlx.graphics.drawable.VisibleDrawable;
 import bxlx.graphics.fill.Container;
@@ -35,43 +37,39 @@ public class Navigator extends DrawableWrapper<Container> {
         return new MarginDrawable(drawable, 3);
     }
 
-    private final ChangeableValue<Boolean> vis;
-    private final WrapperClass mainWrapper;
     private double zoom = 1;
     private double shiftX = 0;
     private double shiftY = 0;
 
     public Navigator(Button upLeft, Button upRight, IDrawable main, Supplier<Boolean> visibility, double buttonsThick, Color background) {
-        super(null);
+        super(new Container(new ArrayList<>(), 2));
 
-        mainWrapper = new WrapperClass(main, background);
-        vis = new ChangeableValue<>(this, visibility);
         Supplier<Double> buttThick = () -> visibility.get() ? -buttonsThick * 2 : 0;
-        Container container = new Container(new ArrayList<>(), 2);
-        container.add(new ColoredDrawable(new DrawRectangle(), background));
-        container.add(
+
+        getChild().get().add(new ColoredDrawable(new DrawRectangle(), background));
+        getChild().get().add(
                 Splitter.threeWaySplit(false, buttThick,
                         Splitter.threeWaySplit(true, buttThick,
                                 null,
-                                makeMargin(new VisibleDrawable(new Button(new DrawNGon(3, Math.PI / 2, true),
-                                        null, b -> up(), () -> shiftY <= 0), visibility)),
+                                makeMargin(new Button(new DrawNGon(3, Math.PI / 2, true),
+                                        null, b -> up(), () -> shiftY <= 0)),
                                 null),
                         Splitter.threeWaySplit(true, buttThick,
-                                makeMargin(new VisibleDrawable(new Button(new DrawNGon(3, Math.PI, true),
-                                        null, b -> left(), () -> shiftX <= 0), visibility)),
-                                mainWrapper,
-                                makeMargin(new VisibleDrawable(new Button(new DrawNGon(3, 0, true),
-                                        null, b -> right(), () -> zoom - 1 <= shiftX), visibility))),
+                                makeMargin(new Button(new DrawNGon(3, Math.PI, true),
+                                        null, b -> left(), () -> shiftX <= 0)),
+                                new FakeZoomDrawable(main, () -> zoom, () -> shiftX, () -> shiftY),
+                                makeMargin(new Button(new DrawNGon(3, 0, true),
+                                        null, b -> right(), () -> zoom - 1 <= shiftX))),
                         Splitter.threeWaySplit(true, buttThick,
-                                makeMargin(new VisibleDrawable(new Button(new Stick(Math.PI / 3, 0.4, 0.7, null, new Magnifying(false)),
-                                        null, b -> zoomOut(), () -> zoom <= 1), visibility)),
-                                makeMargin(new VisibleDrawable(new Button(new DrawNGon(3, -Math.PI / 2, true),
-                                        null, b -> down(), () -> zoom - 1 <= shiftY), visibility)),
-                                makeMargin(new VisibleDrawable(new Button(new Stick(Math.PI / 3, 0.4, 0.7, null, new Magnifying(true)),
-                                        null, b -> zoomIn(), null), visibility)))
+                                makeMargin(new Button(new Stick(Math.PI / 3, 0.4, 0.7, null, new Magnifying(false)),
+                                        null, b -> zoomOut(), () -> zoom <= 1)),
+                                makeMargin(new Button(new DrawNGon(3, -Math.PI / 2, true),
+                                        null, b -> down(), () -> zoom - 1 <= shiftY)),
+                                makeMargin(new Button(new Stick(Math.PI / 3, 0.4, 0.7, null, new Magnifying(true)),
+                                        null, b -> zoomIn(), null)))
                 )
         );
-        container.add(Splitter.threeWaySplit(false, -buttonsThick * 2,
+        getChild().get().add(Splitter.threeWaySplit(false, -buttonsThick * 2,
                 Splitter.threeWaySplit(true, -buttonsThick * 2,
                         makeMargin(new VisibleDrawable(upLeft, () -> {
                             if (upLeft == null) return false;
@@ -94,12 +92,6 @@ public class Navigator extends DrawableWrapper<Container> {
                             return new Rectangle(start, size).isContains(MouseInfo.get().getPosition());
                         }))),
                 null, null));
-
-        getChild().setElem(container);
-    }
-
-    private void setChanged() {
-        mainWrapper.setRedraw();
     }
 
     private void zoomIn() {
@@ -111,63 +103,27 @@ public class Navigator extends DrawableWrapper<Container> {
             shiftX = shiftX / (zoom / 1.1 - 1) * (zoom - 1);
             shiftY = shiftY / (zoom / 1.1 - 1) * (zoom - 1);
         }
-
-        setChanged();
     }
 
     private void zoomOut() {
         shiftX = Math.max(0, shiftX / (zoom - 1) * (zoom / 1.1 - 1));
         shiftY = Math.max(0, shiftY / (zoom - 1) * (zoom / 1.1 - 1));
         zoom = Math.max(1, zoom / 1.1);
-        setChanged();
     }
 
     private void up() {
         shiftY = Math.max(0, shiftY - (zoom - 1) / zoom);
-        setChanged();
     }
 
     private void down() {
         shiftY = Math.min(zoom - 1, shiftY + (zoom - 1) / zoom);
-        setChanged();
     }
 
     private void left() {
         shiftX = Math.max(0, shiftX - (zoom - 1) / zoom);
-        setChanged();
     }
 
     private void right() {
         shiftX = Math.min(zoom - 1, shiftX + (zoom - 1) / zoom);
-        setChanged();
-    }
-
-    private class WrapperClass extends DrawableWrapper implements VisibleDrawable.VisibleDraw {
-        private Color bg;
-
-        public WrapperClass(IDrawable wrapped, Color bg) {
-            super(wrapped);
-            this.bg = bg;
-        }
-
-        @Override
-        public void forceRedraw(ICanvas canvas) {
-            canvas.clearCanvas(bg);
-            Rectangle bound = canvas.getBoundingRectangle();
-
-            Size size = bound.getSize().asPoint().multiple(zoom).asSize();
-
-            Point start = bound.getStart().add(bound.getSize().asPoint().negate().multiple(new Point(shiftX, shiftY)));
-            Rectangle fakeBound = new Rectangle(start, size);
-
-            canvas.fakeClip(fakeBound);
-            super.forceRedraw(canvas);
-            canvas.fakeRestore();
-        }
-
-        @Override
-        public void noVisibleDraw(ICanvas canvas) {
-
-        }
     }
 }

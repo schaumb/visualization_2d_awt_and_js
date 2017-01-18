@@ -13,10 +13,12 @@ import javax.media.MediaLocator;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.WindowConstants;
+import java.awt.Dimension;
 import java.awt.EventQueue;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Rectangle;
+import java.awt.Toolkit;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
 import java.awt.event.MouseAdapter;
@@ -63,7 +65,8 @@ public class AwtSystemSpecific extends SystemSpecific {
         if (frame == null) {
             frame = new JFrame();
             frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
-            frame.setSize(400, 500);
+            Dimension d = Toolkit.getDefaultToolkit().getScreenSize();
+            frame.setSize(d.width, d.height);
             frame.addComponentListener(new ComponentAdapter() {
                 @Override
                 public void componentResized(ComponentEvent e) {

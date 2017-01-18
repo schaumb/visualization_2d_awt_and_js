@@ -40,9 +40,9 @@ public class TestMain implements IRenderer {
     public TestMain() {
         MouseInfo.get(); // init mouseinfo
 
-        ValueOrSupplier<Boolean> visibleNavi = new ValueOrSupplier<>(true);
+        ValueOrSupplier<Boolean> visibleNavi = new ValueOrSupplier<>(false);
 
-        Button visibleButton = new Button(Builder.text("HIDE", "MENU").get(), b -> {
+        Button visibleButton = new Button(Builder.text("NAVI", "MENU").get(), b -> {
             visibleNavi.setElem(!visibleNavi.get());
             splitter.getFirst().get().setOnlyForceDraw();
             splitter.setRedraw();
