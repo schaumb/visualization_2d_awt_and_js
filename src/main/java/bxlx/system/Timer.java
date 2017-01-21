@@ -28,6 +28,11 @@ public class Timer {
         return this;
     }
 
+    public Timer setPercent(double percent) {
+        start = (long) (SystemSpecific.get().getTime() - length * percent);
+        return this;
+    }
+
     public Timer setLength(long length) {
         this.length = length;
         return this;
@@ -51,6 +56,11 @@ public class Timer {
 
     public double percent() {
         return length > 0 ? Math.max(0, Math.min(1, elapsedTime() * 1.0 / length)) : 1.0;
+    }
+
+    public double overPercent() {
+        double percent;
+        return length > 0 && (percent = elapsedTime() * 1.0 / length) > 1.0 ? percent - 1 : 0.0;
     }
 
     public Supplier<Double> asSupplier(double from, double to) {
