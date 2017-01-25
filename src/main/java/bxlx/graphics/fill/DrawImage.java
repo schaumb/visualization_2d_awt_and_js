@@ -1,8 +1,11 @@
 package bxlx.graphics.fill;
 
 import bxlx.graphics.ChangeableDrawable;
+import bxlx.graphics.Color;
 import bxlx.graphics.ICanvas;
+import bxlx.graphics.Point;
 import bxlx.graphics.Size;
+import bxlx.graphics.shapes.Rectangle;
 import bxlx.system.SystemSpecific;
 
 /**
@@ -35,5 +38,11 @@ public class DrawImage extends ChangeableDrawable {
     @Override
     protected void forceRedraw(ICanvas canvas) {
         canvas.drawImage(fileName, canvas.getBoundingRectangle());
+    }
+
+    public Color getColor(Rectangle bound, Point position) {
+        Point pos = position.add(bound.getStart().negate()).multiple(bound.getSize().asPoint().inverse());
+
+        return SystemSpecific.get().getColor(fileName, pos.getX(), pos.getY());
     }
 }

@@ -41,7 +41,7 @@ public class Slider extends Container implements IMouseEventListener {
         add(new ColoredDrawable<>(new DrawRectangle(), bg));
         add(new ColoredDrawable<>(mainStick, Color.LIGHT_GRAY));
         add(new ClippedDrawable<>(new ZoomDrawable<>(new AspectRatioDrawable<>(
-                new ColoredDrawable<>(button = new Button(null, null, null, disabled), Color.GRAY)
+                new ColoredDrawable<>(button = new Button(new Button.RectClickable(null), null, null, disabled), Color.GRAY)
                 , true, -1, -1, () -> this.xDraw.get() ? 2 : 0.5)
                 , true, () -> 1.0, () -> this.xDraw.get() ? 0.05 + now.get() * 0.85 : 0, () -> this.xDraw.get() ? 0 : 0.05 + now.get() * 0.85)
                 , true, r -> lastRectangle = mainStick.getBoundingRectangle(r)));

@@ -1,5 +1,6 @@
 package bxlx.awt;
 
+import bxlx.graphics.Color;
 import bxlx.graphics.Point;
 import bxlx.graphics.Size;
 import bxlx.system.CommonError;
@@ -216,6 +217,14 @@ public class AwtSystemSpecific extends SystemSpecific {
         }
 
         return null;
+    }
+
+    @Override
+    public Color getColor(String pic, double x, double y) {
+        BufferedImage img = GraphicsCanvas.imageCaches.get(pic);
+
+        int rgba = img.getRGB((int) Math.round(x * img.getWidth()), (int) Math.round(y * img.getHeight()));
+        return new Color(rgba);
     }
 
     @Override

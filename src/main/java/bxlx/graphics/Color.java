@@ -23,6 +23,10 @@ public class Color {
         this.alpha = alpha & 0xFF;
     }
 
+    public Color(int rgba) {
+        this(rgba, rgba >> 8, rgba >> 16, rgba >> 24);
+    }
+
 
     public int getRed() {
         return red;
@@ -60,6 +64,8 @@ public class Color {
 
     public final static Color PINK = new Color(255, 175, 175);
     public final static Color ORANGE = new Color(255, 200, 0);
+
+    public final static Color OPAQUE = new Color(0, 0, 0, 0);
 
     public Color getScale(Color to, double percent) {
         return new Color(

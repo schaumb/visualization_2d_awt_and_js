@@ -23,7 +23,6 @@ import bxlx.system.input.DiscreteSlider;
 import bxlx.system.input.Slider;
 
 import java.util.ArrayList;
-import java.util.function.Consumer;
 import java.util.function.Supplier;
 import java.util.function.UnaryOperator;
 
@@ -156,8 +155,8 @@ public class Builder<T extends IDrawable> {
         return new Builder<>(Splitter.threeWaySplit(xSplit, centerSeparate, first, center, last));
     }
 
-    public static Builder<Button> button(IDrawable drawable, Consumer<Button> atClick, Consumer<Button> atHold, Supplier<Boolean> disabled) {
-        return new Builder<>(new Button(drawable, atClick, atHold, disabled));
+    public static Builder<Button> button(IDrawable drawable) {
+        return new Builder<>(new Button(drawable));
     }
 
     public static Builder<Slider> slider(boolean xDraw, double start, Color bg, Supplier<Boolean> disabled) {

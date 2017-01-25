@@ -26,46 +26,47 @@ public class TestMain implements IRenderer {
     private ICanvas c;
     private Splitter splitter = new Splitter(true, 0, null, null);
 
-    private IDrawable wait = new Builder<IDrawable>(
-            new IDrawable() {
-                private Timer timer = new Timer(3000);
+    private static class Waiter implements IDrawable {
+        private Timer timer = new Timer(3000);
 
-                @Override
-                public Redraw needRedraw() {
-                    return new Redraw(Redraw.PARENT_NEED_REDRAW);
-                }
+        @Override
+        public Redraw needRedraw() {
+            return new Redraw(Redraw.PARENT_NEED_REDRAW);
+        }
 
-                @Override
-                public void forceDraw(ICanvas canvas) {
-                    Point center = canvas.getBoundingRectangle().getCenter();
-                    double size = canvas.getBoundingRectangle().getSize().getShorterDimension() / 2;
-                    final int max = 8;
-                    double percent = timer.percent();
-                    double prevAngle = -1.0 / max * Math.PI * 2;
-                    for (int i = 0; i < max; ++i) {
-                        double percentPlus = percent + i / (double) max;
-                        if (percentPlus > 1)
-                            percentPlus -= 1;
-                        double angle = i / (double) max * Math.PI * 2;
+        @Override
+        public void forceDraw(ICanvas canvas) {
+            Point center = canvas.getBoundingRectangle().getCenter();
+            double size = canvas.getBoundingRectangle().getSize().getShorterDimension() / 2;
+            final int max = 8;
+            double percent = timer.percent();
+            double prevAngle = -1.0 / max * Math.PI * 2;
+            for (int i = 0; i < max; ++i) {
+                double percentPlus = percent + i / (double) max;
+                if (percentPlus > 1)
+                    percentPlus -= 1;
+                double angle = i / (double) max * Math.PI * 2;
 
-                        Point from = Direction.fromRadian(prevAngle).getVector();
-                        Point to = Direction.fromRadian(angle).getVector();
+                Point from = Direction.fromRadian(prevAngle).getVector();
+                Point to = Direction.fromRadian(angle).getVector();
 
-                        canvas.setColor(Color.GREEN.getScale(Color.RED, percentPlus));
-                        canvas.fill(new Polygon(Arrays.asList(
-                                center.add(from.multiple(size * (1.0 - percentPlus * 0.5))),
-                                center.add(from.multiple(size * (0.6 - percentPlus * 0.3))),
-                                center.add(to.multiple(size * (0.6 - percentPlus * 0.3))),
-                                center.add(to.multiple(size * (1.0 - percentPlus * 0.5)))
-                        )));
+                canvas.setColor(Color.GREEN.getScale(Color.RED, percentPlus));
+                canvas.fill(new Polygon(Arrays.asList(
+                        center.add(from.multiple(size * (1.0 - percentPlus * 0.5))),
+                        center.add(from.multiple(size * (0.6 - percentPlus * 0.3))),
+                        center.add(to.multiple(size * (0.6 - percentPlus * 0.3))),
+                        center.add(to.multiple(size * (1.0 - percentPlus * 0.5)))
+                )));
 
-                        prevAngle = angle;
-                    }
-                    if (timer.elapsed()) {
-                        timer.setStart();
-                    }
-                }
-            }).makeBackgrounded(Color.WHITE).get();
+                prevAngle = angle;
+            }
+            if (timer.elapsed()) {
+                timer.setStart();
+            }
+        }
+    }
+
+    private IDrawable wait = new Builder<>(new Waiter()).makeBackgrounded(Color.WHITE).get();
 
     private ValueOrSupplier<IDrawable> main = new ValueOrSupplier<>(wait);
 
@@ -87,13 +88,13 @@ public class TestMain implements IRenderer {
 
         ValueOrSupplier<Boolean> visibleNavi = new ValueOrSupplier<>(false);
 
-        Button visibleButton = new Button(Builder.text("NAVI", "MENU").get(), b -> {
+        Button visibleButton = new Button(new Button.RectClickable(Builder.text("NAVI", "MENU").get()), b -> {
             visibleNavi.setElem(!visibleNavi.get());
             splitter.getFirst().get().setOnlyForceDraw();
             splitter.setRedraw();
         }, null, null);
 
-        Button menuButton = new Button(Builder.text("MENU").get(), b -> {
+        Button menuButton = new Button(new Button.RectClickable(Builder.text("MENU").get()), b -> {
             splitter.getSeparate().setElem(-200 - splitter.getSeparate().get());
             splitter.getFirst().get().setOnlyForceDraw();
         }, null, null);
@@ -105,7 +106,8 @@ public class TestMain implements IRenderer {
 
         splitter.getFirst().setElem(navi);
         splitter.getSecond().setSupplier(() -> game.getMenu() == null ? wait : game.getMenu());
-
+        main.setElem(splitter);
+        main.setElem(new Button(new Button.ChangeImgClickable("aal.png", "aax.png", "aax.png", c -> c.getAlpha() != 0), null, null, () -> false));
         SystemSpecific.get().setDrawFunction(this);
     }
 }

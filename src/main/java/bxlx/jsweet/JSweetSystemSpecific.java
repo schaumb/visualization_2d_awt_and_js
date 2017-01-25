@@ -1,5 +1,6 @@
 package bxlx.jsweet;
 
+import bxlx.graphics.Color;
 import bxlx.graphics.ImageCaches;
 import bxlx.graphics.Point;
 import bxlx.graphics.Size;
@@ -7,10 +8,12 @@ import bxlx.system.CommonError;
 import bxlx.system.IMouseEventListener;
 import bxlx.system.IRenderer;
 import bxlx.system.SystemSpecific;
+import jsweet.dom.CanvasRenderingContext2D;
 import jsweet.dom.Event;
 import jsweet.dom.HTMLAudioElement;
 import jsweet.dom.HTMLCanvasElement;
 import jsweet.dom.HTMLImageElement;
+import jsweet.dom.ImageData;
 import jsweet.dom.XMLHttpRequest;
 import jsweet.lang.Date;
 import jsweet.util.StringTypes;
@@ -38,6 +41,16 @@ public class JSweetSystemSpecific extends SystemSpecific {
 
         document.body.appendChild(element);
         return element;
+    });
+
+    private ImageCaches<ImageData> imageTransparencyCache = new ImageCaches<>(src -> {
+        HTMLImageElement img = HtmlCanvas.imageCaches.get(src);
+        HTMLCanvasElement canvasElement = document.createElement(StringTypes.canvas);
+        canvasElement.width = img.naturalWidth;
+        canvasElement.height = img.naturalHeight;
+        CanvasRenderingContext2D rc = canvasElement.getContext(StringTypes._2d);
+        rc.drawImage(img, 0, 0);
+        return rc.getImageData(0, 0, img.naturalWidth, img.naturalHeight);
     });
 
     private JSweetSystemSpecific() {
@@ -190,6 +203,22 @@ public class JSweetSystemSpecific extends SystemSpecific {
             musicCache.get(src);
             return null;
         }
+    }
+
+    @Override
+    public Color getColor(String pic, double x, double y) {
+        HTMLImageElement htmlImageElement = HtmlCanvas.imageCaches.get(pic);
+        if (htmlImageElement.complete) {
+            ImageData data = imageTransparencyCache.get(pic);
+            int intX = (int) Math.round(x * htmlImageElement.naturalWidth);
+            int intY = (int) Math.round(y * htmlImageElement.naturalHeight);
+            int getPixel = intX + intY * (int) htmlImageElement.naturalWidth;
+            return new Color(data.data.$get(getPixel * 4).intValue(),
+                    data.data.$get(getPixel * 4 + 1).intValue(),
+                    data.data.$get(getPixel * 4 + 2).intValue(),
+                    data.data.$get(getPixel * 4 + 3).intValue());
+        }
+        return Color.OPAQUE;
     }
 
     @Override

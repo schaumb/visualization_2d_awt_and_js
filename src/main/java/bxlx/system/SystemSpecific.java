@@ -1,5 +1,6 @@
 package bxlx.system;
 
+import bxlx.graphics.Color;
 import bxlx.graphics.Size;
 
 import java.util.ArrayList;
@@ -59,6 +60,8 @@ public abstract class SystemSpecific {
     abstract public void readTextFileAsync(String fileName, Consumer<String> consumer);
 
     abstract public Size preLoad(String src, boolean img);
+
+    abstract public Color getColor(String pic, double x, double y);
 
     public final boolean isRendering() {
         return rendering;
