@@ -43,6 +43,6 @@ public class DrawImage extends ChangeableDrawable {
     public Color getColor(Rectangle bound, Point position) {
         Point pos = position.add(bound.getStart().negate()).multiple(bound.getSize().asPoint().inverse());
 
-        return SystemSpecific.get().getColor(fileName, pos.getX(), pos.getY());
+        return SystemSpecific.get().getColor(fileName, Math.max(0, Math.min(1, pos.getX())), Math.max(0, Math.min(1, pos.getY())));
     }
 }

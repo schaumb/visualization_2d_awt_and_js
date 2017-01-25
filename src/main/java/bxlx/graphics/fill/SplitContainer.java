@@ -13,10 +13,10 @@ import java.util.List;
 /**
  * Created by qqcs on 2017.01.04..
  */
-public class SplitContainer extends DrawableContainer<IDrawable> {
+public class SplitContainer<T extends IDrawable> extends DrawableContainer<T> {
     private final ChangeableValue<Boolean> xSplit;
 
-    public SplitContainer(boolean xSplit, List<IDrawable> list) {
+    public SplitContainer(boolean xSplit, List<T> list) {
         super(list);
         this.xSplit = new ChangeableValue<>(this, xSplit);
     }
@@ -25,7 +25,7 @@ public class SplitContainer extends DrawableContainer<IDrawable> {
         this(xSplit, new ArrayList<>());
     }
 
-    public SplitContainer(List<IDrawable> list) {
+    public SplitContainer(List<T> list) {
         this(false, list);
     }
 
@@ -38,13 +38,13 @@ public class SplitContainer extends DrawableContainer<IDrawable> {
     }
 
     @Override
-    public SplitContainer add(IDrawable drawable) {
+    public SplitContainer<T> add(T drawable) {
         super.add(drawable);
         return this;
     }
 
     @Override
-    public ChangeableValue<IDrawable> get(int index) {
+    public ChangeableValue<T> get(int index) {
         return super.get(index);
     }
 
@@ -72,7 +72,7 @@ public class SplitContainer extends DrawableContainer<IDrawable> {
         Point elemSize = rectangle.getSize().asPoint().multiple(dimension.multiple(1.0 / size()).add(otherDimension));
 
         for (int i = 0; i < size(); ++i) {
-            IDrawable child = get(i).get();
+            T child = get(i).get();
             if (child == null) {
                 continue;
             }

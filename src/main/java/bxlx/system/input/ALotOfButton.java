@@ -1,0 +1,52 @@
+package bxlx.system.input;
+
+import bxlx.graphics.drawable.MarginDrawable;
+import bxlx.graphics.fill.SplitContainer;
+
+import java.util.function.Consumer;
+import java.util.function.Supplier;
+
+/**
+ * Created by qqcs on 2017.01.25..
+ */
+public class ALotOfButton extends SplitContainer<MarginDrawable<Button<OnOffClickable>>> {
+    private int selectedButtonIndex = -1;
+    public ALotOfButton(boolean xSplit) {
+        super(xSplit);
+    }
+
+    public Supplier<Integer> getSelected() {
+        return () -> selectedButtonIndex;
+    }
+
+    public static MarginDrawable<Button<OnOffClickable>> margin(Button<OnOffClickable> button) {
+        return new MarginDrawable<>(button, 0.1);
+    }
+
+    public ALotOfButton add(Button<OnOffClickable> button) {
+        final int index = size();
+        add(margin(button));
+        final Consumer<Button<OnOffClickable>> prevConsumer = button.getAtClick().get();
+        button.getAtClick().setElem(
+                b -> {
+                    if(prevConsumer != null) {
+                        prevConsumer.accept(b);
+                    }
+                    if(b.getChild().get().isOn().get()) {
+                        selectedButtonIndex = index;
+                        for(int i = 0; i < size(); ++i) {
+                            if(i != selectedButtonIndex) {
+                                get(i).get().getChild().get().getChild().get().on.setElem(false);
+                            }
+                        }
+                    } else {
+                        selectedButtonIndex = -1;
+                    }
+                });
+        return this;
+    }
+
+    public ALotOfButton add(OnOffClickable clickable) {
+        return add(new Button<>(clickable, null, null, () -> false));
+    }
+}

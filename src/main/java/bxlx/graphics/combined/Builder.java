@@ -110,8 +110,12 @@ public class Builder<T extends IDrawable> {
         return new Builder<>(new Text(text));
     }
 
+    public static Builder<Text> text(String text, int align) {
+        return new Builder<>(new Text(text, null, align));
+    }
+
     public static Builder<Text> text(String text, String referenceText) {
-        return new Builder<>(new Text(text, referenceText));
+        return new Builder<>(new Text(text, referenceText, 0));
     }
 
     public static Builder<DrawArc> circle(boolean inside) {
@@ -127,7 +131,7 @@ public class Builder<T extends IDrawable> {
     }
 
     public static Builder<DrawNumber> number(int number, String suffix, String preferenceText) {
-        return new Builder<>(new DrawNumber(number, suffix, preferenceText));
+        return new Builder<>(new DrawNumber(number, suffix, preferenceText, 0));
     }
 
     public static Builder<DrawNGon> nGon(boolean inside, boolean ellipse, int n, double startAngle, boolean makeCentered) {
@@ -138,8 +142,8 @@ public class Builder<T extends IDrawable> {
         return new Builder<>(new Stick(angle, length, thickness, start, end));
     }
 
-    public static Builder<SplitContainer> container(boolean xSplit) {
-        return new Builder<>(new SplitContainer(xSplit));
+    public static Builder<SplitContainer<IDrawable>> container(boolean xSplit) {
+        return new Builder<>(new SplitContainer<>(xSplit));
     }
 
     public static Builder<Container> container() {
@@ -155,16 +159,12 @@ public class Builder<T extends IDrawable> {
         return new Builder<>(Splitter.threeWaySplit(xSplit, centerSeparate, first, center, last));
     }
 
-    public static Builder<Button> button(IDrawable drawable) {
-        return new Builder<>(new Button(drawable));
+    public static Builder<Slider> slider(boolean xDraw, double start, Supplier<Boolean> disabled) {
+        return new Builder<>(new Slider(xDraw, start, disabled));
     }
 
-    public static Builder<Slider> slider(boolean xDraw, double start, Color bg, Supplier<Boolean> disabled) {
-        return new Builder<>(new Slider(xDraw, start, bg, disabled));
-    }
-
-    public static Builder<DiscreteSlider> discreteSlider(boolean xDraw, Color bg, int from, int to, int now, Supplier<Boolean> disabled) {
-        return new Builder<>(new DiscreteSlider(xDraw, bg, from, to, now, disabled));
+    public static Builder<DiscreteSlider> discreteSlider(boolean xDraw, int from, int to, int now, Supplier<Boolean> disabled) {
+        return new Builder<>(new DiscreteSlider(xDraw, from, to, now, disabled));
     }
 
     public static Builder<Navigator> navigator(Button upLeft, Button upRight, IDrawable main, Supplier<Boolean> visibility, double buttonsThick, Color background) {

@@ -19,6 +19,7 @@ import bxlx.graphics.fill.Stick;
 import bxlx.graphics.shapes.Rectangle;
 import bxlx.system.MouseInfo;
 import bxlx.system.input.Button;
+import bxlx.system.input.Clickable;
 
 import java.util.ArrayList;
 import java.util.function.Supplier;
@@ -40,10 +41,10 @@ public class Navigator extends DrawableWrapper<Container> {
     private double shiftY = 0;
 
     private final DrawableWrapper<IDrawable> mainWrapper;
-    private final DrawableWrapper<Button> upLeftWrapper;
-    private final DrawableWrapper<Button> upRightWrapper;
+    private final DrawableWrapper<Button<?>> upLeftWrapper;
+    private final DrawableWrapper<Button<?>> upRightWrapper;
 
-    public Navigator(Button upLeft, Button upRight, IDrawable main, Supplier<Boolean> visibility, double buttonsThick, Color background) {
+    public Navigator(Button<?> upLeft, Button<?> upRight, IDrawable main, Supplier<Boolean> visibility, double buttonsThick, Color background) {
         super(new Container(new ArrayList<>(), 2));
 
         Supplier<Double> buttThick = () -> visibility.get() ? -buttonsThick * 2 : 0;
@@ -53,21 +54,21 @@ public class Navigator extends DrawableWrapper<Container> {
                 Splitter.threeWaySplit(false, buttThick,
                         Splitter.threeWaySplit(true, buttThick,
                                 null,
-                                makeMargin(new Button(new Button.RectClickable(new DrawNGon(3, Math.PI / 2, true)),
+                                makeMargin(new Button<>(new Clickable.RectClickable(new DrawNGon(3, Math.PI / 2, true)),
                                         null, b -> up(), () -> shiftY <= 0)),
                                 null),
                         Splitter.threeWaySplit(true, buttThick,
-                                makeMargin(new Button(new Button.RectClickable(new DrawNGon(3, Math.PI, true)),
+                                makeMargin(new Button<>(new Clickable.RectClickable(new DrawNGon(3, Math.PI, true)),
                                         null, b -> left(), () -> shiftX <= 0)),
                                 mainWrapper = new ZoomDrawable<>(main, true, () -> zoom, () -> -shiftX, () -> -shiftY),
-                                makeMargin(new Button(new Button.RectClickable(new DrawNGon(3, 0, true)),
+                                makeMargin(new Button<>(new Clickable.RectClickable(new DrawNGon(3, 0, true)),
                                         null, b -> right(), () -> zoom - 1 <= shiftX))),
                         Splitter.threeWaySplit(true, buttThick,
-                                makeMargin(new Button(new Button.RectClickable(new Stick(Math.PI / 3, 0.4, 0.7, null, new Magnifying(false))),
+                                makeMargin(new Button<>(new Clickable.RectClickable(new Stick(Math.PI / 3, 0.4, 0.7, null, new Magnifying(false))),
                                         null, b -> zoomOut(), () -> zoom <= 1)),
-                                makeMargin(new Button(new Button.RectClickable(new DrawNGon(3, -Math.PI / 2, true)),
+                                makeMargin(new Button<>(new Clickable.RectClickable(new DrawNGon(3, -Math.PI / 2, true)),
                                         null, b -> down(), () -> zoom - 1 <= shiftY)),
-                                makeMargin(new Button(new Button.RectClickable(new Stick(Math.PI / 3, 0.4, 0.7, null, new Magnifying(true))),
+                                makeMargin(new Button<>(new Clickable.RectClickable(new Stick(Math.PI / 3, 0.4, 0.7, null, new Magnifying(true))),
                                         null, b -> zoomIn(), null)))
                 )
         );
@@ -100,11 +101,11 @@ public class Navigator extends DrawableWrapper<Container> {
         return mainWrapper.getChild();
     }
 
-    public ChangeableValue<Button> getUpLeft() {
+    public ChangeableValue<Button<?>> getUpLeft() {
         return upLeftWrapper.getChild();
     }
 
-    public ChangeableValue<Button> getUpRight() {
+    public ChangeableValue<Button<?>> getUpRight() {
         return upRightWrapper.getChild();
     }
 

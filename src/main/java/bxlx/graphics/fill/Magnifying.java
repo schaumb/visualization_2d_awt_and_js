@@ -30,6 +30,6 @@ public class Magnifying extends ChangeableDrawable {
         arc.forceDraw(canvas);
         canvas.restore();
         canvas.setColor(color);
-        new Text(plus.get() ? "+" : "-", "+").forceDraw(canvas);
+        new Text(plus.get() ? "+" : "-", "+", 0).forceDraw(canvas);
     }
 }

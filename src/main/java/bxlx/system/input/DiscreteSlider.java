@@ -14,8 +14,8 @@ public class DiscreteSlider extends Slider {
     private final ChangeableDrawable.ChangeableValue<Integer> from;
     private final ChangeableValue<Integer> to;
 
-    public DiscreteSlider(boolean xDraw, Color bg, int from, int to, int now, Supplier<Boolean> disabled) {
-        super(xDraw, (double) (now - from) / (to - 1 - from), bg, disabled);
+    public DiscreteSlider(boolean xDraw, int from, int to, int now, Supplier<Boolean> disabled) {
+        super(xDraw, (double) (now - from) / (to - 1 - from), disabled);
         this.from = new ChangeableValue<>(this, from);
         this.to = new ChangeableValue<>(this, to);
         realCachedNow = (double) (now - from) / (to - 1 - from);

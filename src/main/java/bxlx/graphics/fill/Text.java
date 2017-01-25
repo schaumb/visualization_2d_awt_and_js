@@ -5,20 +5,30 @@ import bxlx.graphics.ICanvas;
 import bxlx.graphics.Point;
 import bxlx.graphics.shapes.Rectangle;
 
+import java.util.function.Supplier;
+
 /**
  * Created by qqcs on 2017.01.03..
  */
 public class Text extends ChangeableDrawable {
     private final ChangeableValue<String> text;
     private final ChangeableValue<String> referenceText;
+    private final ChangeableValue<Integer> align;
 
-    public Text(String text) {
-        this(text, null);
+    public Text(Supplier<String> text) {
+        this.text = new ChangeableValue<>(this, text);
+        this.align = new ChangeableValue<>(this, 0);
+        this.referenceText = new ChangeableValue<>(this, (String) null);
     }
 
-    public Text(String text, String referenceText) {
+    public Text(String text) {
+        this(text, null, 0);
+    }
+
+    public Text(String text, String referenceText, int align) {
         this.text = new ChangeableValue<>(this, text);
         this.referenceText = new ChangeableValue<>(this, referenceText);
+        this.align = new ChangeableValue<>(this, (int) Math.signum(align));
     }
 
     public ChangeableValue<String> getText() {
@@ -29,10 +39,15 @@ public class Text extends ChangeableDrawable {
         return referenceText;
     }
 
+    public ChangeableValue<Integer> getAlign() {
+        return align;
+    }
+
     @Override
     public void forceRedraw(ICanvas canvas) {
         String nowText = text.get();
         String nowReferenceText = referenceText.get();
+        int nowAlign = align.get();
 
         if (nowText.isEmpty())
             return;
@@ -47,8 +62,16 @@ public class Text extends ChangeableDrawable {
         }
         int xSize = canvas.textWidth(nowText);
 
+        double x;
+        if(nowAlign < 0) {
+            x = 0;
+        } else if (nowAlign == 0) {
+            x = (rectangle.getSize().getWidth() - xSize) / 2;
+        } else {
+            x = rectangle.getSize().getWidth() - xSize;
+        }
+
         canvas.fillText(nowText, rectangle.getStart().add(new Point(
-                (rectangle.getSize().getWidth() - xSize) / 2,
-                (rectangle.getSize().getHeight() + ySize) / 2 - ySize / 6.0)));
+                x, (rectangle.getSize().getHeight() + ySize) / 2 - ySize / 6.0)));
     }
 }

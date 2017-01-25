@@ -222,8 +222,7 @@ public class AwtSystemSpecific extends SystemSpecific {
     @Override
     public Color getColor(String pic, double x, double y) {
         BufferedImage img = GraphicsCanvas.imageCaches.get(pic);
-
-        int rgba = img.getRGB((int) Math.round(x * img.getWidth()), (int) Math.round(y * img.getHeight()));
+        int rgba = img.getRGB((int) Math.min(img.getWidth() - 1, Math.round(x * img.getWidth())), (int) Math.min(img.getHeight() - 1, Math.round(y * img.getHeight())));
         return new Color(rgba);
     }
 

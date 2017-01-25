@@ -210,8 +210,8 @@ public class JSweetSystemSpecific extends SystemSpecific {
         HTMLImageElement htmlImageElement = HtmlCanvas.imageCaches.get(pic);
         if (htmlImageElement.complete) {
             ImageData data = imageTransparencyCache.get(pic);
-            int intX = (int) Math.round(x * htmlImageElement.naturalWidth);
-            int intY = (int) Math.round(y * htmlImageElement.naturalHeight);
+            int intX = (int) Math.min(htmlImageElement.naturalWidth - 1, Math.round(x * htmlImageElement.naturalWidth));
+            int intY = (int) Math.min(htmlImageElement.naturalHeight - 1, Math.round(y * htmlImageElement.naturalHeight));
             int getPixel = intX + intY * (int) htmlImageElement.naturalWidth;
             return new Color(data.data.$get(getPixel * 4).intValue(),
                     data.data.$get(getPixel * 4 + 1).intValue(),

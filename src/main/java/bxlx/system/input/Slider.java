@@ -3,6 +3,7 @@ package bxlx.system.input;
 import bxlx.graphics.ChangeableDrawable;
 import bxlx.graphics.Color;
 import bxlx.graphics.Direction;
+import bxlx.graphics.IDrawable;
 import bxlx.graphics.Point;
 import bxlx.graphics.drawable.AspectRatioDrawable;
 import bxlx.graphics.drawable.ClippedDrawable;
@@ -17,6 +18,7 @@ import bxlx.system.MouseInfo;
 import bxlx.system.SystemSpecific;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.function.Supplier;
 
 /**
@@ -25,23 +27,27 @@ import java.util.function.Supplier;
 public class Slider extends Container implements IMouseEventListener {
     private Point draggedPoint;
     private Rectangle lastRectangle = Rectangle.NULL_RECTANGLE;
-    private final Button button;
+    private final Button<?> button;
     private final ChangeableDrawable.ChangeableValue<Boolean> xDraw;
     private final ChangeableValue<Double> now;
 
-    public Slider(boolean xDraw, double start, Color bg, Supplier<Boolean> disabled) {
-        super(new ArrayList<>(), 2);
+    public Slider(boolean xDraw, double start, Supplier<Boolean> disabled) {
+        this(new Button<>(new Clickable.RectClickable(null), null, null, disabled), xDraw, start, disabled);
+    }
 
+    public Slider(Button<?> button, boolean xDraw, double start, Supplier<Boolean> disabled) {
+        super(new ArrayList<>());
+
+        this.button = button;
         this.xDraw = new ChangeableValue<>(this, xDraw);
         this.now = new ChangeableValue<>(this, Math.max(0, Math.min(1, start)));
 
         Stick mainStick = new Stick(0, 0.1, 0.5, null, null);
         mainStick.getAngle().setSupplier(() -> this.xDraw.get() ? 0 : Math.PI / 2);
 
-        add(new ColoredDrawable<>(new DrawRectangle(), bg));
         add(new ColoredDrawable<>(mainStick, Color.LIGHT_GRAY));
         add(new ClippedDrawable<>(new ZoomDrawable<>(new AspectRatioDrawable<>(
-                new ColoredDrawable<>(button = new Button(new Button.RectClickable(null), null, null, disabled), Color.GRAY)
+                new ColoredDrawable<>(this.button, Color.GRAY)
                 , true, -1, -1, () -> this.xDraw.get() ? 2 : 0.5)
                 , true, () -> 1.0, () -> this.xDraw.get() ? 0.05 + now.get() * 0.85 : 0, () -> this.xDraw.get() ? 0 : 0.05 + now.get() * 0.85)
                 , true, r -> lastRectangle = mainStick.getBoundingRectangle(r)));

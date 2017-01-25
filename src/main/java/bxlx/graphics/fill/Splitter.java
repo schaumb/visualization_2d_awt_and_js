@@ -9,6 +9,7 @@ import bxlx.graphics.shapes.Rectangle;
 import bxlx.system.ValueOrSupplier;
 
 import java.util.Arrays;
+import java.util.function.Function;
 import java.util.function.Supplier;
 
 /**
@@ -16,18 +17,18 @@ import java.util.function.Supplier;
  */
 public class Splitter extends DrawableContainer<IDrawable> {
     private final ChangeableValue<Boolean> xSplit;
-    private final ChangeableValue<Double> separate;
+    private final ChangeableValue<Function<Rectangle, Double>> separate;
 
     public Splitter(boolean xSplit, double separate, IDrawable first, IDrawable second) {
         super(Arrays.asList(first, second));
         this.xSplit = new ChangeableValue<>(this, xSplit);
-        this.separate = new ChangeableValue<>(this, separate);
+        this.separate = new ChangeableValue<>(this, r -> separate);
     }
 
     public Splitter(boolean xSplit, Supplier<Double> separate, IDrawable first, IDrawable second) {
         super(Arrays.asList(first, second));
         this.xSplit = new ChangeableValue<>(this, xSplit);
-        this.separate = new ChangeableValue<>(this, separate);
+        this.separate = new ChangeableValue<>(this, r -> separate.get());
     }
 
     public Splitter(double separate, IDrawable first, IDrawable second) {
@@ -114,7 +115,7 @@ public class Splitter extends DrawableContainer<IDrawable> {
         return xSplit;
     }
 
-    public ChangeableValue<Double> getSeparate() {
+    public ChangeableValue<Function<Rectangle, Double>> getSeparate() {
         return separate;
     }
 
@@ -134,7 +135,7 @@ public class Splitter extends DrawableContainer<IDrawable> {
         Rectangle rectangle = canvas.getBoundingRectangle();
 
         boolean nowXSplit = xSplit.get();
-        double nowSeparate = separate.get();
+        double nowSeparate = separate.get().apply(rectangle);
 
         Point dimension = nowXSplit ? Direction.RIGHT.getVector() : Direction.DOWN.getVector();
         Point otherDimension = nowXSplit ? Direction.DOWN.getVector() : Direction.RIGHT.getVector();
