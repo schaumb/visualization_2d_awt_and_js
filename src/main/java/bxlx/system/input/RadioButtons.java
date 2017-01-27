@@ -9,10 +9,9 @@ import java.util.function.Supplier;
 /**
  * Created by qqcs on 2017.01.25..
  */
-public class ALotOfButton extends SplitContainer<MarginDrawable<Button<OnOffClickable>>> {
+public class RadioButtons extends SplitContainer<MarginDrawable<Button<OnOffClickable>>> {
     private int selectedButtonIndex = -1;
-
-    public ALotOfButton(boolean xSplit) {
+    public RadioButtons(boolean xSplit) {
         super(xSplit);
     }
 
@@ -21,10 +20,10 @@ public class ALotOfButton extends SplitContainer<MarginDrawable<Button<OnOffClic
     }
 
     public static MarginDrawable<Button<OnOffClickable>> margin(Button<OnOffClickable> button) {
-        return new MarginDrawable<>(button, 0.1);
+        return new MarginDrawable<>(button, 0, 0.1);
     }
 
-    public ALotOfButton add(Button<OnOffClickable> button) {
+    public RadioButtons add(Button<OnOffClickable> button) {
         final int index = size();
         add(margin(button));
         final Consumer<Button<OnOffClickable>> prevConsumer = button.getAtClick().get();
@@ -47,7 +46,7 @@ public class ALotOfButton extends SplitContainer<MarginDrawable<Button<OnOffClic
         return this;
     }
 
-    public ALotOfButton add(OnOffClickable clickable) {
+    public RadioButtons add(OnOffClickable clickable) {
         return add(new Button<>(clickable, null, null, () -> false));
     }
 }

@@ -44,10 +44,6 @@ public class Container extends DrawableContainer<IDrawable> {
 
     @Override
     protected void forceRedraw(ICanvas canvas) {
-        if (size() == 0) {
-            return;
-        }
-
         Redraw redraw = needRedraw();
         boolean noNeedRedraw = redraw.noNeedRedraw();
         boolean iNeedRedraw = redraw.iNeedRedraw();
@@ -58,9 +54,10 @@ public class Container extends DrawableContainer<IDrawable> {
                 continue;
             }
 
-            if (!redraw.iNeedRedraw() && child.needRedraw().parentNeedRedraw()) {
+            Redraw childRedraw = child.needRedraw();
+            if (!redraw.iNeedRedraw() && childRedraw.needRedraw()) {
                 redraw.setINeedRedraw();
-                if (i > 0) {
+                if (i > 0 && childRedraw.parentNeedRedraw()) {
                     i = Math.max(-1, i - forceRedrawPrevLayer.get() - 1);
                     continue;
                 }

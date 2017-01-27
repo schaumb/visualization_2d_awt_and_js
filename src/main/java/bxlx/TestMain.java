@@ -15,10 +15,11 @@ import bxlx.system.MouseInfo;
 import bxlx.system.SystemSpecific;
 import bxlx.system.Timer;
 import bxlx.system.ValueOrSupplier;
-import bxlx.system.input.ALotOfButton;
+import bxlx.system.input.RadioButtons;
 import bxlx.system.input.Button;
 import bxlx.system.input.Clickable;
 import bxlx.system.input.OnOffClickable;
+import bxlx.system.input.Selector;
 
 import java.util.Arrays;
 
@@ -128,10 +129,16 @@ public class TestMain implements IRenderer {
                         .withStart(r.getStart().add(r.getSize().asPoint().multiple(Direction.UP.getVector().multiple(2)))),
                 c -> c.getAlpha() != 0), null, null, () -> timer.percent() < 0.5));
 
-        main.setElem(new ALotOfButton(false)
+        main.setElem(new RadioButtons(true)
                 .add(new OnOffClickable.RectCheckBoxWith(Builder.text("Hello", -1).makeColored(Color.BLACK).get()))
                 .add(new OnOffClickable.RectCheckBoxWith(Builder.text("Szia", -1).makeColored(Color.BLACK).get()))
                 .add(new OnOffClickable.RectCheckBoxWith(Builder.text("Szerbusz", -1).makeColored(Color.BLACK).get()))
+        );
+
+        main.setElem(new Selector(false)
+            .addText(new Selector.RectClickable(), new Text("Hello", null, -1))
+                .addText(new Selector.RectClickable(), new Text("Szia", null, -1))
+                .addText(new Selector.RectClickable(), new Text("Szerbusz", null, -1))
         );
         SystemSpecific.get().setDrawFunction(this);
     }
