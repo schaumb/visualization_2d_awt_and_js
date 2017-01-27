@@ -11,6 +11,7 @@ import java.util.function.Supplier;
  */
 public class ALotOfButton extends SplitContainer<MarginDrawable<Button<OnOffClickable>>> {
     private int selectedButtonIndex = -1;
+
     public ALotOfButton(boolean xSplit) {
         super(xSplit);
     }
@@ -29,13 +30,13 @@ public class ALotOfButton extends SplitContainer<MarginDrawable<Button<OnOffClic
         final Consumer<Button<OnOffClickable>> prevConsumer = button.getAtClick().get();
         button.getAtClick().setElem(
                 b -> {
-                    if(prevConsumer != null) {
+                    if (prevConsumer != null) {
                         prevConsumer.accept(b);
                     }
-                    if(b.getChild().get().isOn().get()) {
+                    if (b.getChild().get().isOn().get()) {
                         selectedButtonIndex = index;
-                        for(int i = 0; i < size(); ++i) {
-                            if(i != selectedButtonIndex) {
+                        for (int i = 0; i < size(); ++i) {
+                            if (i != selectedButtonIndex) {
                                 get(i).get().getChild().get().getChild().get().on.setElem(false);
                             }
                         }

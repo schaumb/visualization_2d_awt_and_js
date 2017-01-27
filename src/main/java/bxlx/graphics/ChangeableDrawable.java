@@ -22,17 +22,17 @@ public abstract class ChangeableDrawable implements IDrawable {
         }
     }
 
-    private boolean onlyForceDraw = false;
     private boolean redraw = false;
     protected List<ChangeableValue> values = new ArrayList<>();
 
-    public void setRedraw() {
+    @Override
+    public final void setRedraw() {
         redraw = true;
     }
 
     @Override
     public Redraw needRedraw() {
-        return new Redraw().setIf(!onlyForceDraw && (redraw || valueChanged()), Redraw.I_NEED_REDRAW);
+        return new Redraw().setIf(redraw || valueChanged(), Redraw.I_NEED_REDRAW);
     }
 
     private boolean valueChanged() {
@@ -66,20 +66,10 @@ public abstract class ChangeableDrawable implements IDrawable {
         */
         forceRedraw(canvas);
         redraw = false;
-        onlyForceDraw = false;
 
         for (ChangeableValue changeableValue : values) {
             changeableValue.commit();
         }
-    }
-
-    @Override
-    public void setOnlyForceDraw() {
-        onlyForceDraw = true;
-    }
-
-    public boolean isOnlyForceDraw() {
-        return onlyForceDraw;
     }
 
     protected abstract void forceRedraw(ICanvas canvas);

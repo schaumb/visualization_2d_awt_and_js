@@ -24,7 +24,7 @@ public abstract class DrawableContainer<T extends IDrawable> extends ChangeableD
 
     @Override
     public Redraw needRedraw() {
-        return new Redraw(iChanged()).orIf(!isOnlyForceDraw(), childrenChanged());
+        return new Redraw(iChanged()).orIf(true, childrenChanged());
     }
 
     public Redraw iChanged() {
@@ -47,17 +47,6 @@ public abstract class DrawableContainer<T extends IDrawable> extends ChangeableD
 
     protected int size() {
         return children.size();
-    }
-
-    @Override
-    public void setOnlyForceDraw() {
-        super.setOnlyForceDraw();
-        for (ChangeableValue<T> drawable : children) {
-            T draw = drawable.get();
-            if (draw != null) {
-                draw.setOnlyForceDraw();
-            }
-        }
     }
 
     public Redraw childrenChanged() {

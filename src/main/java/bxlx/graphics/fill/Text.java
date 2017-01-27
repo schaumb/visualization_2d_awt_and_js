@@ -63,7 +63,7 @@ public class Text extends ChangeableDrawable {
         int xSize = canvas.textWidth(nowText);
 
         double x;
-        if(nowAlign < 0) {
+        if (nowAlign < 0) {
             x = 0;
         } else if (nowAlign == 0) {
             x = (rectangle.getSize().getWidth() - xSize) / 2;

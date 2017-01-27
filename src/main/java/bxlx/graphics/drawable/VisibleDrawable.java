@@ -42,9 +42,14 @@ public class VisibleDrawable<T extends VisibleDrawable.VisibleDraw> extends Draw
             return;
 
         Redraw redraw = needRedraw();
+        boolean noNeedRedraw = redraw.noNeedRedraw();
+        boolean iNeedRedraw = redraw.iNeedRedraw();
 
         if (visible.get()) {
-            if (redraw.noNeedRedraw() || redraw.iNeedRedraw()) {
+            if (noNeedRedraw) {
+                super.forceRedraw(canvas);
+            } else if (iNeedRedraw) {
+                getChild().get().setRedraw();
                 super.forceRedraw(canvas);
             } else {
                 getChild().get().draw(canvas);

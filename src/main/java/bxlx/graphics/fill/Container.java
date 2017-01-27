@@ -49,6 +49,8 @@ public class Container extends DrawableContainer<IDrawable> {
         }
 
         Redraw redraw = needRedraw();
+        boolean noNeedRedraw = redraw.noNeedRedraw();
+        boolean iNeedRedraw = redraw.iNeedRedraw();
 
         for (int i = 0; i < size(); ++i) {
             IDrawable child = get(i).get();
@@ -58,17 +60,16 @@ public class Container extends DrawableContainer<IDrawable> {
 
             if (!redraw.iNeedRedraw() && child.needRedraw().parentNeedRedraw()) {
                 redraw.setINeedRedraw();
-                setOnlyForceDraw();
                 if (i > 0) {
                     i = Math.max(-1, i - forceRedrawPrevLayer.get() - 1);
                     continue;
                 }
             }
 
-            if (redraw.noNeedRedraw() || redraw.iNeedRedraw()) {
+            if (noNeedRedraw) {
                 child.forceDraw(canvas);
-            } else if (get(i).isChanged()) {
-                child.setOnlyForceDraw();
+            } else if (iNeedRedraw) {
+                child.setRedraw();
                 child.forceDraw(canvas);
             } else {
                 child.draw(canvas);

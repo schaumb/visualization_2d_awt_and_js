@@ -60,7 +60,8 @@ public class SplitContainer<T extends IDrawable> extends DrawableContainer<T> {
         }
 
         Redraw redraw = needRedraw();
-        boolean forcedRedraw = redraw.noNeedRedraw() || redraw.iNeedRedraw();
+        boolean noNeedRedraw = redraw.noNeedRedraw();
+        boolean iNeedRedraw = redraw.iNeedRedraw();
 
         Rectangle rectangle = canvas.getBoundingRectangle();
 
@@ -82,7 +83,10 @@ public class SplitContainer<T extends IDrawable> extends DrawableContainer<T> {
                     rectangle.getStart()
                             .add(elemSize.multiple(dimension.multiple(i + 1).add(otherDimension))));
             canvas.clip(toDraw);
-            if (forcedRedraw || get(i).isChanged()) {
+            if (noNeedRedraw) {
+                child.forceDraw(canvas);
+            } else if (iNeedRedraw) {
+                child.setRedraw();
                 child.forceDraw(canvas);
             } else {
                 child.draw(canvas);

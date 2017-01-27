@@ -43,13 +43,14 @@ public abstract class OnOffClickable extends Clickable {
     }
 
     @Override
-    public void forceDraw(ICanvas canvas) {
+    public void forceRedraw(ICanvas canvas) {
         on.commit();
     }
 
     public static class RectCheckBoxWith extends OnOffClickable {
         private final Rect rect;
         private final Splitter container;
+
         public RectCheckBoxWith(IDrawable other) {
             rect = new Rect();
             container = new Splitter(true, 0,
@@ -76,8 +77,8 @@ public abstract class OnOffClickable extends Clickable {
         }
 
         @Override
-        public void forceDraw(ICanvas canvas) {
-            container.setOnlyForceDraw();
+        public void forceRedraw(ICanvas canvas) {
+            container.setRedraw();
             container.forceDraw(canvas);
             super.forceDraw(canvas);
         }
@@ -86,12 +87,11 @@ public abstract class OnOffClickable extends Clickable {
         public boolean isContains(Rectangle bound, Point position) {
             return rect.isContains(
                     bound.getSize().getWidth() != bound.getSize().getLongerDimension() ? bound :
-                    new AspectRatioDrawable<>(null, false, -1, -1, 1)
-                            .getClip().get().apply(bound)
+                            new AspectRatioDrawable<>(null, false, -1, -1, 1)
+                                    .getClip().get().apply(bound)
                     , position);
         }
     }
-
 
 
     public static class ChangeImgClickable extends OnOffClickable {
@@ -131,7 +131,7 @@ public abstract class OnOffClickable extends Clickable {
         }
 
         @Override
-        public void forceDraw(ICanvas canvas) {
+        public void forceRedraw(ICanvas canvas) {
             getActualImage().forceDraw(canvas);
         }
 
@@ -200,7 +200,7 @@ public abstract class OnOffClickable extends Clickable {
         }
 
         @Override
-        public void forceDraw(ICanvas canvas) {
+        public void forceRedraw(ICanvas canvas) {
             lastRectangle = getActualClip().apply(canvas.getBoundingRectangle());
 
             canvas.fakeClip(lastRectangle);

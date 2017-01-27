@@ -1,5 +1,6 @@
 package bxlx.system.input;
 
+import bxlx.graphics.ChangeableDrawable;
 import bxlx.graphics.Color;
 import bxlx.graphics.ICanvas;
 import bxlx.graphics.IDrawable;
@@ -14,11 +15,12 @@ import java.util.function.Supplier;
 /**
  * Created by qqcs on 2017.01.25..
  */
-public abstract class Clickable implements IDrawable {
+public abstract class Clickable extends ChangeableDrawable {
     protected Supplier<Boolean> inside = null;
     protected Supplier<Boolean> disabled = null;
 
     abstract public boolean isContains(Rectangle bound, Point position);
+
     public void clicked() {
     }
 
@@ -45,7 +47,7 @@ public abstract class Clickable implements IDrawable {
         }
 
         @Override
-        public void forceDraw(ICanvas canvas) {
+        public void forceRedraw(ICanvas canvas) {
             canvas.setColor(disabled.get() ? Color.LIGHT_GRAY : inside.get() ? Color.DARK_GRAY : Color.GRAY);
             rect.forceDraw(canvas);
             if (drawable != null) {

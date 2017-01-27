@@ -130,7 +130,8 @@ public class Splitter extends DrawableContainer<IDrawable> {
     @Override
     public void forceRedraw(ICanvas canvas) {
         Redraw redraw = needRedraw();
-        boolean forcedRedraw = redraw.noNeedRedraw() || redraw.iNeedRedraw();
+        boolean noNeedRedraw = redraw.noNeedRedraw();
+        boolean iNeedRedraw = redraw.iNeedRedraw();
 
         Rectangle rectangle = canvas.getBoundingRectangle();
 
@@ -157,7 +158,10 @@ public class Splitter extends DrawableContainer<IDrawable> {
                     rectangle.getStart(),
                     rectangle.getStart().add(dimension.multiple(firstSize))
                             .add(otherDimension.multiple(rectangle.getSize().asPoint()))));
-            if (forcedRedraw || getFirst().isChanged()) {
+            if (noNeedRedraw) {
+                child0.forceDraw(canvas);
+            } else if (iNeedRedraw) {
+                child0.setRedraw();
                 child0.forceDraw(canvas);
             } else {
                 child0.draw(canvas);
@@ -171,7 +175,10 @@ public class Splitter extends DrawableContainer<IDrawable> {
                     rectangle.getStart().add(dimension.multiple(firstSize)),
                     rectangle.getEnd()));
 
-            if (forcedRedraw || getSecond().isChanged()) {
+            if (noNeedRedraw) {
+                child1.forceDraw(canvas);
+            } else if (iNeedRedraw) {
+                child1.setRedraw();
                 child1.forceDraw(canvas);
             } else {
                 child1.draw(canvas);

@@ -47,7 +47,8 @@ public class Stick extends DrawableContainer<IDrawable> {
         double nowThickness = thickness.get();
 
         Redraw redraw = needRedraw();
-        boolean forcedRedraw = redraw.noNeedRedraw() || redraw.iNeedRedraw();
+        boolean noNeedRedraw = redraw.noNeedRedraw();
+        boolean iNeedRedraw = redraw.iNeedRedraw() || redraw.parentNeedRedraw();
 
         Rectangle bound = canvas.getBoundingRectangle();
         Point center = bound.getCenter();
@@ -74,7 +75,7 @@ public class Stick extends DrawableContainer<IDrawable> {
         Point stickThickVector = new Point(-stickVector.getY(), stickVector.getX()).norm();
 
 
-        if (forcedRedraw) {
+        if (noNeedRedraw || iNeedRedraw) {
             canvas.fill(new Polygon(Arrays.asList(
                     center.add(stickVector.multiple(stickSize / 2 - stickThick * 2 / 3)).add(stickThickVector.multiple(stickThick * nowThickness / 2)),
                     center.add(stickVector.multiple(stickSize / 2 - stickThick * 2 / 3)).add(stickThickVector.multiple(-stickThick * nowThickness / 2)),
@@ -84,7 +85,7 @@ public class Stick extends DrawableContainer<IDrawable> {
         }
 
         IDrawable child0 = get(0).get();
-        if (child0 == null && forcedRedraw) {
+        if (child0 == null && (noNeedRedraw || iNeedRedraw)) {
             canvas.fill(Arc.circle(center.add(stickVector.multiple(stickThick * 2 / 3 - stickSize / 2)), stickThick * nowThickness / 2));
         } else if (child0 != null) {
             Polygon p = new Polygon(Arrays.asList(
@@ -95,7 +96,10 @@ public class Stick extends DrawableContainer<IDrawable> {
             ));
             canvas.clip(p.getBoundingRectangle());
 
-            if (forcedRedraw || get(0).isChanged()) {
+            if (noNeedRedraw) {
+                child0.forceDraw(canvas);
+            } else if (iNeedRedraw) {
+                child0.setRedraw();
                 child0.forceDraw(canvas);
             } else {
                 child0.draw(canvas);
@@ -104,7 +108,7 @@ public class Stick extends DrawableContainer<IDrawable> {
         }
 
         IDrawable child1 = get(1).get();
-        if (child1 == null && forcedRedraw) {
+        if (child1 == null && (noNeedRedraw || iNeedRedraw)) {
             canvas.fill(Arc.circle(center.add(stickVector.multiple(stickSize / 2 - stickThick * 2 / 3)), stickThick * nowThickness / 2));
         } else if (child1 != null) {
             Polygon p = new Polygon(Arrays.asList(
@@ -115,7 +119,10 @@ public class Stick extends DrawableContainer<IDrawable> {
             ));
             canvas.clip(p.getBoundingRectangle());
 
-            if (forcedRedraw || get(1).isChanged()) {
+            if (noNeedRedraw) {
+                child1.forceDraw(canvas);
+            } else if (iNeedRedraw) {
+                child1.setRedraw();
                 child1.forceDraw(canvas);
             } else {
                 child1.draw(canvas);

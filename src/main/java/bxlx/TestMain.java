@@ -8,7 +8,6 @@ import bxlx.graphics.Point;
 import bxlx.graphics.combined.Builder;
 import bxlx.graphics.combined.Navigator;
 import bxlx.graphics.fill.Splitter;
-import bxlx.graphics.fill.Text;
 import bxlx.graphics.shapes.Polygon;
 import bxlx.graphisoft.Game;
 import bxlx.system.IRenderer;
@@ -37,6 +36,11 @@ public class TestMain implements IRenderer {
         @Override
         public Redraw needRedraw() {
             return new Redraw(Redraw.PARENT_NEED_REDRAW);
+        }
+
+        @Override
+        public void setRedraw() {
+
         }
 
         @Override
@@ -98,13 +102,12 @@ public class TestMain implements IRenderer {
 
         Button<?> visibleButton = new Button<>(new Clickable.RectClickable(Builder.text("NAVI", "MENU").get()), b -> {
             visibleNavi.setElem(!visibleNavi.get());
-            splitter.getFirst().get().setOnlyForceDraw();
             splitter.setRedraw();
         }, null, null);
 
         Button<?> menuButton = new Button<>(new Clickable.RectClickable(Builder.text("MENU").get()), b -> {
             splitter.getSeparate().setElem(r -> -200 - splitter.getSeparate().get().apply(r));
-            splitter.getFirst().get().setOnlyForceDraw();
+            splitter.setRedraw();
         }, null, null);
 
         Game game = new Game("test2.txt");
