@@ -2,6 +2,7 @@ package bxlx.awt;
 
 import bxlx.graphics.Color;
 import bxlx.graphics.Direction;
+import bxlx.graphics.Font;
 import bxlx.graphics.ICanvas;
 import bxlx.graphics.ImageCaches;
 import bxlx.graphics.Point;
@@ -12,7 +13,6 @@ import bxlx.graphics.shapes.Rectangle;
 import bxlx.graphics.shapes.Shape;
 
 import javax.imageio.ImageIO;
-import java.awt.Font;
 import java.awt.Graphics2D;
 import java.awt.RenderingHints;
 import java.awt.geom.Arc2D;
@@ -38,12 +38,15 @@ public class GraphicsCanvas implements ICanvas {
             return null;
         }
     });
+    private Font latestFont;
 
     public GraphicsCanvas(Graphics2D graphics, java.awt.Rectangle rectangle) {
         this.graphics = graphics;
         this.clips.add(new Rectangle(rectangle.getX(), rectangle.getY(), rectangle.getWidth(), rectangle.getHeight()));
         this.graphics.setClip(rectangle);
         this.areas.push(graphics.getClip());
+        java.awt.Font font = graphics.getFont();
+        this.latestFont = new Font(font.getFontName(), font.getSize(), font.isItalic(), font.isBold());
 
         graphics.setRenderingHint(
                 RenderingHints.KEY_ANTIALIASING,
@@ -129,8 +132,15 @@ public class GraphicsCanvas implements ICanvas {
     }
 
     @Override
-    public void setFont(String name, int size, boolean italic, boolean bold) {
-        graphics.setFont(new Font(name, (italic ? Font.ITALIC : Font.PLAIN) | (bold ? Font.BOLD : Font.PLAIN), size));
+    public void setFont(Font font) {
+        latestFont = font;
+        graphics.setFont(new java.awt.Font(font.getName(), (font.isItalic() ? java.awt.Font.ITALIC : java.awt.Font.PLAIN) |
+                (font.isBold() ? java.awt.Font.BOLD : java.awt.Font.PLAIN), font.getSize()));
+    }
+
+    @Override
+    public Font getFont() {
+        return latestFont;
     }
 
     @Override

@@ -1,6 +1,7 @@
 package bxlx.graphics.fill;
 
 import bxlx.graphics.ChangeableDrawable;
+import bxlx.graphics.Font;
 import bxlx.graphics.ICanvas;
 import bxlx.graphics.Point;
 import bxlx.graphics.shapes.Rectangle;
@@ -56,9 +57,9 @@ public class Text extends ChangeableDrawable {
         int ySize = (int) rectangle.getSize().getHeight();
 
         int xNeedFitSize = (int) rectangle.getSize().getWidth();
-        canvas.setFont("sans-serif", ySize, false, false);
+        canvas.setFont(canvas.getFont().withSize(ySize));
         while (canvas.textWidth(nowReferenceText != null ? nowReferenceText : nowText) > xNeedFitSize) {
-            canvas.setFont("sans-serif", --ySize, false, false);
+            canvas.setFont(canvas.getFont().withSize(--ySize));
         }
         int xSize = canvas.textWidth(nowText);
 

@@ -5,7 +5,6 @@ import bxlx.graphics.Point;
 import bxlx.graphics.shapes.Rectangle;
 
 import java.util.function.Function;
-import java.util.function.Supplier;
 
 /**
  * Created by qqcs on 2017.01.09..

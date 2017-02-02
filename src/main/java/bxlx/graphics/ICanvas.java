@@ -24,7 +24,9 @@ public interface ICanvas {
 
     void drawImage(String src, Rectangle to);
 
-    void setFont(String name, int size, boolean italic, boolean bold);
+    void setFont(Font font);
+
+    Font getFont();
 
     void fillText(String text, Point to);
 

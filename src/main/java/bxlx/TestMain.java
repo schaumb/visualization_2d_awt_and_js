@@ -2,6 +2,7 @@ package bxlx;
 
 import bxlx.graphics.Color;
 import bxlx.graphics.Direction;
+import bxlx.graphics.Font;
 import bxlx.graphics.ICanvas;
 import bxlx.graphics.IDrawable;
 import bxlx.graphics.Point;
@@ -98,6 +99,7 @@ public class TestMain implements IRenderer {
     @Override
     public void setCanvas(ICanvas canvas) {
         c = canvas;
+        c.setFont(new Font("purisa", 10, false, false));
         //SystemSpecific.get().log("");
         main.get().forceDraw(c);
     }
@@ -141,12 +143,10 @@ public class TestMain implements IRenderer {
                 .add(new OnOffClickable.RectCheckBoxWith(Builder.text("Szerbusz", -1).makeColored(Color.BLACK).get()))
         );
 
-        Selector selector;
-        main.setElem(selector = new Selector(false)
+        Selector selector = new Selector(false)
                 .addText(new Selector.RectClickable(), new Text("Hello", null, -1))
                 .addText(new Selector.RectClickable(), new Text("Szia", null, -1))
-                .addText(new Selector.RectClickable(), new Text("Szerbusz", null, -1))
-        );
+                .addText(new Selector.RectClickable(), new Text("Szerbusz", null, -1));
 
         main.setElem(new Builder<>(new SelectorWrapper(selector, 200)).makeBackgrounded(Color.WHITE).get());
         SystemSpecific.get().setDrawFunction(this);

@@ -1,6 +1,7 @@
 package bxlx.jsweet;
 
 import bxlx.graphics.Color;
+import bxlx.graphics.Font;
 import bxlx.graphics.ICanvas;
 import bxlx.graphics.ImageCaches;
 import bxlx.graphics.Point;
@@ -33,6 +34,7 @@ public class HtmlCanvas implements ICanvas {
                 return img;
             });
     private Color latestColor;
+    private Font latestFont = new Font("sans-serif", 10, false, false);
 
     public HtmlCanvas(HTMLCanvasElement canvasElement) {
         this.context = canvasElement.getContext(StringTypes._2d);
@@ -106,8 +108,14 @@ public class HtmlCanvas implements ICanvas {
     }
 
     @Override
-    public void setFont(String name, int size, boolean italic, boolean bold) {
-        context.font = (italic ? "italic " : "") + (bold ? "bold " : "") + size + "px " + name;
+    public void setFont(Font font) {
+        latestFont = font;
+        context.font = (font.isItalic() ? "italic " : "") + (font.isBold() ? "bold " : "") + font.getSize() + "px " + font.getName();
+    }
+
+    @Override
+    public Font getFont() {
+        return latestFont;
     }
 
     @Override
