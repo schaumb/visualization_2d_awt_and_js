@@ -27,18 +27,18 @@ public class MarginDrawable<T extends IDrawable> extends ClippedDrawable<T> {
     }
 
     public MarginDrawable(T wrapped, double marginX, double marginY) {
-        super(wrapped, false, null);
-        this.marginX = new ChangeableValue<>(this, r -> marginX);
-        this.marginY = new ChangeableValue<>(this, r -> marginY);
+        this(wrapped, r -> marginX, r -> marginY);
+    }
+
+    public MarginDrawable(T drawable, Function<Rectangle, Double> marginX, Function<Rectangle, Double> marginY) {
+        super(drawable, false, null);
+        this.marginX = new ChangeableValue<>(this, marginX);
+        this.marginY = new ChangeableValue<>(this, marginY);
         setTheClip();
     }
 
-    public MarginDrawable(T wrapped, double margin) {
-        this(wrapped, margin, margin);
-    }
-
     public MarginDrawable(T wrapped) {
-        this(wrapped, 0);
+        this(wrapped, 0, 0);
     }
 
     public ChangeableValue<Function<Rectangle, Double>> getMarginX() {

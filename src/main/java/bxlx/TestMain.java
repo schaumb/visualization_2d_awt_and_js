@@ -11,9 +11,9 @@ import bxlx.graphics.combined.Navigator;
 import bxlx.graphics.fill.Splitter;
 import bxlx.graphics.fill.Text;
 import bxlx.graphics.shapes.Polygon;
-import bxlx.graphisoft.Game;
 import bxlx.system.IRenderer;
 import bxlx.system.MouseInfo;
+import bxlx.system.MyConsumer;
 import bxlx.system.SystemSpecific;
 import bxlx.system.Timer;
 import bxlx.system.ValueOrSupplier;
@@ -29,11 +29,28 @@ import java.util.Arrays;
 /**
  * Created by qqcs on 2016.12.24..
  */
-public class TestMain implements IRenderer {
+public class TestMain implements IRenderer, MyConsumer<String> {
     private ICanvas c;
     private Splitter splitter = new Splitter(true, 0, null, null);
 
     private Timer timer = new Timer(3000);
+    private Selector selector;
+
+    @Override
+    public void accept(String data) {
+        if (data == null) {
+            selector.addText(new Selector.RectClickable(), new Text("ERROR", null, -1));
+            return;
+        }
+        String[] lines = data.split("\n");
+        for (String str : lines) {
+            str = str.trim();
+
+            if (str.length() > 0) {
+                selector.addText(new Selector.RectClickable(), new Text(str, null, -1));
+            }
+        }
+    }
 
     private static class Waiter implements IDrawable {
         private Timer timer = new Timer(3000);
@@ -119,13 +136,13 @@ public class TestMain implements IRenderer {
             splitter.setRedraw();
         }, null, null);
 
-        Game game = new Game("test2.txt");
+        //Game game = new Game("test2.txt");
 
         Navigator navi = Builder.navigator(visibleButton, menuButton, null, visibleNavi.getAsSupplier(), 40, Color.WHITE).get();
-        navi.getMain().setSupplier(() -> game.getMainDrawable() == null ? wait : game.getMainDrawable());
+        //navi.getMain().setSupplier(() -> game.getMainDrawable() == null ? wait : game.getMainDrawable());
 
         splitter.getFirst().setElem(navi);
-        splitter.getSecond().setSupplier(() -> game.getMenu() == null ? wait : game.getMenu());
+        //splitter.getSecond().setSupplier(() -> game.getMenu() == null ? wait : game.getMenu());
         main.setElem(splitter);
         main.setElem(new Button<>(new OnOffClickable.ChangeImgClickable("aal.png", "aax.png", "aab.png", c -> c.getAlpha() != 0), null, null, () -> false));
 
@@ -142,15 +159,16 @@ public class TestMain implements IRenderer {
                 .add(new OnOffClickable.RectCheckBoxWith(Builder.text("Szia", -1).makeColored(Color.BLACK).get()))
                 .add(new OnOffClickable.RectCheckBoxWith(Builder.text("Szerbusz", -1).makeColored(Color.BLACK).get()))
         );
-        Selector selector = new Selector(false, true)
+        selector = new Selector(false, true)
                 .addText(new Selector.RectClickable(), new Text("Hello", null, -1))
                 .addText(new Selector.RectClickable(), new Text("Szia", null, -1))
                 .addText(new Selector.RectClickable(), new Text("Szerbusz", null, -1));
 
-        main.setElem(new Builder<>(new SelectorWrapper(selector, 200)).makeBackgrounded(Color.WHITE).get());
+        main.setElem(new Builder<>(new SelectorWrapper(selector, 100)).makeBackgrounded(Color.WHITE).get());
 
         //main.setElem(new Container().add(new Button<>(new Selector.RectClickable(), null, null, () -> false))
         //    .add(new Text("ASD")));
         SystemSpecific.get().setDrawFunction(this);
+        SystemSpecific.get().readTextFileAsync("myFile.txt", getAsConsumer());
     }
 }

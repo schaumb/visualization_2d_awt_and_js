@@ -33,7 +33,7 @@ public class Navigator extends DrawableWrapper<Container> {
         if (drawable == null) {
             return null;
         }
-        return new MarginDrawable<>(drawable, 3);
+        return new MarginDrawable<>(drawable, 3, 3);
     }
 
     private double zoom = 1;

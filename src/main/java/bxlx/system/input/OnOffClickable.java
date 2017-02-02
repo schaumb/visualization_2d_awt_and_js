@@ -58,7 +58,7 @@ public abstract class OnOffClickable extends Clickable {
                             new ColoredDrawable<>(rect, Color.BLACK),
                             new ColoredDrawable<>(
                                     new MarginDrawable<>(
-                                            rect, 0.1
+                                            rect, 0.1, 0.1
                                     ), () -> disabled.get() ? Color.LIGHT_GRAY : inside.get() ? Color.DARK_GRAY : Color.GRAY
                             ),
                             new ColoredDrawable<>(

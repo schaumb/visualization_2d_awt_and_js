@@ -21,6 +21,29 @@ import java.util.function.Supplier;
 public class Selector extends SplitContainer<MarginDrawable<Container>> {
     public static class RectClickable extends OnOffClickable {
         private final Rect rect = new Rect();
+        private final MarginDrawable<Rect> smallerRect = new MarginDrawable<>(rect, 5, 5);
+
+        private final Color outsideColor;
+        private final Color color;
+        private final Color insideColor;
+        private final Color clickedColor;
+        private final Color disabledColor;
+        private final Color containsColor;
+        private final Color containsDisabledColor;
+
+        public RectClickable() {
+            this(Color.BLACK, Color.GRAY, Color.DARK_GRAY, Color.DARK_GRAY.getScale(Color.BLACK, 0.5), Color.LIGHT_GRAY, Color.BLACK, Color.WHITE);
+        }
+
+        public RectClickable(Color outsideColor, Color color, Color insideColor, Color clickedColor, Color disabledColor, Color containsColor, Color containsDisabledColor) {
+            this.outsideColor = outsideColor;
+            this.color = color;
+            this.insideColor = insideColor;
+            this.clickedColor = clickedColor;
+            this.disabledColor = disabledColor;
+            this.containsColor = containsColor;
+            this.containsDisabledColor = containsDisabledColor;
+        }
 
         @Override
         public IDrawable.Redraw needRedraw() {
@@ -30,9 +53,11 @@ public class Selector extends SplitContainer<MarginDrawable<Container>> {
         @Override
         public void forceRedraw(ICanvas canvas) {
             super.forceRedraw(canvas);
-            canvas.setColor(disabled.get() ? Color.LIGHT_GRAY : inside.get() ? Color.DARK_GRAY : isOn().get() ? Color.DARK_GRAY.getScale(Color.BLACK, 0.5) : Color.GRAY);
+            canvas.setColor(outsideColor);
             rect.forceDraw(canvas);
-            canvas.setColor(disabled.get() ? Color.WHITE : Color.BLACK);
+            canvas.setColor(disabled.get() ? disabledColor : inside.get() ? insideColor : isOn().get() ? clickedColor : color);
+            smallerRect.forceDraw(canvas);
+            canvas.setColor(disabled.get() ? containsDisabledColor : containsColor);
         }
 
         @Override
@@ -61,7 +86,7 @@ public class Selector extends SplitContainer<MarginDrawable<Container>> {
     public Selector addText(OnOffClickable clickable, Text text) {
         final int index = size();
         final Button<OnOffClickable> button = new Button<>(clickable, null, null, () -> false);
-        add(margin(new Container().add(button).add(new MarginDrawable<>(text, 0.1))));
+        add(margin(new Container().add(button).add(new MarginDrawable<>(text, 10, 10))));
         list.add(button);
         if (getReferenceText != null) {
             // TODO measure with real xSize like SystemSpecific.get().stringLength(null, ...);
