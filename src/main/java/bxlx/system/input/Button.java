@@ -2,7 +2,6 @@ package bxlx.system.input;
 
 import bxlx.graphics.ChangeableDrawable;
 import bxlx.graphics.ICanvas;
-import bxlx.graphics.IDrawable;
 import bxlx.graphics.Point;
 import bxlx.graphics.drawable.DrawableWrapper;
 import bxlx.graphics.drawable.VisibleDrawable;
@@ -85,7 +84,7 @@ public class Button<T extends Clickable> extends DrawableWrapper<T> implements I
         boolean nowDisabled = disabled.get();
         boolean nowInside = inside.get();
 
-        if ((!nowDisabled && inside.isChanged()) || disabled.isChanged() || redraw.noNeedRedraw() || redraw.childNeedRedraw()) {
+        if ((!nowDisabled && inside.isChanged()) || disabled.isChanged() || isManuallyRedraw() || redraw.noNeedRedraw() || redraw.childNeedRedraw()) {
             getClickableChild().forceDraw(canvas);
         }
 

@@ -1,8 +1,5 @@
 package bxlx.graphics.fill;
 
-import bxlx.graphics.ChangeableDrawable;
-import bxlx.graphics.ICanvas;
-
 /**
  * Created by qqcs on 2017.01.09..
  */

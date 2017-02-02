@@ -26,8 +26,12 @@ public abstract class ChangeableDrawable implements IDrawable {
     protected List<ChangeableValue> values = new ArrayList<>();
 
     @Override
-    public final void setRedraw() {
+    public void setRedraw() {
         redraw = true;
+    }
+
+    public boolean isManuallyRedraw() {
+        return redraw;
     }
 
     @Override
@@ -44,9 +48,12 @@ public abstract class ChangeableDrawable implements IDrawable {
         return false;
     }
 
+    private static String indent = "";
+
     @Override
     public final void forceDraw(ICanvas canvas) {
         /* Test what redraw
+        boolean needIndent = false;
         if (!Splitter.class.isInstance(this) &&
                 !Container.class.isInstance(this) &&
                 !VisibleDrawable.class.isInstance(this) &&
@@ -61,7 +68,10 @@ public abstract class ChangeableDrawable implements IDrawable {
             if(ColoredDrawable.class.isInstance(this)) {
                 msg += ((ColoredDrawable) this).getColor().get().toString();
             }
-            SystemSpecific.get().log("ForceRedraw " + this.getClass().getName() + " " + msg);
+            msg = msg + this.needRedraw().parentNeedRedraw() + this.needRedraw().iNeedRedraw() + this.needRedraw().childNeedRedraw() + " vcs:" + valueChanged();
+            SystemSpecific.get().log(indent + "ForceRedraw " + this.getClass().getName() + " " + msg);
+            needIndent = true;
+            indent += "  ";
         }
         */
         forceRedraw(canvas);
@@ -70,6 +80,11 @@ public abstract class ChangeableDrawable implements IDrawable {
         for (ChangeableValue changeableValue : values) {
             changeableValue.commit();
         }
+        /*
+        if(needIndent) {
+            indent = indent.substring(2);
+        }
+        */
     }
 
     protected abstract void forceRedraw(ICanvas canvas);

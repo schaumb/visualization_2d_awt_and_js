@@ -11,6 +11,7 @@ import java.util.function.Supplier;
  */
 public class RadioButtons extends SplitContainer<MarginDrawable<Button<OnOffClickable>>> {
     private int selectedButtonIndex = -1;
+
     public RadioButtons(boolean xSplit) {
         super(xSplit);
     }

@@ -3,28 +3,25 @@ package bxlx.system.input;
 import bxlx.graphics.ChangeableDrawable;
 import bxlx.graphics.Color;
 import bxlx.graphics.Direction;
-import bxlx.graphics.IDrawable;
 import bxlx.graphics.Point;
 import bxlx.graphics.drawable.AspectRatioDrawable;
 import bxlx.graphics.drawable.ClippedDrawable;
 import bxlx.graphics.drawable.ColoredDrawable;
+import bxlx.graphics.drawable.DrawableWrapper;
 import bxlx.graphics.drawable.ZoomDrawable;
 import bxlx.graphics.fill.Container;
-import bxlx.graphics.fill.DrawRectangle;
 import bxlx.graphics.fill.Stick;
 import bxlx.graphics.shapes.Rectangle;
 import bxlx.system.IMouseEventListener;
 import bxlx.system.MouseInfo;
 import bxlx.system.SystemSpecific;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.function.Supplier;
 
 /**
  * Created by qqcs on 2017.01.18..
  */
-public class Slider extends Container implements IMouseEventListener {
+public class Slider extends DrawableWrapper<Container> implements IMouseEventListener {
     private Point draggedPoint;
     private Rectangle lastRectangle = Rectangle.NULL_RECTANGLE;
     private final Button<?> button;
@@ -32,11 +29,11 @@ public class Slider extends Container implements IMouseEventListener {
     private final ChangeableValue<Double> now;
 
     public Slider(boolean xDraw, double start, Supplier<Boolean> disabled) {
-        this(new Button<>(new Clickable.RectClickable(null), null, null, disabled), xDraw, start, disabled);
+        this(new Button<>(new Clickable.RectClickable(null), null, null, disabled), xDraw, start);
     }
 
-    public Slider(Button<?> button, boolean xDraw, double start, Supplier<Boolean> disabled) {
-        super(new ArrayList<>());
+    public Slider(Button<?> button, boolean xDraw, double start) {
+        super(new Container());
 
         this.button = button;
         this.xDraw = new ChangeableValue<>(this, xDraw);
@@ -44,15 +41,22 @@ public class Slider extends Container implements IMouseEventListener {
 
         Stick mainStick = new Stick(0, 0.1, 0.5, null, null);
         mainStick.getAngle().setSupplier(() -> this.xDraw.get() ? 0 : Math.PI / 2);
+        mainStick.getLength().setElem(r -> r.getSize().getWidth() / r.getSize().getHeight());
 
-        add(new ColoredDrawable<>(mainStick, Color.LIGHT_GRAY));
-        add(new ClippedDrawable<>(new ZoomDrawable<>(new AspectRatioDrawable<>(
+        getChild().get().add(new ColoredDrawable<>(mainStick, Color.LIGHT_GRAY));
+        getChild().get().add(new ClippedDrawable<>(new ZoomDrawable<>(new AspectRatioDrawable<>(
                 new ColoredDrawable<>(this.button, Color.GRAY)
                 , true, -1, -1, () -> this.xDraw.get() ? 2 : 0.5)
-                , true, () -> 1.0, () -> this.xDraw.get() ? 0.05 + now.get() * 0.85 : 0, () -> this.xDraw.get() ? 0 : 0.05 + now.get() * 0.85)
+                , true, r -> 1.0, r -> this.xDraw.get() ? now.get() * (1 - 3 * r.getSize().getHeight() / r.getSize().getWidth()) : 0.0,
+                r -> this.xDraw.get() ? 0.0 : 0.5 * r.getSize().getWidth() / r.getSize().getHeight() + now.get() * (1 - 1.5 * r.getSize().getWidth() / r.getSize().getHeight()))
                 , true, r -> lastRectangle = mainStick.getBoundingRectangle(r)));
 
         SystemSpecific.get().setMouseEventListenerQueue(this);
+    }
+
+    @Override
+    public Redraw needRedraw() {
+        return super.needRedraw().setIf(now.isChanged(), Redraw.PARENT_NEED_REDRAW);
     }
 
     public ChangeableValue<Boolean> getxDraw() {
@@ -68,7 +72,7 @@ public class Slider extends Container implements IMouseEventListener {
         if (draggedPoint != null && lastRectangle.isContains(position) && MouseInfo.get().isLeftClicked() &&
                 !button.getDisabled().get()) {
             Point p = this.xDraw.get() ? Direction.RIGHT.getVector() : Direction.DOWN.getVector();
-            Point percent = position.add(draggedPoint.negate()).multiple(p).multiple(lastRectangle.getSize().asPoint().multiple(0.85).inverse());
+            Point percent = position.add(draggedPoint.negate()).multiple(p).multiple(lastRectangle.getSize().asPoint().multiple(1 - 1.5 * lastRectangle.getSize().getWidth() / lastRectangle.getSize().getHeight()).inverse());
 
             double d = percent.getX();
             if (d == 0.0) {

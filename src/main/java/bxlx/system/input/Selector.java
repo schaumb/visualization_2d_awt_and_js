@@ -2,10 +2,7 @@ package bxlx.system.input;
 
 import bxlx.graphics.Color;
 import bxlx.graphics.ICanvas;
-import bxlx.graphics.IDrawable;
 import bxlx.graphics.Point;
-import bxlx.graphics.drawable.ClippedDrawable;
-import bxlx.graphics.drawable.ColoredDrawable;
 import bxlx.graphics.drawable.MarginDrawable;
 import bxlx.graphics.fill.Container;
 import bxlx.graphics.fill.Rect;
@@ -14,7 +11,6 @@ import bxlx.graphics.fill.Text;
 import bxlx.graphics.shapes.Rectangle;
 
 import java.util.ArrayList;
-import java.util.function.Consumer;
 import java.util.function.Supplier;
 
 /**
@@ -31,7 +27,7 @@ public class Selector extends SplitContainer<MarginDrawable<Container>> {
 
         @Override
         public void forceRedraw(ICanvas canvas) {
-            super.forceDraw(canvas);
+            super.forceRedraw(canvas);
             canvas.setColor(disabled.get() ? Color.LIGHT_GRAY : inside.get() ? Color.DARK_GRAY : isOn().get() ? Color.DARK_GRAY.getScale(Color.BLACK, 0.5) : Color.GRAY);
             rect.forceDraw(canvas);
             canvas.setColor(disabled.get() ? Color.WHITE : Color.BLACK);
@@ -45,6 +41,7 @@ public class Selector extends SplitContainer<MarginDrawable<Container>> {
 
     private final ArrayList<Button<OnOffClickable>> list = new ArrayList<>();
     private int selectedButtonIndex = -1;
+
     public Selector(boolean xSplit) {
         super(xSplit);
     }
@@ -65,10 +62,10 @@ public class Selector extends SplitContainer<MarginDrawable<Container>> {
 
         button.getAtClick().setElem(
                 b -> {
-                    if(b.getChild().get().isOn().get()) {
+                    if (b.getChild().get().isOn().get()) {
                         selectedButtonIndex = index;
-                        for(int i = 0; i < size(); ++i) {
-                            if(i != selectedButtonIndex) {
+                        for (int i = 0; i < size(); ++i) {
+                            if (i != selectedButtonIndex) {
                                 list.get(i).getChild().get().on.setElem(false);
                             }
                         }

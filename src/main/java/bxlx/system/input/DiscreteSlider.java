@@ -1,7 +1,6 @@
 package bxlx.system.input;
 
 import bxlx.graphics.ChangeableDrawable;
-import bxlx.graphics.Color;
 import bxlx.graphics.Point;
 
 import java.util.function.Supplier;

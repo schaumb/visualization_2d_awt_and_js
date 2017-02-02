@@ -23,6 +23,12 @@ public abstract class DrawableWrapper<T extends IDrawable> extends DrawableConta
     }
 
     @Override
+    public void setRedraw() {
+        super.setRedraw();
+        getChild().get().setRedraw();
+    }
+
+    @Override
     protected boolean parentRedrawSatisfy() {
         return false;
     }

@@ -45,7 +45,7 @@ public abstract class DrawableContainer<T extends IDrawable> extends ChangeableD
         return children.get(index);
     }
 
-    protected int size() {
+    public int size() {
         return children.size();
     }
 

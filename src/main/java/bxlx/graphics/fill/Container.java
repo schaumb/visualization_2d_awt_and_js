@@ -55,8 +55,8 @@ public class Container extends DrawableContainer<IDrawable> {
             }
 
             Redraw childRedraw = child.needRedraw();
-            if (!redraw.iNeedRedraw() && childRedraw.needRedraw()) {
-                redraw.setINeedRedraw();
+            if (!iNeedRedraw && childRedraw.needRedraw()) {
+                iNeedRedraw = true;
                 if (i > 0 && childRedraw.parentNeedRedraw()) {
                     i = Math.max(-1, i - forceRedrawPrevLayer.get() - 1);
                     continue;
