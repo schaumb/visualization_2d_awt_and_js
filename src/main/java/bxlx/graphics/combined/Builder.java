@@ -63,10 +63,6 @@ public class Builder<T extends IDrawable> {
         return new Builder<>(new MarginDrawable<>(get(), marginX, marginY));
     }
 
-    public Builder<MarginDrawable> makeMargin(Supplier<Double> marginX, Supplier<Double> marginY) {
-        return new Builder<>(new MarginDrawable<>(get(), marginX, marginY));
-    }
-
     public Builder<AspectRatioDrawable> makeSquare(int alignX, int alignY) {
         return makeAspect(alignX, alignY, 1);
     }

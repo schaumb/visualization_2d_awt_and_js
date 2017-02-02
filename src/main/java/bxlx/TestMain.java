@@ -8,6 +8,7 @@ import bxlx.graphics.Point;
 import bxlx.graphics.combined.Builder;
 import bxlx.graphics.combined.Navigator;
 import bxlx.graphics.fill.Splitter;
+import bxlx.graphics.fill.Text;
 import bxlx.graphics.shapes.Polygon;
 import bxlx.graphisoft.Game;
 import bxlx.system.IRenderer;
@@ -15,11 +16,12 @@ import bxlx.system.MouseInfo;
 import bxlx.system.SystemSpecific;
 import bxlx.system.Timer;
 import bxlx.system.ValueOrSupplier;
-import bxlx.system.input.RadioButtons;
 import bxlx.system.input.Button;
 import bxlx.system.input.Clickable;
 import bxlx.system.input.OnOffClickable;
+import bxlx.system.input.RadioButtons;
 import bxlx.system.input.Selector;
+import bxlx.system.input.SelectorWrapper;
 
 import java.util.Arrays;
 
@@ -31,6 +33,7 @@ public class TestMain implements IRenderer {
     private Splitter splitter = new Splitter(true, 0, null, null);
 
     private Timer timer = new Timer(3000);
+
     private static class Waiter implements IDrawable {
         private Timer timer = new Timer(3000);
 
@@ -82,6 +85,9 @@ public class TestMain implements IRenderer {
 
     @Override
     public boolean render() {
+        if (main.get().needRedraw().needRedraw()) {
+            //SystemSpecific.get().log("");
+        }
         main.get().draw(c);
         if (timer.elapsed()) {
             timer.setPercent(timer.overPercent());
@@ -124,7 +130,7 @@ public class TestMain implements IRenderer {
         main.setElem(new Button<>(new OnOffClickable.SameImgClickable("aae.png",
                 r -> r.withSize(r.getSize().asPoint().multiple(Direction.DOWN.getVector().multiple(3.0).add(Direction.RIGHT.getVector())).asSize()),
                 r -> r.withSize(r.getSize().asPoint().multiple(Direction.DOWN.getVector().multiple(3.0).add(Direction.RIGHT.getVector())).asSize())
-                    .withStart(r.getStart().add(r.getSize().asPoint().multiple(Direction.UP.getVector()))),
+                        .withStart(r.getStart().add(r.getSize().asPoint().multiple(Direction.UP.getVector()))),
                 r -> r.withSize(r.getSize().asPoint().multiple(Direction.DOWN.getVector().multiple(3.0).add(Direction.RIGHT.getVector())).asSize())
                         .withStart(r.getStart().add(r.getSize().asPoint().multiple(Direction.UP.getVector().multiple(2)))),
                 c -> c.getAlpha() != 0), null, null, () -> timer.percent() < 0.5));
@@ -135,11 +141,17 @@ public class TestMain implements IRenderer {
                 .add(new OnOffClickable.RectCheckBoxWith(Builder.text("Szerbusz", -1).makeColored(Color.BLACK).get()))
         );
 
-        main.setElem(new Selector(false)
-            .addText(new Selector.RectClickable(), new Text("Hello", null, -1))
+        Selector selector;
+        main.setElem(selector = new Selector(false)
+                .addText(new Selector.RectClickable(), new Text("Hello", null, -1))
                 .addText(new Selector.RectClickable(), new Text("Szia", null, -1))
                 .addText(new Selector.RectClickable(), new Text("Szerbusz", null, -1))
         );
+
+        main.setElem(new Builder<>(new SelectorWrapper(selector, 200)).makeBackgrounded(Color.WHITE).get());
         SystemSpecific.get().setDrawFunction(this);
+
+        //main.setElem(new Container().add(new Button<>(new Selector.RectClickable(), null, null, () -> false))
+        //    .add(new Text("ASD")));
     }
 }

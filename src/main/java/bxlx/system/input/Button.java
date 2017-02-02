@@ -2,6 +2,7 @@ package bxlx.system.input;
 
 import bxlx.graphics.ChangeableDrawable;
 import bxlx.graphics.ICanvas;
+import bxlx.graphics.IDrawable;
 import bxlx.graphics.Point;
 import bxlx.graphics.drawable.DrawableWrapper;
 import bxlx.graphics.drawable.VisibleDrawable;
@@ -53,7 +54,7 @@ public class Button<T extends Clickable> extends DrawableWrapper<T> implements I
     }
 
     @Override
-    public Redraw needRedraw() {
+    public IDrawable.Redraw needRedraw() {
         return super.needRedraw().setIf(holdTimer != null && holdTimer.elapsed(), Redraw.I_NEED_REDRAW);
     }
 

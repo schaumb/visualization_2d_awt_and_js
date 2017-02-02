@@ -2,6 +2,7 @@ package bxlx.system.input;
 
 import bxlx.graphics.Color;
 import bxlx.graphics.ICanvas;
+import bxlx.graphics.IDrawable;
 import bxlx.graphics.Point;
 import bxlx.graphics.drawable.MarginDrawable;
 import bxlx.graphics.fill.Container;
@@ -21,7 +22,7 @@ public class Selector extends SplitContainer<MarginDrawable<Container>> {
         private final Rect rect = new Rect();
 
         @Override
-        public Redraw needRedraw() {
+        public IDrawable.Redraw needRedraw() {
             return super.needRedraw();
         }
 
@@ -51,7 +52,7 @@ public class Selector extends SplitContainer<MarginDrawable<Container>> {
     }
 
     public static MarginDrawable<Container> margin(Container container) {
-        return new MarginDrawable<>(container, 0, 0.1);
+        return new MarginDrawable<>(container, 0.002, 0.1);
     }
 
     public Selector addText(OnOffClickable clickable, Text text) {

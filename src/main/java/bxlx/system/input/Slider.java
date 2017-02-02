@@ -3,6 +3,7 @@ package bxlx.system.input;
 import bxlx.graphics.ChangeableDrawable;
 import bxlx.graphics.Color;
 import bxlx.graphics.Direction;
+import bxlx.graphics.IDrawable;
 import bxlx.graphics.Point;
 import bxlx.graphics.drawable.AspectRatioDrawable;
 import bxlx.graphics.drawable.ClippedDrawable;
@@ -55,7 +56,7 @@ public class Slider extends DrawableWrapper<Container> implements IMouseEventLis
     }
 
     @Override
-    public Redraw needRedraw() {
+    public IDrawable.Redraw needRedraw() {
         return super.needRedraw().setIf(now.isChanged(), Redraw.PARENT_NEED_REDRAW);
     }
 
@@ -65,6 +66,10 @@ public class Slider extends DrawableWrapper<Container> implements IMouseEventLis
 
     public ChangeableValue<Double> getNow() {
         return now;
+    }
+
+    public ChangeableValue<Boolean> getDisable() {
+        return button.getDisabled();
     }
 
     @Override
