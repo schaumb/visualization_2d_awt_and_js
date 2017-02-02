@@ -1,6 +1,7 @@
 package bxlx.system;
 
 import bxlx.graphics.Color;
+import bxlx.graphics.Font;
 import bxlx.graphics.Size;
 
 import java.util.ArrayList;
@@ -68,4 +69,6 @@ public abstract class SystemSpecific {
     }
 
     abstract public <T> boolean equals(T first, T second);
+
+    abstract public int stringLength(Font font, String string);
 }

@@ -142,16 +142,15 @@ public class TestMain implements IRenderer {
                 .add(new OnOffClickable.RectCheckBoxWith(Builder.text("Szia", -1).makeColored(Color.BLACK).get()))
                 .add(new OnOffClickable.RectCheckBoxWith(Builder.text("Szerbusz", -1).makeColored(Color.BLACK).get()))
         );
-
-        Selector selector = new Selector(false)
+        Selector selector = new Selector(false, true)
                 .addText(new Selector.RectClickable(), new Text("Hello", null, -1))
                 .addText(new Selector.RectClickable(), new Text("Szia", null, -1))
                 .addText(new Selector.RectClickable(), new Text("Szerbusz", null, -1));
 
         main.setElem(new Builder<>(new SelectorWrapper(selector, 200)).makeBackgrounded(Color.WHITE).get());
-        SystemSpecific.get().setDrawFunction(this);
 
         //main.setElem(new Container().add(new Button<>(new Selector.RectClickable(), null, null, () -> false))
         //    .add(new Text("ASD")));
+        SystemSpecific.get().setDrawFunction(this);
     }
 }

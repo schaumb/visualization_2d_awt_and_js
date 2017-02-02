@@ -1,7 +1,6 @@
 package bxlx.graphics.fill;
 
 import bxlx.graphics.ChangeableDrawable;
-import bxlx.graphics.Font;
 import bxlx.graphics.ICanvas;
 import bxlx.graphics.Point;
 import bxlx.graphics.shapes.Rectangle;

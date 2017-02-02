@@ -1,6 +1,7 @@
 package bxlx.jsweet;
 
 import bxlx.graphics.Color;
+import bxlx.graphics.Font;
 import bxlx.graphics.ImageCaches;
 import bxlx.graphics.Point;
 import bxlx.graphics.Size;
@@ -53,6 +54,8 @@ public class JSweetSystemSpecific extends SystemSpecific {
         return rc.getImageData(0, 0, img.naturalWidth, img.naturalHeight);
     });
 
+    private HtmlCanvas htmlCanvas;
+
     private JSweetSystemSpecific() {
     }
 
@@ -80,7 +83,7 @@ public class JSweetSystemSpecific extends SystemSpecific {
             canvasElement.width = window.innerWidth;
             canvasElement.height = window.innerHeight;
 
-            renderer.setCanvas(new HtmlCanvas(canvasElement));
+            renderer.setCanvas(htmlCanvas = new HtmlCanvas(canvasElement));
         }
 
         if (!isRendering()) {
@@ -102,7 +105,7 @@ public class JSweetSystemSpecific extends SystemSpecific {
             setMouseEventListeners();
             document.body.appendChild(canvasElement);
 
-            renderer.setCanvas(new HtmlCanvas(canvasElement));
+            renderer.setCanvas(htmlCanvas = new HtmlCanvas(canvasElement));
             window.onresize = this::resized;
         }
         this.renderer = renderer;
@@ -224,5 +227,19 @@ public class JSweetSystemSpecific extends SystemSpecific {
     @Override
     public <T> boolean equals(T first, T second) {
         return first == second;
+    }
+
+    @Override
+    public int stringLength(Font font, String string) {
+        if (htmlCanvas != null) {
+            Font tmp = htmlCanvas.getFont();
+            if (font != null) {
+                htmlCanvas.setFont(font);
+            }
+            int res = htmlCanvas.textWidth(string);
+            htmlCanvas.setFont(tmp);
+            return res;
+        }
+        return -1;
     }
 }

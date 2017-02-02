@@ -1,5 +1,6 @@
 package bxlx.system.input;
 
+import bxlx.graphics.ChangeableDrawable;
 import bxlx.graphics.Color;
 import bxlx.graphics.ICanvas;
 import bxlx.graphics.IDrawable;
@@ -41,10 +42,12 @@ public class Selector extends SplitContainer<MarginDrawable<Container>> {
     }
 
     private final ArrayList<Button<OnOffClickable>> list = new ArrayList<>();
+    private final ChangeableDrawable.ChangeableValue<String> getReferenceText;
     private int selectedButtonIndex = -1;
 
-    public Selector(boolean xSplit) {
+    public Selector(boolean xSplit, boolean hasReferenceText) {
         super(xSplit);
+        this.getReferenceText = hasReferenceText ? new ChangeableValue<>(this, "") : null;
     }
 
     public Supplier<Integer> getSelected() {
@@ -60,7 +63,16 @@ public class Selector extends SplitContainer<MarginDrawable<Container>> {
         final Button<OnOffClickable> button = new Button<>(clickable, null, null, () -> false);
         add(margin(new Container().add(button).add(new MarginDrawable<>(text, 0.1))));
         list.add(button);
+        if (getReferenceText != null) {
+            // TODO measure with real xSize like SystemSpecific.get().stringLength(null, ...);
+            int prevSize = getReferenceText.get().length();
+            int nowSize = text.getText().get().length();
+            if (nowSize > prevSize) {
+                getReferenceText.setElem(text.getText().get());
+            }
 
+            text.getReferenceText().setSupplier(getReferenceText.getAsSupplier());
+        }
         button.getAtClick().setElem(
                 b -> {
                     if (b.getChild().get().isOn().get()) {

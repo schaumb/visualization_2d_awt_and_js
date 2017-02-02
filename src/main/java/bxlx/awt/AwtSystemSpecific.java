@@ -1,6 +1,7 @@
 package bxlx.awt;
 
 import bxlx.graphics.Color;
+import bxlx.graphics.Font;
 import bxlx.graphics.Point;
 import bxlx.graphics.Size;
 import bxlx.system.CommonError;
@@ -44,6 +45,7 @@ public class AwtSystemSpecific extends SystemSpecific {
     private JPanel panel;
     private IRenderer renderer;
     private boolean newRenderer = true;
+    private GraphicsCanvas graphicsCanvas;
 
     private AwtSystemSpecific() {
     }
@@ -99,7 +101,7 @@ public class AwtSystemSpecific extends SystemSpecific {
                     Rectangle rect = graphics.getClipBounds();
                     if (img == null || img.getWidth() != rect.width || img.getHeight() != rect.height || newRenderer) {
                         img = new BufferedImage(rect.width, rect.height, BufferedImage.TYPE_INT_ARGB);
-                        renderer.setCanvas(new GraphicsCanvas((Graphics2D) img.getGraphics(), rect));
+                        renderer.setCanvas(graphicsCanvas = new GraphicsCanvas((Graphics2D) img.getGraphics(), rect));
                         newRenderer = false;
                     }
 
@@ -229,5 +231,19 @@ public class AwtSystemSpecific extends SystemSpecific {
     @Override
     public <T> boolean equals(T first, T second) {
         return Objects.equals(first, second);
+    }
+
+    @Override
+    public int stringLength(Font font, String string) {
+        if (graphicsCanvas != null) {
+            Font tmp = graphicsCanvas.getFont();
+            if (font != null) {
+                graphicsCanvas.setFont(font);
+            }
+            int res = graphicsCanvas.textWidth(string);
+            graphicsCanvas.setFont(tmp);
+            return res;
+        }
+        return -1;
     }
 }

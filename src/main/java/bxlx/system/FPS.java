@@ -1,7 +1,6 @@
 package bxlx.system;
 
 import bxlx.graphics.Color;
-import bxlx.graphics.Font;
 import bxlx.graphics.ICanvas;
 import bxlx.graphics.IDrawable;
 import bxlx.graphics.Point;
