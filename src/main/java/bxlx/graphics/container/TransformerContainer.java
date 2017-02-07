@@ -4,6 +4,7 @@ import bxlx.graphics.IDrawable;
 import bxlx.graphics.drawable.DrawableWrapper;
 import bxlx.system.functional.ValueOrSupplier;
 
+import java.util.ArrayList;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
@@ -25,6 +26,13 @@ public class TransformerContainer<F extends IDrawable, U extends IDrawable, T ex
 
     public TransformerContainer<F, U, T> addAndTransform(Supplier<F> supplier) {
         getChild().get().add(new ValueOrSupplier.Transform<F, U>().transform(new ValueOrSupplier<>(supplier), transformFunction));
+        return this;
+    }
+
+    public TransformerContainer<F, U, T> addAndTransformAll(ArrayList<F> elems) {
+        for (F elem : elems) {
+            getChild().get().add(new ValueOrSupplier.Transform<F, U>().transform(new ValueOrSupplier<>(elem), transformFunction));
+        }
         return this;
     }
 

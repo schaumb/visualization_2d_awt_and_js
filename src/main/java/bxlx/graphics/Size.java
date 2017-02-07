@@ -60,4 +60,8 @@ public class Size {
                 ", height=" + height +
                 '}';
     }
+
+    public double getRatio() {
+        return getWidth() == 0 ? 1 : getHeight() / getWidth();
+    }
 }

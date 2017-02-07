@@ -4,7 +4,6 @@ import bxlx.graphics.ChangeableDrawable;
 import bxlx.graphics.Color;
 import bxlx.graphics.ICanvas;
 import bxlx.graphics.Point;
-import bxlx.graphics.Size;
 import bxlx.graphics.shapes.Rectangle;
 import bxlx.system.SystemSpecific;
 
@@ -13,10 +12,12 @@ import bxlx.system.SystemSpecific;
  */
 public class DrawImage extends ChangeableDrawable {
     private String fileName;
+    private final ChangeableValue<Double> aspectRatio;
 
     public DrawImage(String fileName) {
         this.fileName = fileName;
         SystemSpecific.get().preLoad(fileName, true);
+        aspectRatio = new ChangeableValue<>(this, () -> getOriginalAspectRatio());
     }
 
     public String getFileName() {
@@ -30,9 +31,13 @@ public class DrawImage extends ChangeableDrawable {
         return this;
     }
 
+    @Override
+    public Redraw needRedraw() {
+        return super.needRedraw().setIf(aspectRatio.isChanged(), Redraw.PARENT_NEED_REDRAW);
+    }
+
     public double getOriginalAspectRatio() {
-        Size size = SystemSpecific.get().preLoad(fileName, true);
-        return size.getWidth() == 0 ? 1 : size.getHeight() / size.getWidth();
+        return SystemSpecific.get().preLoad(fileName, true).getRatio();
     }
 
     @Override

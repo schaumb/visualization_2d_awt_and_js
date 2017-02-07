@@ -24,8 +24,11 @@ import bxlx.system.functional.ValueOrSupplier;
 import bxlx.system.input.Button;
 import bxlx.system.input.DiscreteSlider;
 import bxlx.system.input.Slider;
+import bxlx.system.input.clickable.ColorSchemeClickable;
+import bxlx.system.input.clickable.CursorChangeClickable;
 
 import java.util.ArrayList;
+import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.function.UnaryOperator;
@@ -64,6 +67,11 @@ public class Builder<T extends IDrawable> {
             get().add(elem);
             return this;
         }
+
+        public ContainerBuilder<T, C> add(Builder<T> elem) {
+            get().add(elem.get());
+            return this;
+        }
     }
 
     public static class TransformContainerBuilder<U extends IDrawable, T extends IDrawable, C extends SizeChangeableContainer<T, ?>> extends
@@ -80,6 +88,16 @@ public class Builder<T extends IDrawable> {
 
         public TransformContainerBuilder<U, T, C> addAndTransform(U elem) {
             get().addAndTransform(elem);
+            return this;
+        }
+
+        public TransformContainerBuilder<U, T, C> addAndTransform(Builder<U> elem) {
+            get().addAndTransform(elem.get());
+            return this;
+        }
+
+        public TransformContainerBuilder<U, T, C> addAndTransformAll(ArrayList<U> elems) {
+            get().addAndTransformAll(elems);
             return this;
         }
     }
@@ -208,9 +226,54 @@ public class Builder<T extends IDrawable> {
         return new Builder<>(new DrawImage(src));
     }
 
-    public static Builder<AspectRatioDrawable> imageKeepAspectRatio(String src, int alignX, int alignY) {
+    public static Builder<AspectRatioDrawable<DrawImage>> imageKeepAspectRatio(String src, int alignX, int alignY) {
         DrawImage img = new DrawImage(src);
         return new Builder<>(new AspectRatioDrawable<>(img, false, alignX, alignY, () -> img.getOriginalAspectRatio()));
+    }
+
+    public static class ButtonBuilder<T extends Button<?>> extends Builder<T> {
+        public ButtonBuilder(T wrapped) {
+            super(wrapped);
+        }
+
+        public Builder<Container<IDrawable>> with(IDrawable drawable) {
+            return Builder.container().add(get()).add(drawable);
+        }
+
+        public Builder<Container<IDrawable>> with(double margin, IDrawable drawable) {
+            return Builder.container().add(get()).add(new Builder<>(drawable).makeMargin(margin).get());
+        }
+
+        public Builder<Container<IDrawable>> with(double marginX, double marginY, IDrawable drawable) {
+            return Builder.container().add(get()).add(new Builder<>(drawable).makeMargin(marginX, marginY).get());
+        }
+
+    }
+
+    public static class ClickableBuilder<T extends Button.Clickable> extends Builder<T> {
+        public ClickableBuilder(T wrapped) {
+            super(wrapped);
+        }
+
+        public ButtonBuilder<Button<T>> makeButton() {
+            return new ButtonBuilder<>(new Button<>(get(), null, null, () -> false));
+        }
+
+        public ButtonBuilder<Button<T>> makeButton(Consumer<Button<T>> atClick) {
+            return new ButtonBuilder<>(new Button<>(get(), atClick, null, () -> false));
+        }
+
+        public ButtonBuilder<Button<T>> makeButton(Consumer<Button<T>> atClick, Consumer<Button<T>> atHold, Supplier<Boolean> disabled) {
+            return new ButtonBuilder<>(new Button<>(get(), atClick, atHold, disabled));
+        }
+    }
+
+    public static ClickableBuilder<CursorChangeClickable> getCursorChangeClickable() {
+        return new ClickableBuilder<>(new CursorChangeClickable());
+    }
+
+    public static ClickableBuilder<ColorSchemeClickable> getColorSchemeClickable(boolean clickedNeed) {
+        return new ClickableBuilder<>(new ColorSchemeClickable(clickedNeed));
     }
 
     public ValueOrSupplier<T> makeValueOrSupplier() {

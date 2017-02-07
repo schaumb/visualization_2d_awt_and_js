@@ -1,21 +1,15 @@
 package bxlx.graphisoft;
 
 import bxlx.general.IGame;
+import bxlx.general.MenuCreator;
 import bxlx.graphics.Color;
 import bxlx.graphics.Font;
 import bxlx.graphics.IDrawable;
 import bxlx.graphics.combined.Builder;
-import bxlx.graphics.container.SplitContainer;
-import bxlx.graphics.drawable.MarginDrawable;
-import bxlx.graphics.fill.DrawImage;
-import bxlx.graphics.fill.Text;
+import bxlx.graphics.container.Splitter;
 import bxlx.system.ColorScheme;
 import bxlx.system.SystemSpecific;
 import bxlx.system.functional.ValueOrSupplier;
-import bxlx.system.input.Button;
-import bxlx.system.input.Selector;
-import bxlx.system.input.clickable.ColorSchemeClickable;
-import bxlx.system.input.clickable.CursorChangeClickable;
 
 /**
  * Created by qqcs on 2017.01.18..
@@ -40,17 +34,22 @@ public class Game implements IGame {
 
     @Override
     public ValueOrSupplier<IDrawable> getMain() {
-        return new ValueOrSupplier<>(new Builder.ContainerBuilder<>(new SplitContainer<>())
-                .transform(r -> new MarginDrawable<>(r, 10, 10))
-                .addAndTransform(new Selector(true, false)
-                        .addText(new ColorSchemeClickable(true), new Text("Color test")))
-                .addAndTransform(Builder.text("Test Text").get())
-                .addAndTransform(new Button<>(new ColorSchemeClickable(false), r ->
-                        SystemSpecific.get().open("asd.pdf"), null, () -> false))
-                .addAndTransform(new Button<>(new ColorSchemeClickable(false), r ->
-                        SystemSpecific.get().logout(), null, () -> false))
-                .addAndTransform(new Button<>(new CursorChangeClickable(new DrawImage("logo.png")), r ->
-                        SystemSpecific.get().open("http://www.graphisoft.hu/"), null, () -> false))
-                .get());
+        return new ValueOrSupplier<>(
+                new Splitter(false, r -> Math.min(Math.min(100, r.getSize().getHeight() / 2), r.getSize().getWidth() / 12),
+                        new MenuCreator()
+                                .setLogo("logo.png")
+                                .setUrl("http://graphisoft.hu")
+                                .addButton(Builder.getColorSchemeClickable(false)
+                                        .makeButton(r -> SystemSpecific.get().open("task.pdf"))
+                                        .with(10, 8, Builder.text("Feladat", "Kijelentkezés").get())
+                                        .get())
+                                .addButton(Builder.getColorSchemeClickable(false)
+                                        .makeButton(r -> SystemSpecific.get().logout())
+                                        .with(10, 8, Builder.text("Kijelentkezés").get())
+                                        .get())
+                                .setButtonsSize(-1000)
+                                .getMenu()
+                        , null)
+        );
     }
 }

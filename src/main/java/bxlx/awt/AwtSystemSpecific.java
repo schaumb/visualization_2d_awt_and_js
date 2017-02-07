@@ -257,7 +257,7 @@ public class AwtSystemSpecific extends SystemSpecific {
         boolean success = false;
         if (Desktop.isDesktopSupported()) {
             try {
-                if(thing.startsWith("http:") || thing.startsWith("www.")) {
+                if (thing.startsWith("http:") || thing.startsWith("www.")) {
                     Desktop.getDesktop().browse(URI.create(thing));
                 } else {
                     File file = new File(thing);

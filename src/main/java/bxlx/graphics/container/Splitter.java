@@ -19,15 +19,17 @@ public class Splitter extends DrawableContainer<IDrawable> {
     private final ChangeableValue<Function<Rectangle, Double>> separate;
 
     public Splitter(boolean xSplit, double separate, IDrawable first, IDrawable second) {
-        super(Arrays.asList(first, second));
-        this.xSplit = new ChangeableValue<>(this, xSplit);
-        this.separate = new ChangeableValue<>(this, r -> separate);
+        this(xSplit, r -> separate, first, second);
     }
 
     public Splitter(boolean xSplit, Supplier<Double> separate, IDrawable first, IDrawable second) {
+        this(xSplit, r -> separate.get(), first, second);
+    }
+
+    public Splitter(boolean xSplit, Function<Rectangle, Double> separate, IDrawable first, IDrawable second) {
         super(Arrays.asList(first, second));
         this.xSplit = new ChangeableValue<>(this, xSplit);
-        this.separate = new ChangeableValue<>(this, r -> separate.get());
+        this.separate = new ChangeableValue<>(this, separate);
     }
 
     public Splitter(double separate, IDrawable first, IDrawable second) {

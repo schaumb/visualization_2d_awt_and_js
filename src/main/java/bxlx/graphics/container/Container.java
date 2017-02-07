@@ -48,12 +48,14 @@ public class Container<T extends IDrawable> extends SizeChangeableContainer<T, C
             }
 
             Redraw childRedraw = child.needRedraw();
+            boolean setINeedRedraw = false;
             if (!iNeedRedraw && childRedraw.needRedraw()) {
-                iNeedRedraw = true;
                 if (i > 0 && childRedraw.parentNeedRedraw()) {
                     i = Math.max(-1, i - forceRedrawPrevLayer.get() - 1);
+                    iNeedRedraw = true;
                     continue;
                 }
+                setINeedRedraw = true;
             }
 
             if (noNeedRedraw) {
@@ -63,6 +65,10 @@ public class Container<T extends IDrawable> extends SizeChangeableContainer<T, C
                 child.forceDraw(canvas);
             } else {
                 child.draw(canvas);
+            }
+            
+            if(setINeedRedraw) {
+                iNeedRedraw = true;
             }
         }
     }

@@ -18,7 +18,7 @@ public class ColorSchemeClickable extends OnOffClickable {
     private final MarginDrawable<Rect> smallerRect;
 
     public ColorSchemeClickable(boolean clickedNeed) {
-        this(clickedNeed, r -> new MarginDrawable<>(r, 10, 10));
+        this(clickedNeed, r -> new MarginDrawable<>(r, 3, 3));
     }
 
     public ColorSchemeClickable(boolean clickedNeed, Function<Rect, MarginDrawable<Rect>> smallerRect) {
