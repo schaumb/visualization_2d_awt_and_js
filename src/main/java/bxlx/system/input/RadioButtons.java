@@ -1,7 +1,8 @@
 package bxlx.system.input;
 
-import bxlx.graphics.drawable.MarginDrawable;
 import bxlx.graphics.container.SplitContainer;
+import bxlx.graphics.drawable.MarginDrawable;
+import bxlx.system.input.clickable.OnOffClickable;
 
 import java.util.function.Consumer;
 import java.util.function.Supplier;
@@ -33,11 +34,11 @@ public class RadioButtons extends SplitContainer<MarginDrawable<Button<OnOffClic
                     if (prevConsumer != null) {
                         prevConsumer.accept(b);
                     }
-                    if (b.getChild().get().isOn().get()) {
+                    if (b.getChild().get().getOn().get()) {
                         selectedButtonIndex = index;
                         for (int i = 0; i < size(); ++i) {
                             if (i != selectedButtonIndex) {
-                                get(i).get().getChild().get().getChild().get().on.setElem(false);
+                                get(i).get().getChild().get().getChild().get().getOn().setElem(false);
                             }
                         }
                     } else {

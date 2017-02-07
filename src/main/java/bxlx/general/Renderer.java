@@ -39,8 +39,7 @@ public class Renderer implements IRenderer {
     public Renderer(IGame game) {
         MouseInfo.get(); // init mouseinfo
 
-        game.init();
-        this.main = new ValueOrSupplier.Transform<IDrawable, IDrawable>().transform(game.getMain(),
+        this.main = new ValueOrSupplier.Transform<IDrawable, IDrawable>().transform(game.init().getMain(),
                 i -> new Builder<>(i).makeBackgrounded(ColorScheme.getCurrentColorScheme().backgroundColor).get());
 
         SystemSpecific.get().setDrawFunction(this);

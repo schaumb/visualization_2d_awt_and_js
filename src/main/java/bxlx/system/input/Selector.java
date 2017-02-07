@@ -1,16 +1,11 @@
 package bxlx.system.input;
 
 import bxlx.graphics.ChangeableDrawable;
-import bxlx.graphics.ICanvas;
-import bxlx.graphics.IDrawable;
-import bxlx.graphics.Point;
-import bxlx.graphics.drawable.MarginDrawable;
 import bxlx.graphics.container.Container;
-import bxlx.graphics.fill.Rect;
 import bxlx.graphics.container.SplitContainer;
+import bxlx.graphics.drawable.MarginDrawable;
 import bxlx.graphics.fill.Text;
-import bxlx.graphics.shapes.Rectangle;
-import bxlx.system.ColorScheme;
+import bxlx.system.input.clickable.OnOffClickable;
 
 import java.util.ArrayList;
 import java.util.function.Supplier;
@@ -19,32 +14,6 @@ import java.util.function.Supplier;
  * Created by qqcs on 2017.01.26..
  */
 public class Selector extends SplitContainer<MarginDrawable<Container>> {
-    public static class RectClickable extends OnOffClickable {
-        private final Rect rect = new Rect();
-        private final MarginDrawable<Rect> smallerRect = new MarginDrawable<>(rect, 5, 5);
-
-        @Override
-        public IDrawable.Redraw needRedraw() {
-            return super.needRedraw();
-        }
-
-        @Override
-        public void forceRedraw(ICanvas canvas) {
-            ColorScheme colors = ColorScheme.getCurrentColorScheme();
-            super.forceRedraw(canvas);
-            canvas.setColor(colors.buttonBorderColor);
-
-            rect.forceDraw(canvas);
-            canvas.setColor(disabled.get() ? colors.disabledColor : inside.get() ? colors.insideColor : isOn().get() ? colors.clickedColor : colors.buttonColor);
-            smallerRect.forceDraw(canvas);
-            canvas.setColor(colors.buttonTextColor);
-        }
-
-        @Override
-        public boolean isContains(Rectangle bound, Point position) {
-            return rect.isContains(bound, position);
-        }
-    }
 
     private final ArrayList<Button<OnOffClickable>> list = new ArrayList<>();
     private final ArrayList<Text> texts = new ArrayList<>();
@@ -86,11 +55,11 @@ public class Selector extends SplitContainer<MarginDrawable<Container>> {
         }
         button.getAtClick().setElem(
                 b -> {
-                    if (b.getChild().get().isOn().get()) {
+                    if (b.getChild().get().getOn().get()) {
                         selectedButtonIndex = index;
                         for (int i = 0; i < size(); ++i) {
                             if (i != selectedButtonIndex) {
-                                list.get(i).getChild().get().on.setElem(false);
+                                list.get(i).getChild().get().getOn().setElem(false);
                             }
                         }
                     } else {

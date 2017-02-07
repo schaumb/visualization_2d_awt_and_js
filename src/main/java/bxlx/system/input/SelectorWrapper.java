@@ -2,10 +2,10 @@ package bxlx.system.input;
 
 import bxlx.graphics.ChangeableDrawable;
 import bxlx.graphics.Direction;
+import bxlx.graphics.container.Splitter;
 import bxlx.graphics.drawable.ClippedDrawable;
 import bxlx.graphics.drawable.DrawableWrapper;
 import bxlx.graphics.drawable.ZoomDrawable;
-import bxlx.graphics.container.Splitter;
 
 /**
  * Created by qqcs on 2017.01.27..

@@ -5,19 +5,19 @@ import bxlx.graphics.Direction;
 import bxlx.graphics.IDrawable;
 import bxlx.graphics.Point;
 import bxlx.graphics.Size;
+import bxlx.graphics.container.Container;
+import bxlx.graphics.container.Splitter;
 import bxlx.graphics.drawable.ColoredDrawable;
 import bxlx.graphics.drawable.DrawableWrapper;
 import bxlx.graphics.drawable.MarginDrawable;
 import bxlx.graphics.drawable.VisibleDrawable;
 import bxlx.graphics.drawable.ZoomDrawable;
-import bxlx.graphics.container.Container;
 import bxlx.graphics.fill.DrawNGon;
 import bxlx.graphics.fill.DrawRectangle;
-import bxlx.graphics.container.Splitter;
 import bxlx.graphics.shapes.Rectangle;
 import bxlx.system.MouseInfo;
 import bxlx.system.input.Button;
-import bxlx.system.input.Clickable;
+import bxlx.system.input.clickable.RectClickable;
 
 import java.util.ArrayList;
 import java.util.function.Supplier;
@@ -52,21 +52,21 @@ public class Navigator extends DrawableWrapper<Container> {
                 Splitter.threeWaySplit(false, buttThick,
                         Splitter.threeWaySplit(true, buttThick,
                                 null,
-                                makeMargin(new Button<>(new Clickable.RectClickable(new DrawNGon(3, Math.PI / 2, true)),
+                                makeMargin(new Button<>(new RectClickable(new DrawNGon(3, Math.PI / 2, true)),
                                         null, b -> up(), () -> shiftY <= 0)),
                                 null),
                         Splitter.threeWaySplit(true, buttThick,
-                                makeMargin(new Button<>(new Clickable.RectClickable(new DrawNGon(3, Math.PI, true)),
+                                makeMargin(new Button<>(new RectClickable(new DrawNGon(3, Math.PI, true)),
                                         null, b -> left(), () -> shiftX <= 0)),
                                 mainWrapper = new ZoomDrawable<>(main, true, () -> zoom, () -> -shiftX, () -> -shiftY),
-                                makeMargin(new Button<>(new Clickable.RectClickable(new DrawNGon(3, 0, true)),
+                                makeMargin(new Button<>(new RectClickable(new DrawNGon(3, 0, true)),
                                         null, b -> right(), () -> zoom - 1 <= shiftX))),
                         Splitter.threeWaySplit(true, buttThick,
-                                makeMargin(new Button<>(new Clickable.RectClickable(new Stick(Math.PI / 3, 0.4, 0.7, null, new Magnifying(false))),
+                                makeMargin(new Button<>(new RectClickable(new Stick(Math.PI / 3, 0.4, 0.7, null, new Magnifying(false))),
                                         null, b -> zoomOut(), () -> zoom <= 1)),
-                                makeMargin(new Button<>(new Clickable.RectClickable(new DrawNGon(3, -Math.PI / 2, true)),
+                                makeMargin(new Button<>(new RectClickable(new DrawNGon(3, -Math.PI / 2, true)),
                                         null, b -> down(), () -> zoom - 1 <= shiftY)),
-                                makeMargin(new Button<>(new Clickable.RectClickable(new Stick(Math.PI / 3, 0.4, 0.7, null, new Magnifying(true))),
+                                makeMargin(new Button<>(new RectClickable(new Stick(Math.PI / 3, 0.4, 0.7, null, new Magnifying(true))),
                                         null, b -> zoomIn(), null)))
                 )
         );

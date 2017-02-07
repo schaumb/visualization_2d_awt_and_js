@@ -12,6 +12,7 @@ import bxlx.system.SystemSpecific;
 import bxlx.system.functional.ValueOrSupplier;
 import bxlx.system.input.Button;
 import bxlx.system.input.Selector;
+import bxlx.system.input.clickable.ColorSchemeClickable;
 
 /**
  * Created by qqcs on 2017.01.18..
@@ -37,9 +38,9 @@ public class Game implements IGame {
     @Override
     public ValueOrSupplier<IDrawable> getMain() {
         return new ValueOrSupplier<>(new SplitContainer<>()
-                .add(new Selector(true, false).addText(new Selector.RectClickable(), new Text("Color test")))
+                .add(new Selector(true, false).addText(new ColorSchemeClickable(true), new Text("Color test")))
                 .add(Builder.text("Test Text").get())
-                .add(new Button<>(new Selector.RectClickable(), r ->
+                .add(new Button<>(new ColorSchemeClickable(false), r ->
                         SystemSpecific.get().open("asd.pdf"), null, () -> false)));
     }
 }

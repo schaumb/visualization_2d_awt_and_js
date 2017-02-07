@@ -18,7 +18,18 @@ import java.util.function.Supplier;
 /**
  * Created by qqcs on 2017.01.03..
  */
-public class Button<T extends Clickable> extends DrawableWrapper<T> implements IMouseEventListener, VisibleDrawable.VisibleDraw {
+public class Button<T extends Button.Clickable> extends DrawableWrapper<T> implements IMouseEventListener, VisibleDrawable.VisibleDraw {
+    public abstract static class Clickable extends ChangeableDrawable {
+        protected Supplier<Boolean> inside = null;
+        protected Supplier<Boolean> disabled = null;
+
+        abstract public boolean isContains(Rectangle bound, Point position);
+
+        public void clicked() {
+        }
+
+    }
+
     private boolean isVisible = false;
     private Rectangle lastRectangle = Rectangle.NULL_RECTANGLE;
     private final ChangeableDrawable.ChangeableValue<Consumer<Button<T>>> atClick;
@@ -44,8 +55,8 @@ public class Button<T extends Clickable> extends DrawableWrapper<T> implements I
         SystemSpecific.get().setMouseEventListenerQueue(this);
     }
 
-    private Clickable getClickableChild() {
-        Clickable c = getChild().get();
+    private T getClickableChild() {
+        T c = getChild().get();
         if (c.inside == null) {
             c.inside = inside.getAsSupplier();
             c.disabled = disabled.getAsSupplier();

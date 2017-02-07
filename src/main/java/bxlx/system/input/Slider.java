@@ -6,16 +6,17 @@ import bxlx.graphics.Direction;
 import bxlx.graphics.IDrawable;
 import bxlx.graphics.Point;
 import bxlx.graphics.combined.Stick;
+import bxlx.graphics.container.Container;
 import bxlx.graphics.drawable.AspectRatioDrawable;
 import bxlx.graphics.drawable.ClippedDrawable;
 import bxlx.graphics.drawable.ColoredDrawable;
 import bxlx.graphics.drawable.DrawableWrapper;
 import bxlx.graphics.drawable.ZoomDrawable;
-import bxlx.graphics.container.Container;
 import bxlx.graphics.shapes.Rectangle;
 import bxlx.system.IMouseEventListener;
 import bxlx.system.MouseInfo;
 import bxlx.system.SystemSpecific;
+import bxlx.system.input.clickable.RectClickable;
 
 import java.util.function.Supplier;
 
@@ -30,7 +31,7 @@ public class Slider extends DrawableWrapper<Container> implements IMouseEventLis
     private final ChangeableValue<Double> now;
 
     public Slider(boolean xDraw, double start, Supplier<Boolean> disabled) {
-        this(new Button<>(new Clickable.RectClickable(null), null, null, disabled), xDraw, start);
+        this(new Button<>(new RectClickable(null), null, null, disabled), xDraw, start);
     }
 
     public Slider(Button<?> button, boolean xDraw, double start) {
