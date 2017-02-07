@@ -1,7 +1,7 @@
 package bxlx.system.input;
 
 import bxlx.graphics.drawable.MarginDrawable;
-import bxlx.graphics.fill.SplitContainer;
+import bxlx.graphics.container.SplitContainer;
 
 import java.util.function.Consumer;
 import java.util.function.Supplier;

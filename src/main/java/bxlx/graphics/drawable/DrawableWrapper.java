@@ -2,6 +2,7 @@ package bxlx.graphics.drawable;
 
 import bxlx.graphics.ICanvas;
 import bxlx.graphics.IDrawable;
+import bxlx.graphics.container.DrawableContainer;
 
 import java.util.Collections;
 

@@ -1,4 +1,4 @@
-package bxlx.graphics.drawable;
+package bxlx.graphics.container;
 
 import bxlx.graphics.ChangeableDrawable;
 import bxlx.graphics.IDrawable;

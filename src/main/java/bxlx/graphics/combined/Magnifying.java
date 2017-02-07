@@ -1,8 +1,11 @@
-package bxlx.graphics.fill;
+package bxlx.graphics.combined;
 
 import bxlx.graphics.ChangeableDrawable;
 import bxlx.graphics.Color;
 import bxlx.graphics.ICanvas;
+import bxlx.graphics.fill.DrawArc;
+import bxlx.graphics.fill.DrawRectangle;
+import bxlx.graphics.fill.Text;
 
 /**
  * Created by qqcs on 2017.01.11..

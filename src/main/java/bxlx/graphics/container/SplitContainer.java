@@ -1,10 +1,9 @@
-package bxlx.graphics.fill;
+package bxlx.graphics.container;
 
 import bxlx.graphics.Direction;
 import bxlx.graphics.ICanvas;
 import bxlx.graphics.IDrawable;
 import bxlx.graphics.Point;
-import bxlx.graphics.drawable.DrawableContainer;
 import bxlx.graphics.shapes.Rectangle;
 
 import java.util.ArrayList;

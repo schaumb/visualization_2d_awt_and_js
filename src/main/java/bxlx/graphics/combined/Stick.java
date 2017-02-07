@@ -1,11 +1,11 @@
-package bxlx.graphics.fill;
+package bxlx.graphics.combined;
 
 import bxlx.graphics.Direction;
 import bxlx.graphics.ICanvas;
 import bxlx.graphics.IDrawable;
 import bxlx.graphics.Point;
 import bxlx.graphics.Size;
-import bxlx.graphics.drawable.DrawableContainer;
+import bxlx.graphics.container.DrawableContainer;
 import bxlx.graphics.shapes.Arc;
 import bxlx.graphics.shapes.Polygon;
 import bxlx.graphics.shapes.Rectangle;

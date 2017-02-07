@@ -5,7 +5,7 @@ import bxlx.graphics.Color;
 import bxlx.graphics.Font;
 import bxlx.graphics.IDrawable;
 import bxlx.graphics.combined.Builder;
-import bxlx.graphics.fill.SplitContainer;
+import bxlx.graphics.container.SplitContainer;
 import bxlx.graphics.fill.Text;
 import bxlx.system.ColorScheme;
 import bxlx.system.SystemSpecific;

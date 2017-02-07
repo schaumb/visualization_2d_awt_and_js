@@ -1,8 +1,7 @@
-package bxlx.graphics.fill;
+package bxlx.graphics.container;
 
 import bxlx.graphics.ICanvas;
 import bxlx.graphics.IDrawable;
-import bxlx.graphics.drawable.DrawableContainer;
 
 import java.util.ArrayList;
 import java.util.List;
