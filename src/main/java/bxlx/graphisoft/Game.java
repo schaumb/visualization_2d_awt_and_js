@@ -6,6 +6,7 @@ import bxlx.graphics.Font;
 import bxlx.graphics.IDrawable;
 import bxlx.graphics.combined.Builder;
 import bxlx.graphics.container.SplitContainer;
+import bxlx.graphics.drawable.MarginDrawable;
 import bxlx.graphics.fill.Text;
 import bxlx.system.ColorScheme;
 import bxlx.system.SystemSpecific;
@@ -37,10 +38,15 @@ public class Game implements IGame {
 
     @Override
     public ValueOrSupplier<IDrawable> getMain() {
-        return new ValueOrSupplier<>(new SplitContainer<>()
-                .add(new Selector(true, false).addText(new ColorSchemeClickable(true), new Text("Color test")))
-                .add(Builder.text("Test Text").get())
-                .add(new Button<>(new ColorSchemeClickable(false), r ->
-                        SystemSpecific.get().open("asd.pdf"), null, () -> false)));
+        return new ValueOrSupplier<>(new Builder.ContainerBuilder<>(new SplitContainer<>())
+                .transform(r -> new MarginDrawable<>(r, 10, 10))
+                .addAndTransform(new Selector(true, false)
+                        .addText(new ColorSchemeClickable(true), new Text("Color test")))
+                .addAndTransform(Builder.text("Test Text").get())
+                .addAndTransform(new Button<>(new ColorSchemeClickable(false), r ->
+                        SystemSpecific.get().open("asd.pdf"), null, () -> false))
+                .addAndTransform(new Button<>(new ColorSchemeClickable(false), r ->
+                        SystemSpecific.get().logout(), null, () -> false))
+                .get());
     }
 }

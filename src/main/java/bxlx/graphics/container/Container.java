@@ -9,31 +9,25 @@ import java.util.List;
 /**
  * Created by qqcs on 2017.01.09..
  */
-public class Container extends DrawableContainer<IDrawable> {
+public class Container<T extends IDrawable> extends SizeChangeableContainer<T, Container<T>> {
     private final ChangeableValue<Integer> forceRedrawPrevLayer;
 
     public Container() {
         this(new ArrayList<>());
     }
 
-    public Container(List<IDrawable> children) {
+    public Container(List<T> children) {
         this(children, 0);
     }
 
-    public Container(List<IDrawable> children, int forceRedrawPrevLayer) {
-        super(children);
-        this.forceRedrawPrevLayer = new ChangeableValue<>(this, forceRedrawPrevLayer);
-    }
-
     @Override
-    public Container add(IDrawable elem) {
-        super.add(elem);
+    public Container<T> getThis() {
         return this;
     }
 
-    @Override
-    public ChangeableValue<IDrawable> get(int index) {
-        return super.get(index);
+    public Container(List<T> children, int forceRedrawPrevLayer) {
+        super(children);
+        this.forceRedrawPrevLayer = new ChangeableValue<>(this, forceRedrawPrevLayer);
     }
 
     @Override

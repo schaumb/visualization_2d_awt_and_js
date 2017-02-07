@@ -12,12 +12,11 @@ import java.util.List;
 /**
  * Created by qqcs on 2017.01.04..
  */
-public class SplitContainer<T extends IDrawable> extends DrawableContainer<T> {
+public class SplitContainer<T extends IDrawable> extends SizeChangeableContainer<T, SplitContainer<T>> {
     private final ChangeableValue<Boolean> xSplit;
 
-    public SplitContainer(boolean xSplit, List<T> list) {
-        super(list);
-        this.xSplit = new ChangeableValue<>(this, xSplit);
+    public SplitContainer() {
+        this(false, new ArrayList<>());
     }
 
     public SplitContainer(boolean xSplit) {
@@ -28,23 +27,18 @@ public class SplitContainer<T extends IDrawable> extends DrawableContainer<T> {
         this(false, list);
     }
 
-    public SplitContainer() {
-        this(false, new ArrayList<>());
+    @Override
+    public SplitContainer<T> getThis() {
+        return this;
+    }
+
+    public SplitContainer(boolean xSplit, List<T> list) {
+        super(list);
+        this.xSplit = new ChangeableValue<>(this, xSplit);
     }
 
     public ChangeableValue<Boolean> getxSplit() {
         return xSplit;
-    }
-
-    @Override
-    public SplitContainer<T> add(T drawable) {
-        super.add(drawable);
-        return this;
-    }
-
-    @Override
-    public ChangeableValue<T> get(int index) {
-        return super.get(index);
     }
 
     @Override

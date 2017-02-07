@@ -3,8 +3,10 @@ package bxlx.graphics.combined;
 import bxlx.graphics.Color;
 import bxlx.graphics.IDrawable;
 import bxlx.graphics.container.Container;
+import bxlx.graphics.container.SizeChangeableContainer;
 import bxlx.graphics.container.SplitContainer;
 import bxlx.graphics.container.Splitter;
+import bxlx.graphics.container.TransformerContainer;
 import bxlx.graphics.drawable.AspectRatioDrawable;
 import bxlx.graphics.drawable.ClippedDrawable;
 import bxlx.graphics.drawable.ColoredDrawable;
@@ -18,11 +20,13 @@ import bxlx.graphics.fill.DrawRectangle;
 import bxlx.graphics.fill.Text;
 import bxlx.graphics.shapes.Rectangle;
 import bxlx.system.ColorScheme;
+import bxlx.system.functional.ValueOrSupplier;
 import bxlx.system.input.Button;
 import bxlx.system.input.DiscreteSlider;
 import bxlx.system.input.Slider;
 
 import java.util.ArrayList;
+import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.function.UnaryOperator;
 
@@ -45,6 +49,39 @@ public class Builder<T extends IDrawable> {
             return null;
         }
         return new Builder<>(start);
+    }
+
+    public static class ContainerBuilder<T extends IDrawable, C extends SizeChangeableContainer<T, ?>> extends Builder<C> {
+        public ContainerBuilder(C wrapped) {
+            super(wrapped);
+        }
+
+        public <U extends IDrawable> TransformContainerBuilder<U, T, C> transform(Function<U, T> transform) {
+            return new TransformContainerBuilder<>(new TransformerContainer<>(get(), transform));
+        }
+
+        public ContainerBuilder<T, C> add(T elem) {
+            get().add(elem);
+            return this;
+        }
+    }
+
+    public static class TransformContainerBuilder<U extends IDrawable, T extends IDrawable, C extends SizeChangeableContainer<T, ?>> extends
+            Builder<TransformerContainer<U, T, C>> {
+        public TransformContainerBuilder(TransformerContainer<U, T, C> wrapped) {
+            super(wrapped);
+        }
+
+        public <V extends IDrawable> TransformContainerBuilder<V, T, C> transform(Function<V, U> transform) {
+            Function<U, T> fun = get().getTransformFunction();
+            return new TransformContainerBuilder<>(new TransformerContainer<>(get().getChild().get(),
+                    e -> fun.apply(transform.apply(e))));
+        }
+
+        public TransformContainerBuilder<U, T, C> addAndTransform(U elem) {
+            get().addAndTransform(elem);
+            return this;
+        }
     }
 
     public Builder<ColoredDrawable<T>> makeColored(Color color) {
@@ -91,8 +128,8 @@ public class Builder<T extends IDrawable> {
         return new Builder<>(new VisibleDrawable<>(builder.get(), visibility));
     }
 
-    public Builder<Container> makeBackgrounded(Color color) {
-        Builder<Container> result = new Builder<>(new Container(new ArrayList<>(), 1));
+    public Builder<Container<IDrawable>> makeBackgrounded(Color color) {
+        Builder<Container<IDrawable>> result = new Builder<>(new Container<>(new ArrayList<>(), 1));
         result.get().add(background().makeColored(color).get());
         result.get().add(get());
         return result;
@@ -138,12 +175,12 @@ public class Builder<T extends IDrawable> {
         return new Builder<>(new Stick(angle, length, thickness, start, end));
     }
 
-    public static Builder<SplitContainer<IDrawable>> container(boolean xSplit) {
-        return new Builder<>(new SplitContainer<>(xSplit));
+    public static <T extends IDrawable> ContainerBuilder<T, SplitContainer<T>> container(boolean xSplit) {
+        return new ContainerBuilder<>(new SplitContainer<>(xSplit));
     }
 
-    public static Builder<Container> container() {
-        return new Builder<>(new Container());
+    public static <T extends IDrawable> ContainerBuilder<T, Container<T>> container() {
+        return new ContainerBuilder<>(new Container<>());
     }
 
     public static Builder<Splitter> splitter(boolean xSplit, double separate, IDrawable first, IDrawable second) {
@@ -174,5 +211,9 @@ public class Builder<T extends IDrawable> {
     public static Builder<AspectRatioDrawable> imageKeepAspectRatio(String src, int alignX, int alignY) {
         DrawImage img = new DrawImage(src);
         return new Builder<>(new AspectRatioDrawable<>(img, false, alignX, alignY, () -> img.getOriginalAspectRatio()));
+    }
+
+    public ValueOrSupplier<T> makeValueOrSupplier() {
+        return new ValueOrSupplier<>(get());
     }
 }

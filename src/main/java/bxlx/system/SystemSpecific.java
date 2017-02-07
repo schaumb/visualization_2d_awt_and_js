@@ -73,4 +73,6 @@ public abstract class SystemSpecific {
     abstract public int stringLength(Font font, String string);
 
     abstract public void open(String thing);
+
+    abstract public void logout();
 }

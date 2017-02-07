@@ -249,4 +249,9 @@ public class JSweetSystemSpecific extends SystemSpecific {
     public void open(String thing) {
         window.open(thing, "_blank");
     }
+
+    @Override
+    public void logout() {
+        window.location.href = "/logout";
+    }
 }

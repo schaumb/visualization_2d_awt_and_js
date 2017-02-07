@@ -27,7 +27,7 @@ public abstract class DrawableContainer<T extends IDrawable> extends ChangeableD
         return new Redraw(iChanged()).orIf(true, childrenChanged());
     }
 
-    public Redraw iChanged() {
+    protected Redraw iChanged() {
         return super.needRedraw();
     }
 
@@ -45,11 +45,11 @@ public abstract class DrawableContainer<T extends IDrawable> extends ChangeableD
         return children.get(index);
     }
 
-    public int size() {
+    protected int size() {
         return children.size();
     }
 
-    public Redraw childrenChanged() {
+    protected Redraw childrenChanged() {
         boolean parent = parentRedrawSatisfy();
         Redraw result = new Redraw();
         for (ChangeableValue<T> drawable : children) {

@@ -267,4 +267,9 @@ public class AwtSystemSpecific extends SystemSpecific {
             JOptionPane.showMessageDialog(frame, message, "Error", JOptionPane.ERROR_MESSAGE);
         }
     }
+
+    @Override
+    public void logout() {
+        frame.dispatchEvent(new WindowEvent(frame, WindowEvent.WINDOW_CLOSING));
+    }
 }
