@@ -6,7 +6,7 @@ import bxlx.graphics.IDrawable;
 import bxlx.graphics.Point;
 import bxlx.graphics.drawable.DrawableContainer;
 import bxlx.graphics.shapes.Rectangle;
-import bxlx.system.ValueOrSupplier;
+import bxlx.system.functional.ValueOrSupplier;
 
 import java.util.Arrays;
 import java.util.function.Function;

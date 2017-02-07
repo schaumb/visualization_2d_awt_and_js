@@ -1,4 +1,6 @@
-package bxlx.system;
+package bxlx.system.functional;
+
+import bxlx.system.SystemSpecific;
 
 import java.util.function.Function;
 import java.util.function.Supplier;

@@ -1,7 +1,6 @@
 package bxlx.system.input;
 
 import bxlx.graphics.ChangeableDrawable;
-import bxlx.graphics.Color;
 import bxlx.graphics.ICanvas;
 import bxlx.graphics.IDrawable;
 import bxlx.graphics.Point;
@@ -11,6 +10,7 @@ import bxlx.graphics.fill.Rect;
 import bxlx.graphics.fill.SplitContainer;
 import bxlx.graphics.fill.Text;
 import bxlx.graphics.shapes.Rectangle;
+import bxlx.system.ColorScheme;
 
 import java.util.ArrayList;
 import java.util.function.Supplier;
@@ -23,28 +23,6 @@ public class Selector extends SplitContainer<MarginDrawable<Container>> {
         private final Rect rect = new Rect();
         private final MarginDrawable<Rect> smallerRect = new MarginDrawable<>(rect, 5, 5);
 
-        private final Color outsideColor;
-        private final Color color;
-        private final Color insideColor;
-        private final Color clickedColor;
-        private final Color disabledColor;
-        private final Color containsColor;
-        private final Color containsDisabledColor;
-
-        public RectClickable() {
-            this(Color.BLACK, Color.GRAY, Color.DARK_GRAY, Color.DARK_GRAY.getScale(Color.BLACK, 0.5), Color.LIGHT_GRAY, Color.BLACK, Color.WHITE);
-        }
-
-        public RectClickable(Color outsideColor, Color color, Color insideColor, Color clickedColor, Color disabledColor, Color containsColor, Color containsDisabledColor) {
-            this.outsideColor = outsideColor;
-            this.color = color;
-            this.insideColor = insideColor;
-            this.clickedColor = clickedColor;
-            this.disabledColor = disabledColor;
-            this.containsColor = containsColor;
-            this.containsDisabledColor = containsDisabledColor;
-        }
-
         @Override
         public IDrawable.Redraw needRedraw() {
             return super.needRedraw();
@@ -52,12 +30,14 @@ public class Selector extends SplitContainer<MarginDrawable<Container>> {
 
         @Override
         public void forceRedraw(ICanvas canvas) {
+            ColorScheme colors = ColorScheme.getCurrentColorScheme();
             super.forceRedraw(canvas);
-            canvas.setColor(outsideColor);
+            canvas.setColor(colors.buttonBorderColor);
+
             rect.forceDraw(canvas);
-            canvas.setColor(disabled.get() ? disabledColor : inside.get() ? insideColor : isOn().get() ? clickedColor : color);
+            canvas.setColor(disabled.get() ? colors.disabledColor : inside.get() ? colors.insideColor : isOn().get() ? colors.clickedColor : colors.buttonColor);
             smallerRect.forceDraw(canvas);
-            canvas.setColor(disabled.get() ? containsDisabledColor : containsColor);
+            canvas.setColor(colors.buttonTextColor);
         }
 
         @Override
@@ -67,6 +47,7 @@ public class Selector extends SplitContainer<MarginDrawable<Container>> {
     }
 
     private final ArrayList<Button<OnOffClickable>> list = new ArrayList<>();
+    private final ArrayList<Text> texts = new ArrayList<>();
     private final ChangeableDrawable.ChangeableValue<String> getReferenceText;
     private int selectedButtonIndex = -1;
 
@@ -79,6 +60,10 @@ public class Selector extends SplitContainer<MarginDrawable<Container>> {
         return () -> selectedButtonIndex;
     }
 
+    public Supplier<String> getSelectedText() {
+        return () -> selectedButtonIndex < 0 ? null : texts.get(selectedButtonIndex).getText().get();
+    }
+
     public static MarginDrawable<Container> margin(Container container) {
         return new MarginDrawable<>(container, 0.002, 0.1);
     }
@@ -88,6 +73,7 @@ public class Selector extends SplitContainer<MarginDrawable<Container>> {
         final Button<OnOffClickable> button = new Button<>(clickable, null, null, () -> false);
         add(margin(new Container().add(button).add(new MarginDrawable<>(text, 10, 10))));
         list.add(button);
+        texts.add(text);
         if (getReferenceText != null) {
             // TODO measure with real xSize like SystemSpecific.get().stringLength(null, ...);
             int prevSize = getReferenceText.get().length();

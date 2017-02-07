@@ -1,6 +1,6 @@
 package bxlx.graphics;
 
-import bxlx.system.ValueOrSupplier;
+import bxlx.system.functional.ValueOrSupplier;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -60,7 +60,8 @@ public abstract class ChangeableDrawable implements IDrawable {
                 !AspectRatioDrawable.class.isInstance(this) &&
                 !MarginDrawable.class.isInstance(this) &&
                 !ClippedDrawable.class.isInstance(this) &&
-                !ColoredDrawable.class.isInstance(this)) {
+                // !ColoredDrawable.class.isInstance(this) &&
+                true) {
             String msg = "";
             if (Text.class.isInstance(this)) {
                 msg += ((Text) this).getText().get();

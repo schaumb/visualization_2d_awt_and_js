@@ -24,7 +24,7 @@ public class Color {
     }
 
     public Color(int rgba) {
-        this(rgba, rgba >> 8, rgba >> 16, rgba >> 24);
+        this(rgba >> 16, rgba >> 8, rgba, rgba >> 24);
     }
 
 

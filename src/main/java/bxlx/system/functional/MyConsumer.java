@@ -1,4 +1,4 @@
-package bxlx.system;
+package bxlx.system.functional;
 
 import java.util.function.Consumer;
 

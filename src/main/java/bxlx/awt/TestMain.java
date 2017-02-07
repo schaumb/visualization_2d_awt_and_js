@@ -1,6 +1,6 @@
 package bxlx.awt;
 
-import bxlx.system.EntryPoint;
+import bxlx.general.EntryPoint;
 
 /**
  * Created by qqcs on 2016.12.22..

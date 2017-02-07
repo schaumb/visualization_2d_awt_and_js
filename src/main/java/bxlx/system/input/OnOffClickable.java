@@ -14,7 +14,7 @@ import bxlx.graphics.fill.Rect;
 import bxlx.graphics.fill.Splitter;
 import bxlx.graphics.fill.Text;
 import bxlx.graphics.shapes.Rectangle;
-import bxlx.system.ValueOrSupplier;
+import bxlx.system.functional.ValueOrSupplier;
 
 import java.util.Arrays;
 import java.util.function.Predicate;

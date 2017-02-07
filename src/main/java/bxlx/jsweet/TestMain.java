@@ -1,6 +1,6 @@
 package bxlx.jsweet;
 
-import bxlx.system.EntryPoint;
+import bxlx.general.EntryPoint;
 
 import static jsweet.dom.Globals.window;
 

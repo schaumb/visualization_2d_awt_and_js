@@ -18,6 +18,7 @@ import bxlx.graphics.fill.Splitter;
 import bxlx.graphics.fill.Stick;
 import bxlx.graphics.fill.Text;
 import bxlx.graphics.shapes.Rectangle;
+import bxlx.system.ColorScheme;
 import bxlx.system.input.Button;
 import bxlx.system.input.DiscreteSlider;
 import bxlx.system.input.Slider;
@@ -47,11 +48,11 @@ public class Builder<T extends IDrawable> {
         return new Builder<>(start);
     }
 
-    public Builder<ColoredDrawable> makeColored(Color color) {
+    public Builder<ColoredDrawable<T>> makeColored(Color color) {
         return new Builder<>(new ColoredDrawable<>(get(), color));
     }
 
-    public Builder<ColoredDrawable> makeColored(Supplier<Color> color) {
+    public Builder<ColoredDrawable<T>> makeColored(Supplier<Color> color) {
         return new Builder<>(new ColoredDrawable<>(get(), color));
     }
 
@@ -102,16 +103,16 @@ public class Builder<T extends IDrawable> {
         return new Builder<>(new DrawRectangle());
     }
 
-    public static Builder<Text> text(String text) {
-        return new Builder<>(new Text(text));
+    public static Builder<ColoredDrawable<Text>> text(String text) {
+        return new Builder<>(new Text(text)).makeColored(ColorScheme.getCurrentColorScheme().textColor);
     }
 
-    public static Builder<Text> text(String text, int align) {
-        return new Builder<>(new Text(text, null, align));
+    public static Builder<ColoredDrawable<Text>> text(String text, int align) {
+        return new Builder<>(new Text(text, null, align)).makeColored(ColorScheme.getCurrentColorScheme().textColor);
     }
 
-    public static Builder<Text> text(String text, String referenceText) {
-        return new Builder<>(new Text(text, referenceText, 0));
+    public static Builder<ColoredDrawable<Text>> text(String text, String referenceText) {
+        return new Builder<>(new Text(text, referenceText, 0)).makeColored(ColorScheme.getCurrentColorScheme().textColor);
     }
 
     public static Builder<DrawArc> circle(boolean inside) {
