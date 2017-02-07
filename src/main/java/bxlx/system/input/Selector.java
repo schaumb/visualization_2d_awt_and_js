@@ -71,7 +71,7 @@ public class Selector extends SplitContainer<MarginDrawable<Container>> {
     public Selector addText(OnOffClickable clickable, Text text) {
         final int index = size();
         final Button<OnOffClickable> button = new Button<>(clickable, null, null, () -> false);
-        add(margin(new Container().add(button).add(new MarginDrawable<>(text, 10, 10))));
+        add(margin(new Container().add(button).add(new MarginDrawable<>(text, 50, 50))));
         list.add(button);
         texts.add(text);
         if (getReferenceText != null) {

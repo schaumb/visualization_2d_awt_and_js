@@ -244,4 +244,9 @@ public class JSweetSystemSpecific extends SystemSpecific {
         }
         return -1;
     }
+
+    @Override
+    public void open(String thing) {
+        window.open(thing, "_blank");
+    }
 }

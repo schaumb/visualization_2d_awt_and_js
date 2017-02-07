@@ -13,8 +13,10 @@ import bxlx.system.Timer;
 import javax.media.Manager;
 import javax.media.MediaLocator;
 import javax.swing.JFrame;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.WindowConstants;
+import java.awt.Desktop;
 import java.awt.Dimension;
 import java.awt.EventQueue;
 import java.awt.Graphics;
@@ -245,5 +247,24 @@ public class AwtSystemSpecific extends SystemSpecific {
             return res;
         }
         return -1;
+    }
+
+    @Override
+    public void open(String thing) {
+        String message = "Open is not supported";
+        boolean success = false;
+        if (Desktop.isDesktopSupported()) {
+            try {
+                File file = new File(thing);
+                Desktop.getDesktop().open(file);
+                success = true;
+            } catch (IOException | IllegalArgumentException e) {
+                message = e.getLocalizedMessage();
+            }
+        }
+
+        if (!success) {
+            JOptionPane.showMessageDialog(frame, message, "Error", JOptionPane.ERROR_MESSAGE);
+        }
     }
 }

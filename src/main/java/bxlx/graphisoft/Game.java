@@ -8,7 +8,9 @@ import bxlx.graphics.combined.Builder;
 import bxlx.graphics.fill.SplitContainer;
 import bxlx.graphics.fill.Text;
 import bxlx.system.ColorScheme;
+import bxlx.system.SystemSpecific;
 import bxlx.system.functional.ValueOrSupplier;
+import bxlx.system.input.Button;
 import bxlx.system.input.Selector;
 
 /**
@@ -36,6 +38,8 @@ public class Game implements IGame {
     public ValueOrSupplier<IDrawable> getMain() {
         return new ValueOrSupplier<>(new SplitContainer<>()
                 .add(new Selector(true, false).addText(new Selector.RectClickable(), new Text("Color test")))
-                .add(Builder.text("Test Text").get()));
+                .add(Builder.text("Test Text").get())
+                .add(new Button<>(new Selector.RectClickable(), r ->
+                        SystemSpecific.get().open("asd.pdf"), null, () -> false)));
     }
 }
