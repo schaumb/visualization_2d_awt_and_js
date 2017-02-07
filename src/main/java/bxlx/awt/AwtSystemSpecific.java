@@ -1,6 +1,7 @@
 package bxlx.awt;
 
 import bxlx.graphics.Color;
+import bxlx.graphics.Cursor;
 import bxlx.graphics.Font;
 import bxlx.graphics.Point;
 import bxlx.graphics.Size;
@@ -32,6 +33,7 @@ import java.awt.event.WindowEvent;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
+import java.net.URI;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.Date;
@@ -255,8 +257,12 @@ public class AwtSystemSpecific extends SystemSpecific {
         boolean success = false;
         if (Desktop.isDesktopSupported()) {
             try {
-                File file = new File(thing);
-                Desktop.getDesktop().open(file);
+                if(thing.startsWith("http:") || thing.startsWith("www.")) {
+                    Desktop.getDesktop().browse(URI.create(thing));
+                } else {
+                    File file = new File(thing);
+                    Desktop.getDesktop().open(file);
+                }
                 success = true;
             } catch (IOException | IllegalArgumentException e) {
                 message = e.getLocalizedMessage();
@@ -271,5 +277,18 @@ public class AwtSystemSpecific extends SystemSpecific {
     @Override
     public void logout() {
         frame.dispatchEvent(new WindowEvent(frame, WindowEvent.WINDOW_CLOSING));
+    }
+
+    @Override
+    public void setCursor(Cursor cursor) {
+        java.awt.Cursor awtCursor = java.awt.Cursor.getDefaultCursor();
+        switch (cursor) {
+            case DEFAULT:
+                break;
+            case HAND:
+                awtCursor = java.awt.Cursor.getPredefinedCursor(java.awt.Cursor.HAND_CURSOR);
+                break;
+        }
+        panel.setCursor(awtCursor);
     }
 }

@@ -1,6 +1,7 @@
 package bxlx.jsweet;
 
 import bxlx.graphics.Color;
+import bxlx.graphics.Cursor;
 import bxlx.graphics.Font;
 import bxlx.graphics.ImageCaches;
 import bxlx.graphics.Point;
@@ -253,5 +254,18 @@ public class JSweetSystemSpecific extends SystemSpecific {
     @Override
     public void logout() {
         window.location.href = "/logout";
+    }
+
+    @Override
+    public void setCursor(Cursor cursor) {
+        String cursorName = "default";
+        switch (cursor) {
+            case DEFAULT:
+                break;
+            case HAND:
+                cursorName = "pointer";
+                break;
+        }
+        canvasElement.style.cursor = cursorName;
     }
 }

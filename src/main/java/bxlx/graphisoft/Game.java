@@ -7,6 +7,7 @@ import bxlx.graphics.IDrawable;
 import bxlx.graphics.combined.Builder;
 import bxlx.graphics.container.SplitContainer;
 import bxlx.graphics.drawable.MarginDrawable;
+import bxlx.graphics.fill.DrawImage;
 import bxlx.graphics.fill.Text;
 import bxlx.system.ColorScheme;
 import bxlx.system.SystemSpecific;
@@ -14,6 +15,7 @@ import bxlx.system.functional.ValueOrSupplier;
 import bxlx.system.input.Button;
 import bxlx.system.input.Selector;
 import bxlx.system.input.clickable.ColorSchemeClickable;
+import bxlx.system.input.clickable.CursorChangeClickable;
 
 /**
  * Created by qqcs on 2017.01.18..
@@ -47,6 +49,8 @@ public class Game implements IGame {
                         SystemSpecific.get().open("asd.pdf"), null, () -> false))
                 .addAndTransform(new Button<>(new ColorSchemeClickable(false), r ->
                         SystemSpecific.get().logout(), null, () -> false))
+                .addAndTransform(new Button<>(new CursorChangeClickable(new DrawImage("logo.png")), r ->
+                        SystemSpecific.get().open("http://www.graphisoft.hu/"), null, () -> false))
                 .get());
     }
 }

@@ -22,12 +22,24 @@ public class Button<T extends Button.Clickable> extends DrawableWrapper<T> imple
     public abstract static class Clickable extends ChangeableDrawable {
         protected Supplier<Boolean> inside = null;
         protected Supplier<Boolean> disabled = null;
+        protected Supplier<Boolean> hover = null;
 
         abstract public boolean isContains(Rectangle bound, Point position);
 
         public void clicked() {
         }
 
+        public boolean getInsideNow() {
+            return inside != null && inside.get();
+        }
+
+        public boolean getDisableNow() {
+            return disabled != null && disabled.get();
+        }
+
+        public boolean getHoverNow() {
+            return hover != null && hover.get();
+        }
     }
 
     private boolean isVisible = false;
@@ -51,6 +63,7 @@ public class Button<T extends Button.Clickable> extends DrawableWrapper<T> imple
         this.inside = new ChangeableValue<>(this, () -> MouseInfo.get().isLeftClicked() && hover.get());
         clickable.inside = inside.getAsSupplier();
         clickable.disabled = disabled.getAsSupplier();
+        clickable.hover = this.hover;
 
         SystemSpecific.get().setMouseEventListenerQueue(this);
     }
@@ -60,6 +73,7 @@ public class Button<T extends Button.Clickable> extends DrawableWrapper<T> imple
         if (c.inside == null) {
             c.inside = inside.getAsSupplier();
             c.disabled = disabled.getAsSupplier();
+            c.hover = this.hover;
         }
         return c;
     }

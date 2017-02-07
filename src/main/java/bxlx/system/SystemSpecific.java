@@ -1,6 +1,7 @@
 package bxlx.system;
 
 import bxlx.graphics.Color;
+import bxlx.graphics.Cursor;
 import bxlx.graphics.Font;
 import bxlx.graphics.Size;
 
@@ -75,4 +76,6 @@ public abstract class SystemSpecific {
     abstract public void open(String thing);
 
     abstract public void logout();
+
+    abstract public void setCursor(Cursor cursor);
 }
