@@ -80,9 +80,10 @@ public class JSweetSystemSpecific extends SystemSpecific {
             return null;
         }
 
-        if (canvasElement.width != window.innerWidth || canvasElement.height != window.innerHeight) {
-            canvasElement.width = window.innerWidth;
-            canvasElement.height = window.innerHeight;
+        if (canvasElement.width != Math.max(window.innerWidth, minimumSize.getWidth()) ||
+                canvasElement.height != Math.max(window.innerHeight, minimumSize.getHeight())) {
+            canvasElement.width = Math.max(window.innerWidth, minimumSize.getWidth());
+            canvasElement.height = Math.max(window.innerHeight, minimumSize.getHeight());
 
             renderer.setCanvas(htmlCanvas = new HtmlCanvas(canvasElement));
         }
@@ -97,8 +98,8 @@ public class JSweetSystemSpecific extends SystemSpecific {
     public void setDrawFunction(IRenderer renderer) {
         if (canvasElement == null) {
             canvasElement = document.createElement(StringTypes.canvas);
-            canvasElement.width = window.innerWidth;
-            canvasElement.height = window.innerHeight;
+            canvasElement.width = Math.max(window.innerWidth, minimumSize.getWidth());
+            canvasElement.height = Math.max(window.innerHeight, minimumSize.getHeight());
             canvasElement.style.position = "absolute";
             canvasElement.style.top = "0";
             canvasElement.style.left = "0";

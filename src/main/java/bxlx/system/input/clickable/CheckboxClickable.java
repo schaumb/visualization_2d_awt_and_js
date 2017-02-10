@@ -2,6 +2,7 @@ package bxlx.system.input.clickable;
 
 import bxlx.graphics.Color;
 import bxlx.graphics.ICanvas;
+import bxlx.graphics.IDrawable;
 import bxlx.graphics.Point;
 import bxlx.graphics.container.Container;
 import bxlx.graphics.drawable.AspectRatioDrawable;
@@ -37,7 +38,7 @@ public class CheckboxClickable extends OnOffClickable {
     }
 
     @Override
-    public Redraw needRedraw() {
+    public IDrawable.Redraw needRedraw() {
         return super.needRedraw().orIf(true, container.needRedraw());
     }
 

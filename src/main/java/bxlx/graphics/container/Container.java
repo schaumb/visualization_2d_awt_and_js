@@ -66,8 +66,8 @@ public class Container<T extends IDrawable> extends SizeChangeableContainer<T, C
             } else {
                 child.draw(canvas);
             }
-            
-            if(setINeedRedraw) {
+
+            if (setINeedRedraw) {
                 iNeedRedraw = true;
             }
         }

@@ -17,6 +17,7 @@ public abstract class SystemSpecific {
     protected boolean rendering = false;
     protected String[] args;
     protected List<IMouseEventListener> listeners = new ArrayList<>();
+    protected Size minimumSize = Size.NULL;
 
     public static SystemSpecific get() {
         if (INSTANCE == null) {
@@ -78,4 +79,8 @@ public abstract class SystemSpecific {
     abstract public void logout();
 
     abstract public void setCursor(Cursor cursor);
+
+    public void setMinimumSize(Size size) {
+        minimumSize = size;
+    }
 }

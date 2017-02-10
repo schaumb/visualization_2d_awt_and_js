@@ -5,6 +5,7 @@ import bxlx.general.MenuCreator;
 import bxlx.graphics.Color;
 import bxlx.graphics.Font;
 import bxlx.graphics.IDrawable;
+import bxlx.graphics.Size;
 import bxlx.graphics.combined.Builder;
 import bxlx.graphics.container.Splitter;
 import bxlx.system.ColorScheme;
@@ -29,6 +30,7 @@ public class Game implements IGame {
                 new Color(0xff18445f),
                 Color.WHITE
         ));
+        SystemSpecific.get().setMinimumSize(new Size(640, 480));
         return this;
     }
 

@@ -74,6 +74,7 @@ public class AwtSystemSpecific extends SystemSpecific {
             frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
             Dimension d = Toolkit.getDefaultToolkit().getScreenSize();
             frame.setSize(d.width, d.height);
+            frame.setMinimumSize(new Dimension((int) minimumSize.getWidth(), (int) minimumSize.getHeight()));
             frame.addComponentListener(new ComponentAdapter() {
                 @Override
                 public void componentResized(ComponentEvent e) {
@@ -290,5 +291,13 @@ public class AwtSystemSpecific extends SystemSpecific {
                 break;
         }
         panel.setCursor(awtCursor);
+    }
+
+    @Override
+    public void setMinimumSize(Size size) {
+        super.setMinimumSize(size);
+        if (frame != null) {
+            frame.setMinimumSize(new Dimension((int) size.getWidth(), (int) size.getHeight()));
+        }
     }
 }
