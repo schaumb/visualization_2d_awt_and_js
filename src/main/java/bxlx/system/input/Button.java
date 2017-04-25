@@ -100,11 +100,6 @@ public class Button<T extends Button.Clickable> extends DrawableWrapper<T> imple
     }
 
     @Override
-    protected boolean parentRedrawSatisfy() {
-        return true;
-    }
-
-    @Override
     public void forceRedraw(ICanvas canvas) {
         Redraw redraw = needRedraw();
         boolean nowDisabled = disabled.get();

@@ -19,19 +19,19 @@ public class TransformerContainer<F extends IDrawable, U extends IDrawable, T ex
         this.transformFunction = transformFunction;
     }
 
-    public TransformerContainer<F, U, T> addAndTransform(F elem) {
-        getChild().get().add(new ValueOrSupplier.Transform<F, U>().transform(new ValueOrSupplier<>(elem), transformFunction));
+    public TransformerContainer<F, U, T> add(F elem) {
+        getChild().get().add(new ChangeableValue<>(this, elem).transform(transformFunction).getAsSupplier());
         return this;
     }
 
-    public TransformerContainer<F, U, T> addAndTransform(Supplier<F> supplier) {
-        getChild().get().add(new ValueOrSupplier.Transform<F, U>().transform(new ValueOrSupplier<>(supplier), transformFunction));
+    public TransformerContainer<F, U, T> add(Supplier<F> supplier) {
+        getChild().get().add(new ChangeableValue<>(this, supplier).transform(transformFunction).getAsSupplier());
         return this;
     }
 
-    public TransformerContainer<F, U, T> addAndTransformAll(ArrayList<F> elems) {
+    public TransformerContainer<F, U, T> add(ArrayList<F> elems) {
         for (F elem : elems) {
-            getChild().get().add(new ValueOrSupplier.Transform<F, U>().transform(new ValueOrSupplier<>(elem), transformFunction));
+            getChild().get().add(new ChangeableValue<>(this, elem).transform(transformFunction).getAsSupplier());
         }
         return this;
     }
@@ -40,11 +40,10 @@ public class TransformerContainer<F extends IDrawable, U extends IDrawable, T ex
         return transformFunction;
     }
 
-    public ChangeableValue<U> getTransformed(int index) {
+    public ChangeableValue<U> get(int index) {
         return getChild().get().get(index);
     }
 
-    @Override
     public int size() {
         return getChild().get().size();
     }

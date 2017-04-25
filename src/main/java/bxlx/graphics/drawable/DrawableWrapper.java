@@ -1,21 +1,27 @@
 package bxlx.graphics.drawable;
 
+import bxlx.graphics.ChangeableDrawable;
 import bxlx.graphics.ICanvas;
 import bxlx.graphics.IDrawable;
-import bxlx.graphics.container.DrawableContainer;
-
-import java.util.Collections;
 
 /**
  * Created by qqcs on 2017.01.13..
  */
-public abstract class DrawableWrapper<T extends IDrawable> extends DrawableContainer<T> {
+public abstract class DrawableWrapper<T extends IDrawable> extends ChangeableDrawable {
+    private ChangeableValue<T> child;
+
     public DrawableWrapper(T child) {
-        super(Collections.singletonList(child));
+        this.child = new ChangeableValue<>(this, child);
     }
 
     public ChangeableValue<T> getChild() {
-        return get(0);
+        return child;
+    }
+
+
+    @Override
+    public Redraw needRedraw() {
+        return super.needRedraw().orIf(true, child.get().needRedraw());
     }
 
     @Override
@@ -27,10 +33,5 @@ public abstract class DrawableWrapper<T extends IDrawable> extends DrawableConta
     public void setRedraw() {
         super.setRedraw();
         getChild().get().setRedraw();
-    }
-
-    @Override
-    protected boolean parentRedrawSatisfy() {
-        return false;
     }
 }

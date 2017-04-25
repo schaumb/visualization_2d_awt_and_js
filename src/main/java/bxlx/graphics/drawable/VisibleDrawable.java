@@ -32,11 +32,6 @@ public class VisibleDrawable<T extends VisibleDrawable.VisibleDraw> extends Draw
     }
 
     @Override
-    public Redraw childrenChanged() {
-        return new Redraw().orIf(visible.get(), super.childrenChanged());
-    }
-
-    @Override
     public void forceRedraw(ICanvas canvas) {
         if (getChild().get() == null)
             return;

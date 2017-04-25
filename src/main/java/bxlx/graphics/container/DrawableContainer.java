@@ -24,11 +24,7 @@ public abstract class DrawableContainer<T extends IDrawable> extends ChangeableD
 
     @Override
     public Redraw needRedraw() {
-        return new Redraw(iChanged()).orIf(true, childrenChanged());
-    }
-
-    protected Redraw iChanged() {
-        return super.needRedraw();
+        return super.needRedraw().orIf(true, childrenChanged());
     }
 
     protected DrawableContainer<T> add(T elem) {

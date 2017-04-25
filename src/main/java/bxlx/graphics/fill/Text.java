@@ -31,6 +31,12 @@ public class Text extends ChangeableDrawable {
         this.align = new ChangeableValue<>(this, (int) Math.signum(align));
     }
 
+    @Override
+    public Redraw needRedraw() {
+        Redraw result = super.needRedraw();
+        return result.setIf(result.iNeedRedraw(), Redraw.PARENT_NEED_REDRAW);
+    }
+
     public ChangeableValue<String> getText() {
         return text;
     }

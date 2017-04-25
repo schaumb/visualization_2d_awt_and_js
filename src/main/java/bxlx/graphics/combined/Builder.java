@@ -86,18 +86,13 @@ public class Builder<T extends IDrawable> {
                     e -> fun.apply(transform.apply(e))));
         }
 
-        public TransformContainerBuilder<U, T, C> addAndTransform(U elem) {
-            get().addAndTransform(elem);
+        public TransformContainerBuilder<U, T, C> add(U elem) {
+            get().add(elem);
             return this;
         }
 
-        public TransformContainerBuilder<U, T, C> addAndTransform(Builder<U> elem) {
-            get().addAndTransform(elem.get());
-            return this;
-        }
-
-        public TransformContainerBuilder<U, T, C> addAndTransformAll(ArrayList<U> elems) {
-            get().addAndTransformAll(elems);
+        public TransformContainerBuilder<U, T, C> add(Builder<U> elem) {
+            get().add(elem.get());
             return this;
         }
     }

@@ -16,7 +16,7 @@ import java.util.function.Supplier;
  */
 public class Splitter extends DrawableContainer<IDrawable> {
     private final ChangeableValue<Boolean> xSplit;
-    private final ChangeableValue<Function<Rectangle, Double>> separate;
+    private final ChangeableDependentValue<Double, Rectangle> separate;
 
     public Splitter(boolean xSplit, double separate, IDrawable first, IDrawable second) {
         this(xSplit, r -> separate, first, second);
@@ -29,7 +29,7 @@ public class Splitter extends DrawableContainer<IDrawable> {
     public Splitter(boolean xSplit, Function<Rectangle, Double> separate, IDrawable first, IDrawable second) {
         super(Arrays.asList(first, second));
         this.xSplit = new ChangeableValue<>(this, xSplit);
-        this.separate = new ChangeableValue<>(this, separate);
+        this.separate = new ChangeableDependentValue<>(this, separate);
     }
 
     public Splitter(double separate, IDrawable first, IDrawable second) {
@@ -79,8 +79,8 @@ public class Splitter extends DrawableContainer<IDrawable> {
 
     public static Splitter threeWaySplit(boolean xSplit, Supplier<Double> centerSeparate,
                                          IDrawable first, IDrawable center, IDrawable last) {
-        Supplier<Double> sep1 = new ValueOrSupplier.Transform<Double, Double>()
-                .transform(new ValueOrSupplier<>(centerSeparate), cSep -> {
+        Supplier<Double> sep1 = new ValueOrSupplier<>(centerSeparate)
+                .transform(cSep -> {
                     if (cSep <= -1) {
                         return (double) Math.round(-cSep / 2);
                     } else if (cSep < 0) {
@@ -92,11 +92,11 @@ public class Splitter extends DrawableContainer<IDrawable> {
                     } else {
                         return -cSep;
                     }
-                });
+                }).getAsSupplier();
 
 
-        Supplier<Double> sep2 = new ValueOrSupplier.Transform<Double, Double>()
-                .transform(new ValueOrSupplier<>(centerSeparate), cSep -> {
+        Supplier<Double> sep2 = new ValueOrSupplier<>(centerSeparate)
+                .transform(cSep -> {
                     if (cSep <= -1) {
                         return (double) Math.round(cSep / 2);
                     } else if (cSep < 0) {
@@ -106,7 +106,7 @@ public class Splitter extends DrawableContainer<IDrawable> {
                     } else {
                         return cSep;
                     }
-                });
+                }).getAsSupplier();
 
         return new Splitter(xSplit, sep1, first,
                 new Splitter(xSplit, sep2, center, last));
@@ -116,7 +116,7 @@ public class Splitter extends DrawableContainer<IDrawable> {
         return xSplit;
     }
 
-    public ChangeableValue<Function<Rectangle, Double>> getSeparate() {
+    public ChangeableDependentValue<Double, Rectangle> getSeparate() {
         return separate;
     }
 
@@ -137,7 +137,7 @@ public class Splitter extends DrawableContainer<IDrawable> {
         Rectangle rectangle = canvas.getBoundingRectangle();
 
         boolean nowXSplit = xSplit.get();
-        double nowSeparate = separate.get().apply(rectangle);
+        double nowSeparate = separate.setDep(rectangle).get();
 
         Point dimension = nowXSplit ? Direction.RIGHT.getVector() : Direction.DOWN.getVector();
         Point otherDimension = nowXSplit ? Direction.DOWN.getVector() : Direction.RIGHT.getVector();

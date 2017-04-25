@@ -23,7 +23,7 @@ import java.util.function.Supplier;
 /**
  * Created by qqcs on 2017.01.18..
  */
-public class Slider extends DrawableWrapper<Container> implements IMouseEventListener {
+public class Slider extends DrawableWrapper<Container<IDrawable>> implements IMouseEventListener {
     private Point draggedPoint;
     private Rectangle lastRectangle = Rectangle.NULL_RECTANGLE;
     private final Button<?> button;
@@ -35,7 +35,7 @@ public class Slider extends DrawableWrapper<Container> implements IMouseEventLis
     }
 
     public Slider(Button<?> button, boolean xDraw, double start) {
-        super(new Container());
+        super(new Container<>());
 
         this.button = button;
         this.xDraw = new ChangeableValue<>(this, xDraw);
@@ -43,7 +43,7 @@ public class Slider extends DrawableWrapper<Container> implements IMouseEventLis
 
         Stick mainStick = new Stick(0, 0.1, 0.5, null, null);
         mainStick.getAngle().setSupplier(() -> this.xDraw.get() ? 0 : Math.PI / 2);
-        mainStick.getLength().setElem(r -> r.getSize().getWidth() / r.getSize().getHeight());
+        mainStick.getLength().setDepFun(r -> r.getSize().getWidth() / r.getSize().getHeight());
 
         getChild().get().add(new ColoredDrawable<>(mainStick, Color.LIGHT_GRAY));
         getChild().get().add(new ClippedDrawable<>(new ZoomDrawable<>(new AspectRatioDrawable<>(

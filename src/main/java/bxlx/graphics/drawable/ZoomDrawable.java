@@ -12,35 +12,30 @@ import java.util.function.Supplier;
  * Created by qqcs on 2017.01.18..
  */
 public class ZoomDrawable<T extends IDrawable> extends ClippedDrawable<T> {
-    private final ChangeableValue<Function<Rectangle, Double>> zoom;
-    private final ChangeableValue<Function<Rectangle, Double>> shiftX;
-    private final ChangeableValue<Function<Rectangle, Double>> shiftY;
+    private final ChangeableDependentValue<Double, Rectangle> zoom;
+    private final ChangeableDependentValue<Double, Rectangle> shiftX;
+    private final ChangeableDependentValue<Double, Rectangle> shiftY;
 
     public ZoomDrawable(T wrapped, boolean fake, Function<Rectangle, Double> zoom, Function<Rectangle, Double> x, Function<Rectangle, Double> y) {
         super(wrapped, fake, null);
 
-        this.zoom = new ChangeableValue<>(this, zoom);
-        this.shiftX = new ChangeableValue<>(this, x);
-        this.shiftY = new ChangeableValue<>(this, y);
+        this.zoom = new ChangeableDependentValue<>(this, zoom);
+        this.shiftX = new ChangeableDependentValue<>(this, x);
+        this.shiftY = new ChangeableDependentValue<>(this, y);
 
         setClip();
     }
 
     public ZoomDrawable(T wrapped, boolean fake, Supplier<Double> zoom, Supplier<Double> x, Supplier<Double> y) {
-        super(wrapped, fake, null);
-
-        this.zoom = new ChangeableValue<>(this, r -> zoom.get());
-        this.shiftX = new ChangeableValue<>(this, r -> x.get());
-        this.shiftY = new ChangeableValue<>(this, r -> y.get());
-
-        setClip();
+        this(wrapped, fake, r -> zoom.get(), r -> x.get(), r -> y.get());
     }
 
     private void setClip() {
         getClip().setElem(r -> {
-            Size size = r.getSize().asPoint().multiple(zoom.get().apply(r)).asSize();
+            Size size = r.getSize().asPoint().multiple(zoom.setDep(r).get()).asSize();
 
-            Point start = r.getStart().add(r.getSize().asPoint().negate().multiple(new Point(-shiftX.get().apply(r), -shiftY.get().apply(r))));
+            Point start = r.getStart().add(r.getSize().asPoint().negate().multiple(new Point(-shiftX.setDep(r).get(),
+                    -shiftY.setDep(r).get())));
             return new Rectangle(start, size);
         });
     }

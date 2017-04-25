@@ -2,13 +2,14 @@ package bxlx.system.functional;
 
 import bxlx.system.SystemSpecific;
 
+import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
 public class ValueOrSupplier<T> {
     private Supplier<T> supplier;
     private T lastGetElem;
-    private T elem;
+    private T lastShowedElem;
 
     public ValueOrSupplier(Supplier<T> supplier) {
         this.supplier = supplier;
@@ -16,6 +17,24 @@ public class ValueOrSupplier<T> {
 
     public ValueOrSupplier(T elem) {
         this.lastGetElem = elem;
+    }
+
+    protected ValueOrSupplier(ValueOrSupplier<?> other, Function<Object, T> trans) {
+        this.supplier = () -> other.isChanged() ? trans.apply(other.get()) : lastGetElem;
+    }
+
+    private ValueOrSupplier(ValueOrSupplier<?> other1, ValueOrSupplier<?> other2, BiFunction<Object, Object, T> trans) {
+        this.supplier = () -> other1.isChanged() || other2.isChanged() ? trans.apply(other1.get(), other2.get()) : lastGetElem;
+    }
+
+    @SuppressWarnings("unchecked")
+    public <U> ValueOrSupplier<U> transform(Function<T, U> trans) {
+        return new ValueOrSupplier<>(this, o -> trans.apply((T) o));
+    }
+
+    @SuppressWarnings("unchecked")
+    public <U, V> ValueOrSupplier<U> transform2(ValueOrSupplier<V> other, BiFunction<T, V, U> trans) {
+        return new ValueOrSupplier<>(this, other, (t, v) -> trans.apply((T) t, (V) v));
     }
 
     public ValueOrSupplier<T> setSupplier(Supplier<T> supplier) {
@@ -30,11 +49,11 @@ public class ValueOrSupplier<T> {
     }
 
     public boolean isChanged() {
-        return !SystemSpecific.get().equals(elem, supplier == null ? lastGetElem : (lastGetElem = supplier.get()));
+        return !SystemSpecific.get().equals(lastShowedElem, supplier == null ? lastGetElem : (lastGetElem = supplier.get()));
     }
 
     public void commit() {
-        elem = lastGetElem;
+        lastShowedElem = lastGetElem;
     }
 
     public Supplier<T> getAsSupplier() {
@@ -43,22 +62,5 @@ public class ValueOrSupplier<T> {
 
     public T get() {
         return supplier == null ? lastGetElem : (lastGetElem = supplier.get());
-    }
-
-    public static class Transform<T, U> {
-        public Supplier<U> transform(ValueOrSupplier<T> supplier, Function<T, U> trans) {
-            final Supplier<T> suppl = supplier.getAsSupplier();
-            return new ValueOrSupplier<U>((U) null) {
-                private T lastGet = suppl.get();
-                private T tmpGet;
-                private U cache = trans.apply(lastGet);
-
-                @Override
-                public U get() {
-                    return !SystemSpecific.get().equals(lastGet, tmpGet = suppl.get()) ?
-                            cache = trans.apply(lastGet = tmpGet) : cache;
-                }
-            }.getAsSupplier();
-        }
     }
 }

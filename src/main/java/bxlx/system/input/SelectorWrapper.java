@@ -27,10 +27,10 @@ public class SelectorWrapper extends DrawableWrapper<Splitter> {
             double bowlingSize = fixSize.get() * selector.size() - r.getSize().getHeight();
             if (bowlingSize <= 0) {
                 slider.getNow().setElem(0.0);
-                getChild().get().getSeparate().setElem(rt -> 0.0);
+                getChild().get().getSeparate().setDepFun(rt -> 0.0);
                 return 0.0;
             }
-            getChild().get().getSeparate().setElem(rt -> -40.0);
+            getChild().get().getSeparate().setDepFun(rt -> -40.0);
             return -bowlingSize / r.getSize().getHeight() * slider.getNow().get();
         }));
         splitter.getSecond().setElem(slider);

@@ -2,12 +2,9 @@ package bxlx.general;
 
 import bxlx.graphics.ICanvas;
 import bxlx.graphics.IDrawable;
-import bxlx.graphics.combined.Builder;
-import bxlx.system.ColorScheme;
 import bxlx.system.IRenderer;
 import bxlx.system.MouseInfo;
 import bxlx.system.SystemSpecific;
-import bxlx.system.functional.ValueOrSupplier;
 
 import java.util.function.Supplier;
 
@@ -39,8 +36,7 @@ public class Renderer implements IRenderer {
     public Renderer(IGame game) {
         MouseInfo.get(); // init mouseinfo
 
-        this.main = new ValueOrSupplier.Transform<IDrawable, IDrawable>().transform(game.init().getMain(),
-                i -> new Builder<>(i).makeBackgrounded(ColorScheme.getCurrentColorScheme().backgroundColor).get());
+        this.main = game.init().getMain().getAsSupplier();
 
         SystemSpecific.get().setDrawFunction(this);
     }

@@ -11,20 +11,19 @@ import bxlx.graphics.shapes.Polygon;
 import bxlx.graphics.shapes.Rectangle;
 
 import java.util.Arrays;
-import java.util.function.Function;
 
 /**
  * Created by qqcs on 2017.01.10..
  */
 public class Stick extends DrawableContainer<IDrawable> {
     private final ChangeableValue<Double> angle;
-    private final ChangeableValue<Function<Rectangle, Double>> length;
+    private final ChangeableDependentValue<Double, Rectangle> length;
     private final ChangeableValue<Double> thickness;
 
     public Stick(double angle, double length, double thickness, IDrawable start, IDrawable end) {
         super(Arrays.asList(start, end));
         this.angle = new ChangeableValue<>(this, angle);
-        this.length = new ChangeableValue<>(this, r -> length);
+        this.length = new ChangeableDependentValue<>(this, r -> length);
         this.thickness = new ChangeableValue<>(this, thickness);
 
     }
@@ -33,7 +32,7 @@ public class Stick extends DrawableContainer<IDrawable> {
         return angle;
     }
 
-    public ChangeableValue<Function<Rectangle, Double>> getLength() {
+    public ChangeableDependentValue<Double, Rectangle> getLength() {
         return length;
     }
 
@@ -48,7 +47,7 @@ public class Stick extends DrawableContainer<IDrawable> {
         Size size = bound.getSize();
 
         double nowAngle = angle.get();
-        double nowLength = length.get().apply(bound);
+        double nowLength = length.setDep(bound).get();
         double nowThickness = thickness.get();
 
         Redraw redraw = needRedraw();
@@ -134,7 +133,7 @@ public class Stick extends DrawableContainer<IDrawable> {
 
     public Rectangle getBoundingRectangle(Rectangle bound) {
         double nowAngle = angle.get();
-        double nowLength = length.get().apply(bound);
+        double nowLength = length.setDep(bound).get();
 
         Point center = bound.getCenter();
         Size size = bound.getSize();
