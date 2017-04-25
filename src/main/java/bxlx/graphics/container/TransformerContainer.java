@@ -36,6 +36,11 @@ public class TransformerContainer<F extends IDrawable, U extends IDrawable, T ex
         return this;
     }
 
+    public TransformerContainer<F, U, T> addVal(ChangeableValue<F> changeable) {
+        getChild().get().add(changeable.transform(transformFunction).getAsSupplier());
+        return this;
+    }
+
     public Function<F, U> getTransformFunction() {
         return transformFunction;
     }

@@ -80,13 +80,13 @@ public class JSweetSystemSpecific extends SystemSpecific {
             return null;
         }
 
-        if (canvasElement.width != Math.max(window.innerWidth, minimumSize.getWidth()) ||
+        /*if (canvasElement.width != Math.max(window.innerWidth, minimumSize.getWidth()) ||
                 canvasElement.height != Math.max(window.innerHeight, minimumSize.getHeight())) {
-            canvasElement.width = Math.max(window.innerWidth, minimumSize.getWidth());
-            canvasElement.height = Math.max(window.innerHeight, minimumSize.getHeight());
 
-            renderer.setCanvas(htmlCanvas = new HtmlCanvas(canvasElement));
-        }
+        }*/
+        canvasElement.width = Math.max(window.innerWidth, minimumSize.getWidth());
+        canvasElement.height = Math.max(window.innerHeight, minimumSize.getHeight());
+        renderer.setCanvas(htmlCanvas = new HtmlCanvas(canvasElement));
 
         if (!isRendering()) {
             window.requestAnimationFrame(x -> draw(x));
@@ -183,7 +183,7 @@ public class JSweetSystemSpecific extends SystemSpecific {
     }
 
     @Override
-    public void readTextFileAsync(String fileName, Consumer<String> consumer) {
+    public void readTextFileAsync(String from, String fileName, Consumer<String> consumer) {
 
         XMLHttpRequest request = new XMLHttpRequest();
 
@@ -197,6 +197,11 @@ public class JSweetSystemSpecific extends SystemSpecific {
             }
             return null;
         });
+        /*
+        request.open("POST", from, true);
+        request.send(fileName);
+        */
+
         request.open("GET", fileName, true);
         request.send();
     }

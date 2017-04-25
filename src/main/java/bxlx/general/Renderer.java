@@ -30,6 +30,7 @@ public class Renderer implements IRenderer {
     public void setCanvas(ICanvas canvas) {
         c = canvas;
         //SystemSpecific.get().log("");
+        main.get().setRedraw();
         main.get().forceDraw(c);
     }
 

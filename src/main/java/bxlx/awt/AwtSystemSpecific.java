@@ -201,10 +201,10 @@ public class AwtSystemSpecific extends SystemSpecific {
     }
 
     @Override
-    public void readTextFileAsync(String fileName, Consumer<String> consumer) {
+    public void readTextFileAsync(String from, String fileName, Consumer<String> consumer) {
         Thread t = new Thread(() -> {
             try {
-                consumer.accept(Files.readAllLines(Paths.get(fileName)).stream().collect(Collectors.joining("\n")));
+                consumer.accept(Files.readAllLines(Paths.get(from, fileName)).stream().collect(Collectors.joining("\n")));
             } catch (IOException e) {
                 consumer.accept(null);
             }

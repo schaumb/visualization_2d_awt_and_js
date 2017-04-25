@@ -60,7 +60,7 @@ public abstract class SystemSpecific {
 
     abstract public void playMusic(String src);
 
-    abstract public void readTextFileAsync(String fileName, Consumer<String> consumer);
+    abstract public void readTextFileAsync(String from, String fileName, Consumer<String> consumer);
 
     abstract public Size preLoad(String src, boolean img);
 

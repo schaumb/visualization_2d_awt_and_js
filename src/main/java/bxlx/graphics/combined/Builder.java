@@ -117,16 +117,29 @@ public class Builder<T extends IDrawable> {
         return makeAspect(alignX, alignY, 1);
     }
 
+    public Builder<AspectRatioDrawable<T>> makeAspect(boolean fake, int alignX, int alignY, Function<T, Double> ratio) {
+        return new Builder<>(new AspectRatioDrawable<>(get(), fake, alignX, alignY, ratio));
+    }
+
     public Builder<AspectRatioDrawable> makeAspect(int alignX, int alignY, double ratio) {
-        return makeAspect(alignX, alignY, () -> ratio);
+        return new Builder<>(new AspectRatioDrawable<>(get(), false, alignX, alignY, ratio));
     }
 
     public Builder<AspectRatioDrawable> makeAspect(int alignX, int alignY, Supplier<Double> ratio) {
         return new Builder<>(new AspectRatioDrawable<>(get(), false, alignX, alignY, ratio));
     }
 
-    public Builder<ClippedDrawable> makeClipped(UnaryOperator<Rectangle> clip) {
+    public Builder<ClippedDrawable<T>> makeClipped(UnaryOperator<Rectangle> clip) {
         return new Builder<>(new ClippedDrawable<>(get(), false, clip));
+    }
+
+    public Builder<ClippedDrawable<T>> makeClipped(boolean fake, UnaryOperator<Rectangle> clip) {
+        return new Builder<>(new ClippedDrawable<>(get(), fake, clip));
+    }
+
+    public Builder<T> apply(Consumer<T> consumer) {
+        consumer.accept(get());
+        return this;
     }
 
     public static <T extends VisibleDrawable.VisibleDraw> Builder<VisibleDrawable> makeVisible(
@@ -164,6 +177,10 @@ public class Builder<T extends IDrawable> {
         return new Builder<>(new Text(text, referenceText, 0)).makeColored(ColorScheme.getCurrentColorScheme().textColor);
     }
 
+    public static Builder<Text> text(String text, String referenceText, int align) {
+        return new Builder<>(new Text(text, referenceText, align));
+    }
+
     public static Builder<DrawArc> circle(boolean inside) {
         return new Builder<>(DrawArc.circle(inside));
     }
@@ -197,6 +214,10 @@ public class Builder<T extends IDrawable> {
     }
 
     public static Builder<Splitter> splitter(boolean xSplit, double separate, IDrawable first, IDrawable second) {
+        return new Builder<>(new Splitter(xSplit, separate, first, second));
+    }
+
+    public static Builder<Splitter> splitter(boolean xSplit, Supplier<Double> separate, IDrawable first, IDrawable second) {
         return new Builder<>(new Splitter(xSplit, separate, first, second));
     }
 
@@ -268,7 +289,7 @@ public class Builder<T extends IDrawable> {
     }
 
     public static ClickableBuilder<ColorSchemeClickable> getColorSchemeClickable(boolean clickedNeed) {
-        return new ClickableBuilder<>(new ColorSchemeClickable(clickedNeed));
+        return new ClickableBuilder<>(new ColorSchemeClickable(false, clickedNeed));
     }
 
     public ValueOrSupplier<T> makeValueOrSupplier() {

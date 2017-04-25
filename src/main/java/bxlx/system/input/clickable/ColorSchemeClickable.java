@@ -17,11 +17,12 @@ public class ColorSchemeClickable extends OnOffClickable {
     private final Rect rect = new Rect();
     private final MarginDrawable<Rect> smallerRect;
 
-    public ColorSchemeClickable(boolean clickedNeed) {
-        this(clickedNeed, r -> new MarginDrawable<>(r, 3, 3));
+    public ColorSchemeClickable(boolean onlyOn, boolean clickedNeed) {
+        this(onlyOn, clickedNeed, r -> new MarginDrawable<>(r, 3, 3));
     }
 
-    public ColorSchemeClickable(boolean clickedNeed, Function<Rect, MarginDrawable<Rect>> smallerRect) {
+    public ColorSchemeClickable(boolean onlyOn, boolean clickedNeed, Function<Rect, MarginDrawable<Rect>> smallerRect) {
+        super(onlyOn);
         this.clickedNeed = clickedNeed;
         this.smallerRect = smallerRect.apply(rect);
     }
@@ -29,7 +30,7 @@ public class ColorSchemeClickable extends OnOffClickable {
     @Override
     public void forceRedraw(ICanvas canvas) {
         ColorScheme colors = ColorScheme.getCurrentColorScheme();
-        super.forceRedraw(canvas);
+        // super.forceRedraw(canvas);
         canvas.setColor(colors.buttonBorderColor);
 
         rect.forceDraw(canvas);

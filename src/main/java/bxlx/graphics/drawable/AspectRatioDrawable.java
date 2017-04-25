@@ -5,6 +5,7 @@ import bxlx.graphics.Point;
 import bxlx.graphics.Size;
 import bxlx.graphics.shapes.Rectangle;
 
+import java.util.function.Function;
 import java.util.function.Supplier;
 
 
@@ -14,22 +15,23 @@ import java.util.function.Supplier;
 public class AspectRatioDrawable<T extends IDrawable> extends ClippedDrawable<T> {
     private final ChangeableValue<Integer> alignX;
     private final ChangeableValue<Integer> alignY;
-    private final ChangeableValue<Double> ratio;
+    private final ChangeableDependentValue<Double, T> ratio;
 
-    public AspectRatioDrawable(T wrapped, boolean fake, int alignX, int alignY, double ratio) {
+    public AspectRatioDrawable(T wrapped, boolean fake, int alignX, int alignY, Function<T, Double> ratio) {
         super(wrapped, fake, null);
         this.alignX = new ChangeableValue<>(this, alignX);
         this.alignY = new ChangeableValue<>(this, alignY);
-        this.ratio = new ChangeableValue<>(this, ratio);
+        this.ratio = new ChangeableDependentValue<>(this, ratio);
+        this.ratio.setDepSup(getChild().getAsSupplier());
         setTheClip();
     }
 
     public AspectRatioDrawable(T wrapped, boolean fake, int alignX, int alignY, Supplier<Double> ratio) {
-        super(wrapped, fake, null);
-        this.alignX = new ChangeableValue<>(this, alignX);
-        this.alignY = new ChangeableValue<>(this, alignY);
-        this.ratio = new ChangeableValue<>(this, ratio);
-        setTheClip();
+        this(wrapped, fake, alignX, alignY, r -> ratio.get());
+    }
+
+    public AspectRatioDrawable(T wrapped, boolean fake, int alignX, int alignY, double ratio) {
+        this(wrapped, fake, alignX, alignY, r -> ratio);
     }
 
     public ChangeableValue<Integer> getAlignX() {

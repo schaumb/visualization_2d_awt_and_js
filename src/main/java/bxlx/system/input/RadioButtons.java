@@ -1,54 +1,68 @@
 package bxlx.system.input;
 
+import bxlx.graphics.ChangeableDrawable;
+import bxlx.graphics.IDrawable;
 import bxlx.graphics.container.SplitContainer;
-import bxlx.graphics.drawable.MarginDrawable;
+import bxlx.graphics.container.TransformerContainer;
+import bxlx.system.functional.ValueOrSupplier;
 import bxlx.system.input.clickable.OnOffClickable;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.function.Consumer;
+import java.util.function.Function;
 import java.util.function.Supplier;
 
 /**
  * Created by qqcs on 2017.01.25..
  */
-public class RadioButtons extends SplitContainer<MarginDrawable<Button<OnOffClickable>>> {
+public class RadioButtons<X extends IDrawable, C extends SplitContainer<X>, O extends OnOffClickable, B extends Button<O>> extends
+        TransformerContainer<B, X, C> {
     private int selectedButtonIndex = -1;
+    private final List<ChangeableValue<B>> buttons = new ArrayList<>();
 
-    public RadioButtons(boolean xSplit) {
-        super(xSplit);
+    public RadioButtons(C container, Function<B, X> transformFunction) {
+        super(container, transformFunction);
     }
 
     public Supplier<Integer> getSelected() {
         return () -> selectedButtonIndex;
     }
 
-    public static MarginDrawable<Button<OnOffClickable>> margin(Button<OnOffClickable> button) {
-        return new MarginDrawable<>(button, 0, 0.1);
+    public ChangeableValue<B> getButton(int index) {
+        return buttons.get(index);
     }
 
-    public RadioButtons add(Button<OnOffClickable> button) {
+    public RadioButtons<X, C, O, B> addButton(B button) {
         final int index = size();
-        add(margin(button));
-        final Consumer<Button<OnOffClickable>> prevConsumer = button.getAtClick().get();
+        final Consumer<Button<O>> prevConsumer = button.getAtClick().get();
         button.getAtClick().setElem(
                 b -> {
                     if (prevConsumer != null) {
                         prevConsumer.accept(b);
                     }
-                    if (b.getChild().get().getOn().get()) {
+                    ValueOrSupplier<Boolean> boolX = b.getChild().get().getOn();
+                    if(!boolX.isChanged()) {
+                        return;
+                    }
+                    if (boolX.get()) {
                         selectedButtonIndex = index;
                         for (int i = 0; i < size(); ++i) {
                             if (i != selectedButtonIndex) {
-                                get(i).get().getChild().get().getChild().get().getOn().setElem(false);
+                                ValueOrSupplier<Boolean> bool = buttons.get(i).get().getChild().get().getOn();
+                                if(bool.get()) {
+                                    bool.setElem(false);
+                                    RadioButtons.this.getChild().get().get(i).get().setRedraw();
+                                }
                             }
                         }
                     } else {
                         selectedButtonIndex = -1;
                     }
                 });
+        ChangeableValue<B> buttonChangeableValue = new ChangeableDrawable.ChangeableValue<>(this, button);
+        buttons.add(buttonChangeableValue);
+        super.addVal(buttonChangeableValue);
         return this;
-    }
-
-    public RadioButtons add(OnOffClickable clickable) {
-        return add(new Button<>(clickable, null, null, () -> false));
     }
 }

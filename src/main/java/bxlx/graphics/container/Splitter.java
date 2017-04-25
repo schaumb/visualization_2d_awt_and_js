@@ -129,6 +129,11 @@ public class Splitter extends DrawableContainer<IDrawable> {
     }
 
     @Override
+    public Redraw needRedraw() {
+        return super.needRedraw().setIf(xSplit.isChanged() || separate.isChanged(), Redraw.PARENT_NEED_REDRAW);
+    }
+
+    @Override
     public void forceRedraw(ICanvas canvas) {
         Redraw redraw = needRedraw();
         boolean noNeedRedraw = redraw.noNeedRedraw();
