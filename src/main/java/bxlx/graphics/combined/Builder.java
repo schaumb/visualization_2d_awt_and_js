@@ -170,7 +170,7 @@ public class Builder<T extends IDrawable> {
     }
 
     public static Builder<ColoredDrawable<Text>> text(String text, int align) {
-        return new Builder<>(new Text(text, null, align)).makeColored(ColorScheme.getCurrentColorScheme().textColor);
+        return new Builder<>(new Text(text, (String) null, align)).makeColored(ColorScheme.getCurrentColorScheme().textColor);
     }
 
     public static Builder<ColoredDrawable<Text>> text(String text, String referenceText) {
@@ -178,6 +178,10 @@ public class Builder<T extends IDrawable> {
     }
 
     public static Builder<Text> text(String text, String referenceText, int align) {
+        return new Builder<>(new Text(text, referenceText, align));
+    }
+
+    public static Builder<Text> text(String text, Supplier<String> referenceText, int align) {
         return new Builder<>(new Text(text, referenceText, align));
     }
 

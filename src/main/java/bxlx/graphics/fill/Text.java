@@ -22,10 +22,16 @@ public class Text extends ChangeableDrawable {
     }
 
     public Text(String text) {
-        this(text, null, 0);
+        this(text, (String) null, 0);
     }
 
     public Text(String text, String referenceText, int align) {
+        this.text = new ChangeableValue<>(this, text);
+        this.referenceText = new ChangeableValue<>(this, referenceText);
+        this.align = new ChangeableValue<>(this, (int) Math.signum(align));
+    }
+
+    public Text(String text, Supplier<String> referenceText, int align) {
         this.text = new ChangeableValue<>(this, text);
         this.referenceText = new ChangeableValue<>(this, referenceText);
         this.align = new ChangeableValue<>(this, (int) Math.signum(align));
@@ -63,7 +69,7 @@ public class Text extends ChangeableDrawable {
 
         int xNeedFitSize = (int) rectangle.getSize().getWidth();
         canvas.setFont(canvas.getFont().withSize(ySize));
-        while (canvas.textWidth(nowReferenceText != null ? nowReferenceText : nowText) > xNeedFitSize) {
+        while (ySize > 2 && canvas.textWidth(nowReferenceText != null ? nowReferenceText : nowText) > xNeedFitSize) {
             canvas.setFont(canvas.getFont().withSize(--ySize));
         }
         int xSize = canvas.textWidth(nowText);
