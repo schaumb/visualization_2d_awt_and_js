@@ -25,6 +25,7 @@ import java.util.function.Consumer;
 
 import static jsweet.dom.Globals.console;
 import static jsweet.dom.Globals.document;
+import static jsweet.dom.Globals.setTimeout;
 import static jsweet.dom.Globals.window;
 
 /**
@@ -273,5 +274,10 @@ public class JSweetSystemSpecific extends SystemSpecific {
                 break;
         }
         canvasElement.style.cursor = cursorName;
+    }
+
+    @Override
+    public void runAfter(Runnable run, int millisec) {
+        setTimeout(run, millisec);
     }
 }

@@ -40,13 +40,27 @@ public class Game implements IGame {
                 Color.WHITE
         ));
 
-        String from = SystemSpecific.get().getArgs()[0];
-        String file = SystemSpecific.get().getArgs()[1];
-        SystemSpecific.get().readTextFileAsync(from, file, r -> start(r));
+        readReachableFiles();
         return this;
     }
 
+    public void readReachableFiles() {
+        if(SystemSpecific.get().getArgs().length < 2) {
+            SystemSpecific.get().log("No file argument");
+            return;
+        }
+        String from = SystemSpecific.get().getArgs()[0];
+        String file = SystemSpecific.get().getArgs()[1];
+        SystemSpecific.get().readTextFileAsync(from, file, r -> start(r));
+    }
+
     public void start(String reachableFiles) {
+        if(reachableFiles == null) {
+            SystemSpecific.get().log("Can not reach file, try again after 2 sec");
+            SystemSpecific.get().runAfter(() -> readReachableFiles(), 2000);
+            return;
+        }
+
         String[] fileNames = reachableFiles.trim().split("\n");
 
         int i = 0;
@@ -69,6 +83,7 @@ public class Game implements IGame {
 
     RadioButtons<?, ?, ColorSchemeClickable, ButtonWithData<ColorSchemeClickable, String>> radioButtons =
             new RadioButtons<>(new SplitContainer<>(), i -> Builder.container().add(i).add(Builder.text(i.getData(), "10", 0)
+                    .makeColored(ColorScheme.getCurrentColorScheme().textColor)
                     .makeMargin(5).get()).makeColored(Color.BLACK).makeMargin(4).makeSquare(0, 0).get());
 
     ValueOrSupplier<Boolean> disabled = new ValueOrSupplier<>(true);

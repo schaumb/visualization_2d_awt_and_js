@@ -80,6 +80,8 @@ public abstract class SystemSpecific {
 
     abstract public void setCursor(Cursor cursor);
 
+    abstract public void runAfter(Runnable run, int millisec);
+
     public void setMinimumSize(Size size) {
         minimumSize = size;
     }

@@ -38,6 +38,9 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.Date;
 import java.util.Objects;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
@@ -45,6 +48,11 @@ import java.util.stream.Collectors;
  * Created by qqcs on 2016.12.23..
  */
 public class AwtSystemSpecific extends SystemSpecific {
+    private static final ScheduledExecutorService executor = Executors.newScheduledThreadPool(3, runnable -> {
+        Thread t = Executors.defaultThreadFactory().newThread(runnable);
+        t.setDaemon(true);
+        return t;
+    });
     private JFrame frame;
     private JPanel panel;
     private IRenderer renderer;
@@ -202,15 +210,13 @@ public class AwtSystemSpecific extends SystemSpecific {
 
     @Override
     public void readTextFileAsync(String from, String fileName, Consumer<String> consumer) {
-        Thread t = new Thread(() -> {
+        executor.submit(() -> {
             try {
                 consumer.accept(Files.readAllLines(Paths.get(from, fileName)).stream().collect(Collectors.joining("\n")));
             } catch (IOException e) {
                 consumer.accept(null);
             }
         });
-        t.setDaemon(true);
-        t.start();
     }
 
     @Override
@@ -291,6 +297,11 @@ public class AwtSystemSpecific extends SystemSpecific {
                 break;
         }
         panel.setCursor(awtCursor);
+    }
+
+    @Override
+    public void runAfter(Runnable run, int millisec) {
+        executor.schedule(run, millisec, TimeUnit.MILLISECONDS);
     }
 
     @Override
