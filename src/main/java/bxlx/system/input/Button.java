@@ -105,7 +105,9 @@ public class Button<T extends Button.Clickable> extends DrawableWrapper<T> imple
         boolean nowDisabled = disabled.get();
         boolean nowInside = inside.get();
 
-        if ((!nowDisabled && inside.isChanged()) || disabled.isChanged() || isManuallyRedraw() || redraw.noNeedRedraw() || redraw.childNeedRedraw()) {
+        T child = getClickableChild();
+        if ((!nowDisabled && inside.isChanged()) || disabled.isChanged() || isManuallyRedraw()
+                || redraw.noNeedRedraw() || redraw.childNeedRedraw() || child.needRedraw().needRedraw()) {
             getClickableChild().forceDraw(canvas);
         }
 

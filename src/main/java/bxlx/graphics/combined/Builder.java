@@ -20,6 +20,7 @@ import bxlx.graphics.fill.DrawRectangle;
 import bxlx.graphics.fill.Text;
 import bxlx.graphics.shapes.Rectangle;
 import bxlx.system.ColorScheme;
+import bxlx.system.FPS;
 import bxlx.system.functional.ValueOrSupplier;
 import bxlx.system.input.Button;
 import bxlx.system.input.DiscreteSlider;
@@ -52,6 +53,10 @@ public class Builder<T extends IDrawable> {
             return null;
         }
         return new Builder<>(start);
+    }
+
+    public ContainerBuilder<IDrawable, Container<IDrawable>> withFPS() {
+        return container().add(get()).add(new FPS());
     }
 
     public static class ContainerBuilder<T extends IDrawable, C extends SizeChangeableContainer<T, ?>> extends Builder<C> {

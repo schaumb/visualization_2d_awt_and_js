@@ -46,7 +46,6 @@ public class CheckboxClickable extends OnOffClickable {
     public void forceRedraw(ICanvas canvas) {
         container.setRedraw();
         container.forceDraw(canvas);
-        super.forceDraw(canvas);
     }
 
     @Override

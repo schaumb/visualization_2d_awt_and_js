@@ -26,25 +26,21 @@ import bxlx.system.input.clickable.ColorSchemeClickable;
  * Created by qqcs on 2017.01.18..
  */
 public class Game implements IGame {
-    ValueOrSupplier<Boolean> disabled = new ValueOrSupplier<>(true);
-    ValueOrSupplier<Double> size = new ValueOrSupplier<>(0.0);
+    ChangeableDrawable.ChangeableValue<String> longestText;
+    ChangeableDrawable.ChangeableValue<Double> size;
 
     RadioButtons<?, ?, ColorSchemeClickable, ButtonWithData<ColorSchemeClickable, String>> radioButtons;
 
-    ValueOrSupplier<String> longestText;
-
-    Slider slider;
-
-    ClippedDrawable<RadioButtons<?, ?, ColorSchemeClickable, ButtonWithData<ColorSchemeClickable, String>>> clippedDrawable;
-
-    Splitter menu;
-
-    GameViewer gameViewer;
-
-    Splitter main;
+    ChangeableDrawable main;
 
     public Game() {
-        longestText = new ValueOrSupplier<>(() -> {
+
+        radioButtons = new RadioButtons<>(new SplitContainer<>(), i -> Builder.container()
+                .add(i).add(Builder.text(i.getData(), longestText.getAsSupplier(), 0)
+                .makeColored(ColorScheme.getCurrentColorScheme().textColor)
+                .makeMargin(5).get()).makeColored(Color.BLACK).makeMargin(4).makeSquare(0, 0).get());
+
+        longestText = new ChangeableDrawable.ChangeableValue<>(radioButtons, () -> {
             String longest = "i";
             int longestVal = 0;
             for(int i = 0; i < radioButtons.size(); ++i) {
@@ -57,41 +53,68 @@ public class Game implements IGame {
             }
             return longest;
         });
-        radioButtons = new RadioButtons<>(new SplitContainer<>(), i -> Builder.container().add(i).add(Builder.text(i.getData(), longestText.getAsSupplier(), 0)
-                .makeColored(ColorScheme.getCurrentColorScheme().textColor)
-                .makeMargin(5).get()).makeColored(Color.BLACK).makeMargin(4).makeSquare(0, 0).get());
-        slider = new Slider(new Button<>(new ColorSchemeClickable(true, false), null, null, disabled.getAsSupplier()), false, 0);
-        clippedDrawable = new ClippedDrawable<>(radioButtons, true, r -> {
-            double zz = size.get() - r.getSize().getHeight();
-            disabled.setElem(zz > 0);
-            return r.withStart(r.getStart()
-                    .add(new Point(0, Math.min(0, zz * slider.getNow().get()))));
-        });
-        menu = Builder.splitter(true, disabled.transform(b -> b ? 0.0 : -30.0).getAsSupplier(),
+
+        Button<ColorSchemeClickable> butt = new Button<>(new ColorSchemeClickable(true, false), null, null, () -> true);
+
+        Slider slider = new Slider(butt, false, 0);
+
+        ChangeableDrawable.ChangeableValue<Boolean> disabled = butt.getDisabled();
+        ClippedDrawable<RadioButtons<?, ?, ?, ?>> clippedDrawable =
+                new ClippedDrawable<>(radioButtons, true, r -> {
+                    double zz = size.get() - r.getSize().getHeight();
+                    disabled.setElem(zz > 0);
+                    return r.withStart(r.getStart()
+                            .add(new Point(0, Math.min(0, zz * slider.getNow().get()))));
+                });
+
+        size = new ChangeableDrawable.ChangeableValue<>(clippedDrawable, 0.0);
+        IDrawable menu = Builder.splitter(true, () -> disabled.get() ? 0.0 : -30.0,
                 Builder.make(clippedDrawable)
                         .makeAspect(false,1, -1, i -> (double) i.getChild().get().size())
                         .makeClipped(true, c -> c.withSize(new Size(c.getSize().getWidth(), 9000000)))
                         .makeClipped(true, r -> new Rectangle(r.getStart(),
                                 new Size(r.getSize().getWidth(), size.setElem(r.getSize().getHeight()).get()))).get(),
                 slider)
+                .makeBackgrounded(ColorScheme.getCurrentColorScheme().backgroundColor)
                 .get();
-        gameViewer = new GameViewer(() -> {
+
+        IDrawable gameViewer = Builder.make(new GameViewer(() -> {
             Integer res = radioButtons.getSelected().get();
-            if(res == null || res == -1) {
+            if (res == null || res == -1) {
                 return null;
             }
             return radioButtons.getButton(res).get().getData();
-        });
-        main = new Splitter(true, disabled.transform(b -> b ? -50.0 : -80.0).getAsSupplier(), gameViewer, menu);
+        }))
+                .makeBackgrounded(ColorScheme.getCurrentColorScheme().backgroundColor)
+                .get();
+        main = new Splitter(true, () -> disabled.get() ? -50.0 : -80.0, gameViewer, menu);
+        main = Builder.make(main).makeBackgrounded(ColorScheme.getCurrentColorScheme().backgroundColor).get();
     }
 
+    public static String formatString(String format, String... others) {
+        for(int i = 0; i < others.length; ++i) {
+
+            int index = format.indexOf("%s");
+            int index2 = format.indexOf("%0.s");
+            if(index2 != -1 && index2 < index) {
+                format = format.substring(0, index2) + format.substring(index2 + 4);
+                continue;
+            }
+
+            if(index == -1) {
+                return format;
+            }
+            format = format.substring(0, index) + others[i] + format.substring(index + 2);
+        }
+        return format;
+    }
 
     @Override
     public Game init() {
         if(SystemSpecific.get().getArgs().length < 2) {
             SystemSpecific.get().setArgs(new String[] {
                     "/game/inc/process/p.gameLoad.php", // "."
-                    "process=%d&level=%s" // "%1$s.txt"
+                    "process=%s&level=%s" // "%s.txt"
             });
         }
         ColorScheme.setCurrentColorScheme(new ColorScheme(
@@ -107,7 +130,6 @@ public class Game implements IGame {
                 Color.WHITE
         ));
 
-        new ChangeableDrawable.ChangeableValue<>(clippedDrawable, size.getAsSupplier());
         readReachableFiles();
         return this;
     }
@@ -118,7 +140,7 @@ public class Game implements IGame {
             return;
         }
         String from = SystemSpecific.get().getArgs()[0];
-        String file = String.format(SystemSpecific.get().getArgs()[1], 1, "0");
+        String file = formatString(SystemSpecific.get().getArgs()[1], "1", "0");
         SystemSpecific.get().readTextFileAsync(from, file, r -> reachable(file, r));
     }
 
@@ -151,6 +173,6 @@ public class Game implements IGame {
 
     @Override
     public ValueOrSupplier<IDrawable> getMain() {
-        return new ValueOrSupplier<>(Builder.make(main).makeBackgrounded(Color.WHITE).get());
+        return new ValueOrSupplier<>(main);
     }
 }

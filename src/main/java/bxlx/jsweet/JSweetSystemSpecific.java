@@ -27,6 +27,11 @@ import static jsweet.dom.Globals.console;
 import static jsweet.dom.Globals.document;
 import static jsweet.dom.Globals.setTimeout;
 import static jsweet.dom.Globals.window;
+import static jsweet.lang.Globals.isNaN;
+import static jsweet.lang.Globals.parseFloat;
+import static jsweet.util.Globals.equalsStrict;
+import static jsweet.util.Globals.equalsLoose;
+import static jsweet.util.Globals.typeof;
 
 /**
  * Created by qqcs on 2016.12.23..
@@ -236,7 +241,11 @@ public class JSweetSystemSpecific extends SystemSpecific {
 
     @Override
     public <T> boolean equals(T first, T second) {
-        return first == second;
+        return equalsStrict(first, second) ||
+                (equalsLoose(typeof(first), "number") &&
+                        equalsLoose(typeof(second), "number") &&
+                        isNaN(parseFloat(first.toString())) &&
+                        isNaN(parseFloat(second.toString())));
     }
 
     @Override

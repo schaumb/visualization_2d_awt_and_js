@@ -81,23 +81,27 @@ public abstract class ChangeableDrawable implements IDrawable {
     public final void forceDraw(ICanvas canvas) {
         /* Test what redraw
         boolean needIndent = false;
-        if (!Splitter.class.isInstance(this) &&
-                !Container.class.isInstance(this) &&
-                !VisibleDrawable.class.isInstance(this) &&
-                !AspectRatioDrawable.class.isInstance(this) &&
-                !MarginDrawable.class.isInstance(this) &&
-                !ClippedDrawable.class.isInstance(this) &&
+        if (
+                //!Splitter.class.isInstance(this) &&
+                //!Container.class.isInstance(this) &&
+                //!VisibleDrawable.class.isInstance(this) &&
+                //!AspectRatioDrawable.class.isInstance(this) &&
+                //!MarginDrawable.class.isInstance(this) &&
+                //!ClippedDrawable.class.isInstance(this) &&
                 // !ColoredDrawable.class.isInstance(this) &&
                 true) {
             String msg = "";
-            if (Text.class.isInstance(this)) {
+            if (Text.class == this.getClass()) {
                 msg += ((Text) this).getText().get();
             }
-            if(ColoredDrawable.class.isInstance(this)) {
+            if(ColoredDrawable.class == this.getClass()) {
                 msg += ((ColoredDrawable) this).getColor().get().toString();
             }
+            if(GameViewer.class == this.getClass()) {
+                msg += "ch:" + ((GameViewer) this).getChild().get().needRedraw().toString();
+            }
             msg = msg + this.needRedraw().parentNeedRedraw() + this.needRedraw().iNeedRedraw() + this.needRedraw().childNeedRedraw() + " vcs:" + valueChanged();
-            SystemSpecific.get().log(indent + "ForceRedraw " + this.getClass().getName() + " " + msg);
+            SystemSpecific.get().log(indent + "ForceRedraw " + this.getClass().getName() + " " + msg + " & " + this.toString());
             needIndent = true;
             indent += "  ";
         }

@@ -51,12 +51,12 @@ public class MultilineText extends ChangeableDrawable {
                 c.add(new Text(lines[where], longest, -1));
             }
         }
-        c.forceRedraw(canvas);
+        c.forceDraw(canvas);
     }
 
     @Override
     public Redraw needRedraw() {
-        return super.needRedraw().setIf(text.isChanged(), Redraw.PARENT_NEED_REDRAW);
+        return super.needRedraw().orIf(true, texts.get().needRedraw()).setIf(text.isChanged(), Redraw.PARENT_NEED_REDRAW);
     }
 
     public ValueOrSupplier<String> getText() {

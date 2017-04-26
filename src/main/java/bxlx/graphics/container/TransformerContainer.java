@@ -2,7 +2,6 @@ package bxlx.graphics.container;
 
 import bxlx.graphics.IDrawable;
 import bxlx.graphics.drawable.DrawableWrapper;
-import bxlx.system.functional.ValueOrSupplier;
 
 import java.util.ArrayList;
 import java.util.function.Function;
