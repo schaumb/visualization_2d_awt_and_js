@@ -73,7 +73,7 @@ public class Point {
         Point point = (Point) o;
 
         if (point.x != x) return false;
-        return point.y != y;
+        return point.y == y;
     }
 
     @Override

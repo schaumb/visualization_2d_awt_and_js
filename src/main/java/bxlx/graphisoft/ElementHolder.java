@@ -220,9 +220,8 @@ public class ElementHolder extends ChangeableDrawable {
                         Princess p = princesses.get(whosTurn);
                         Point toMove = new Point(x, y);
 
-                        if(!p.getPosition().equals(toMove)) {
-                            p.setMove(toMove);
-                        }
+                        p.setMove(toMove);
+                        break;
                 }
             }
         }
@@ -233,13 +232,14 @@ public class ElementHolder extends ChangeableDrawable {
     @Override
     public IDrawable.Redraw needRedraw() {
         return super.needRedraw().setIf(stateIndex.isChanged(), Redraw.PARENT_NEED_REDRAW)
-                .setIf(timer.need() > 0, Redraw.I_NEED_REDRAW);
+                .setIf(this.state != State.END, Redraw.I_NEED_REDRAW);
     }
 
     public enum State {
         FIRST_DRAW,
         MOVE_ELEMENTS,
-        MOVE_PRINCESS
+        MOVE_PRINCESS,
+        END
     }
 
     private State state = State.FIRST_DRAW;
@@ -317,14 +317,15 @@ public class ElementHolder extends ChangeableDrawable {
             }
             case MOVE_PRINCESS: {
                 Princess princess = princesses.get(whosTurn);
-                if(princess.getToPosition() == null) {
+                Point pp = princess.getPosition();
+                Point ptp = princess.getToPosition();
+
+                if(ptp == null || pp.equals(ptp)) {
                     setNextState();
                     timer.setStart();
                     state = State.MOVE_ELEMENTS;
                     break;
                 }
-                Point pp = princess.getPosition();
-                Point ptp = princess.getToPosition();
 
                 forceDrawField.accept(fields.get((int) pp.getY()).get((int) pp.getX()));
                 forceDrawField.accept(fields.get((int) ptp.getY()).get((int) ptp.getX()));
@@ -372,10 +373,10 @@ public class ElementHolder extends ChangeableDrawable {
                 canvas.restore();
 
                 if(timer.elapsed()) {
+                    state = State.MOVE_ELEMENTS;
+                    timer.setStart();
                     commitPrincessMove();
                     setNextState();
-                    timer.setStart();
-                    state = State.MOVE_ELEMENTS;
                 }
                 break;
             }
@@ -388,6 +389,9 @@ public class ElementHolder extends ChangeableDrawable {
 
         if(states.length > state) {
             setState(state);
+        } else {
+            this.state = State.END;
+            timer.setPercent(100);
         }
     }
 
