@@ -13,8 +13,11 @@ import bxlx.graphics.shapes.Rectangle;
 import bxlx.graphics.shapes.Shape;
 
 import javax.imageio.ImageIO;
+import java.awt.Dimension;
 import java.awt.Graphics2D;
+import java.awt.Paint;
 import java.awt.RenderingHints;
+import java.awt.TexturePaint;
 import java.awt.geom.Arc2D;
 import java.awt.geom.Area;
 import java.awt.geom.Path2D;
@@ -30,6 +33,7 @@ public class GraphicsCanvas implements ICanvas {
     private final Graphics2D graphics;
     private final Stack<Rectangle> clips = new Stack<>();
     private final Stack<java.awt.Shape> areas = new Stack<>();
+    private final Stack<Paint> fillPaintStack = new Stack<>();
     static final ImageCaches<BufferedImage> imageCaches = new ImageCaches<>(str ->
     {
         try {
@@ -45,6 +49,7 @@ public class GraphicsCanvas implements ICanvas {
         this.clips.add(new Rectangle(rectangle.getX(), rectangle.getY(), rectangle.getWidth(), rectangle.getHeight()));
         this.graphics.setClip(rectangle);
         this.areas.push(graphics.getClip());
+        this.fillPaintStack.push(graphics.getPaint());
         java.awt.Font font = graphics.getFont();
         this.latestFont = new Font(font.getFontName(), font.getSize(), font.isItalic(), font.isBold());
 
@@ -70,6 +75,21 @@ public class GraphicsCanvas implements ICanvas {
     public Color getColor() {
         java.awt.Color color = graphics.getColor();
         return new Color(color.getRed(), color.getGreen(), color.getBlue(), color.getAlpha());
+    }
+
+    @Override
+    public void pushFillImg(String src, Size resizeImg) {
+        Paint paint = new TexturePaint(imageCaches.get(src), new java.awt.Rectangle(
+                new Dimension((int) resizeImg.getWidth(), (int) resizeImg.getHeight())));
+
+        graphics.setPaint(paint);
+        fillPaintStack.push(paint);
+    }
+
+    @Override
+    public void popFillImg() {
+        fillPaintStack.pop();
+        graphics.setPaint(fillPaintStack.peek());
     }
 
     @Override

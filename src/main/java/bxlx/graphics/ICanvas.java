@@ -20,6 +20,10 @@ public interface ICanvas {
 
     Color getColor();
 
+    void pushFillImg(String src, Size resizeImg);
+
+    void popFillImg();
+
     void fill(Shape shape);
 
     void drawImage(String src, Rectangle to);

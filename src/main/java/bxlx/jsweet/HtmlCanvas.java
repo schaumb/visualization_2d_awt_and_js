@@ -10,11 +10,13 @@ import bxlx.graphics.shapes.Arc;
 import bxlx.graphics.shapes.Polygon;
 import bxlx.graphics.shapes.Rectangle;
 import bxlx.graphics.shapes.Shape;
-import bxlx.system.SystemSpecific;
+import jsweet.dom.CanvasGradient;
+import jsweet.dom.CanvasPattern;
 import jsweet.dom.CanvasRenderingContext2D;
 import jsweet.dom.HTMLCanvasElement;
 import jsweet.dom.HTMLImageElement;
 import jsweet.util.StringTypes;
+import jsweet.util.union.Union3;
 
 import java.util.List;
 import java.util.Stack;
@@ -28,6 +30,7 @@ import static jsweet.util.Globals.union;
 public class HtmlCanvas implements ICanvas {
     private final CanvasRenderingContext2D context;
     private final Stack<Rectangle> clips = new Stack<>();
+    private final Stack<Union3<String, CanvasGradient, CanvasPattern>> patterns = new Stack<>();
     static final ImageCaches<HTMLImageElement> imageCaches =
             new ImageCaches<>(src -> {
                 HTMLImageElement img = document.createElement(StringTypes.img);
@@ -40,6 +43,7 @@ public class HtmlCanvas implements ICanvas {
     public HtmlCanvas(HTMLCanvasElement canvasElement) {
         this.context = canvasElement.getContext(StringTypes._2d);
         clips.push(new Rectangle(Point.ORIGO, new Size(context.canvas.width, context.canvas.height)));
+        patterns.push(context.fillStyle);
     }
 
     @Override
@@ -59,6 +63,29 @@ public class HtmlCanvas implements ICanvas {
     @Override
     public Color getColor() {
         return latestColor;
+    }
+
+    @Override
+    public void pushFillImg(String src, Size resizeImg) {
+        HTMLImageElement element = imageCaches.get(src);
+        if (element.complete) {
+            HTMLCanvasElement tmpCanvasElement = document.createElement(StringTypes.canvas);
+            tmpCanvasElement.width = resizeImg.getWidth();
+            tmpCanvasElement.height = resizeImg.getHeight();
+            CanvasRenderingContext2D tmpCanvas = tmpCanvasElement.getContext(StringTypes._2d);
+            tmpCanvas.drawImage(element, 0, 0, resizeImg.getWidth(), resizeImg.getHeight());
+
+            CanvasPattern canvasPattern = context.createPattern(tmpCanvasElement, "repeat");
+
+            context.fillStyle = union(canvasPattern);
+            patterns.push(context.fillStyle);
+        }
+    }
+
+    @Override
+    public void popFillImg() {
+        patterns.pop();
+        context.fillStyle = patterns.peek();
     }
 
     @Override

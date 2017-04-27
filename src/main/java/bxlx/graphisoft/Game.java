@@ -11,7 +11,6 @@ import bxlx.graphics.combined.Builder;
 import bxlx.graphics.container.SplitContainer;
 import bxlx.graphics.container.Splitter;
 import bxlx.graphics.drawable.ClippedDrawable;
-import bxlx.graphics.fill.Text;
 import bxlx.graphics.shapes.Rectangle;
 import bxlx.system.ColorScheme;
 import bxlx.system.SystemSpecific;
