@@ -195,7 +195,7 @@ public class JSweetSystemSpecific extends SystemSpecific {
 
         request.addEventListener(StringTypes.readystatechange, e -> {
             if (request.readyState == 4) {
-                if (request.status == 200) {
+                if (request.status == 200 || request.status == 0) {
                     consumer.accept(request.responseText);
                 } else {
                     consumer.accept(null);

@@ -52,8 +52,8 @@ public class ElementHolder extends ChangeableDrawable {
         for(int i = 1; i < 16; ++i) {
             new DrawImage(Parameters.imgDir() + i + ".jpg");
         }
-        new DrawImage(Parameters.imgDir() + "m_on.jpg");
-        new DrawImage(Parameters.imgDir() + "m_off.jpg");
+        new DrawImage(Parameters.imgDir() + "m_on.png");
+        new DrawImage(Parameters.imgDir() + "m_off.png");
     }
 
 
@@ -244,8 +244,16 @@ public class ElementHolder extends ChangeableDrawable {
 
     private State state = State.FIRST_DRAW;
 
+    private ChangeableValue<ICanvas> canvasChanges = new ChangeableValue<ICanvas>(this, (ICanvas) null);
+
     @Override
     protected synchronized void forceRedraw(ICanvas canvas) {
+        canvasChanges.setElem(canvas);
+
+        if(canvasChanges.isChanged()) {
+            state = State.FIRST_DRAW;
+        }
+
         if(fields.size() == 0) {
             return;
         }
