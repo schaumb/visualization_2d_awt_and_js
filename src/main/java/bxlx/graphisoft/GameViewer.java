@@ -1,11 +1,9 @@
 package bxlx.graphisoft;
 
 import bxlx.graphics.ChangeableDrawable;
-import bxlx.graphics.Color;
 import bxlx.graphics.ICanvas;
-import bxlx.graphics.drawable.ColoredDrawable;
+import bxlx.graphics.IDrawable;
 import bxlx.graphics.drawable.DrawableWrapper;
-import bxlx.graphics.fill.MultilineText;
 import bxlx.system.SystemSpecific;
 
 import java.util.function.Supplier;
@@ -13,30 +11,27 @@ import java.util.function.Supplier;
 /**
  * Created by ecosim on 4/26/17.
  */
-public class GameViewer extends DrawableWrapper<ColoredDrawable<MultilineText>> {
+public class GameViewer extends DrawableWrapper<ElementHolder> {
     private final ChangeableDrawable.ChangeableValue<String> file;
     private final ChangeableValue<String> fileContent;
 
     public GameViewer(Supplier<String> val) {
-        super(new ColoredDrawable<>(new MultilineText(() -> "ASD"), Color.BLACK));
+        super(new ElementHolder());
         this.file = new ChangeableValue<>(this, val);
-        this.fileContent = new ChangeableValue<>(getChild().get().getChild().get(), "ASDY\ngnjas\ndjlvsdvdcv\n\\ndfssdfdsf");
-
-        getChild().get().getChild().get().getText().setSupplier(fileContent.getAsSupplier());
+        this.fileContent = new ChangeableValue<>(this, "");
     }
-
 
     @Override
     protected void forceRedraw(ICanvas canvas) {
         if(file.isChanged()) {
-            fileContent.setElem("ASDY\ngnjas\ndjlvsdvdcv\n\\ndfssdfdsf\nTestMessage");
+            fileContent.setElem("");
             readFile(file.get());
         }
         super.forceRedraw(canvas);
     }
 
     @Override
-    public Redraw needRedraw() {
+    public IDrawable.Redraw needRedraw() {
         return super.needRedraw().setIf(file.isChanged() || fileContent.isChanged(), Redraw.PARENT_NEED_REDRAW);
     }
 
@@ -58,11 +53,16 @@ public class GameViewer extends DrawableWrapper<ColoredDrawable<MultilineText>> 
             return;
         }
 
+        getChild().get().removeElements();
         if(file == null) {
             SystemSpecific.get().log("Can not reach file: " + fileName + ", try again after 2 sec");
             SystemSpecific.get().runAfter(() -> readFile(fileName), 2000);
             return;
         }
         fileContent.setElem(file);
+
+        String[] states = file.split("PLAYERTURN ");
+
+        getChild().get().createElements(states);
     }
 }

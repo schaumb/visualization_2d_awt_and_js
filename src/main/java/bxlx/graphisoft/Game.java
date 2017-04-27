@@ -114,7 +114,8 @@ public class Game implements IGame {
         if(SystemSpecific.get().getArgs().length < 2) {
             SystemSpecific.get().setArgs(new String[] {
                     "/game/inc/process/p.gameLoad.php", // "."
-                    "process=%s&level=%s" // "%s.txt"
+                    "process=%s&level=%s", // "%s.txt"
+                    "img/"
             });
         }
         ColorScheme.setCurrentColorScheme(new ColorScheme(
