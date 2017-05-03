@@ -11,6 +11,7 @@ import bxlx.graphics.combined.Builder;
 import bxlx.graphics.container.SplitContainer;
 import bxlx.graphics.container.Splitter;
 import bxlx.graphics.drawable.ClippedDrawable;
+import bxlx.graphics.drawable.MarginDrawable;
 import bxlx.graphics.shapes.Rectangle;
 import bxlx.system.ColorScheme;
 import bxlx.system.SystemSpecific;
@@ -19,23 +20,25 @@ import bxlx.system.input.Button;
 import bxlx.system.input.ButtonWithData;
 import bxlx.system.input.RadioButtons;
 import bxlx.system.input.Slider;
+import bxlx.system.input.clickable.CheckboxClickable;
 import bxlx.system.input.clickable.ColorSchemeClickable;
 
 /**
  * Created by qqcs on 2017.01.18..
  */
 public class Game implements IGame {
-    ChangeableDrawable.ChangeableValue<String> longestText;
-    ChangeableDrawable.ChangeableValue<Double> size;
+    private ChangeableDrawable.ChangeableValue<String> longestText;
+    private ChangeableDrawable.ChangeableValue<Double> size;
+    private ChangeableDrawable.ChangeableValue<Boolean> settingIsOn;
 
-    RadioButtons<?, ?, ColorSchemeClickable, ButtonWithData<ColorSchemeClickable, String>> radioButtons;
+    private RadioButtons<?, ?, ColorSchemeClickable, ButtonWithData<ColorSchemeClickable, String>> radioButtons;
 
-    ChangeableDrawable main;
+    private ChangeableDrawable main;
 
     public Game() {
 
         radioButtons = new RadioButtons<>(new SplitContainer<>(), i -> Builder.container()
-                .add(i).add(Builder.text(i.getData(), longestText.getAsSupplier(), 0)
+                .add(i).add(Builder.text(() -> i.getData(), longestText.getAsSupplier(), 0)
                 .makeColored(ColorScheme.getCurrentColorScheme().textColor)
                 .makeMargin(5).get()).makeColored(Color.BLACK).makeMargin(4).makeSquare(0, 0).get());
 
@@ -57,37 +60,39 @@ public class Game implements IGame {
 
         Slider slider = new Slider(butt, false, 0);
 
-        ChangeableDrawable.ChangeableValue<Boolean> disabled = butt.getDisabled();
-        ClippedDrawable<RadioButtons<?, ?, ?, ?>> clippedDrawable =
-                new ClippedDrawable<>(radioButtons, true, r -> {
-                    double zz = size.get() - r.getSize().getHeight();
-                    disabled.setElem(zz > 0);
-                    return r.withStart(r.getStart()
-                            .add(new Point(0, Math.min(0, zz * slider.getNow().get()))));
-                });
-
-        size = new ChangeableDrawable.ChangeableValue<>(clippedDrawable, 0.0);
-        IDrawable menu = Builder.splitter(true, () -> disabled.get() ? 0.0 : -30.0,
-                Builder.make(clippedDrawable)
-                        .makeAspect(false,1, -1, i -> (double) i.getChild().get().size())
-                        .makeClipped(true, c -> c.withSize(new Size(c.getSize().getWidth(), 9000000)))
-                        .makeClipped(true, r -> new Rectangle(r.getStart(),
-                                new Size(r.getSize().getWidth(), size.setElem(r.getSize().getHeight()).get()))).get(),
+        IDrawable menu = Builder.splitter(true, () -> butt.getDisabled().get() ? 0.0 : -30.0,
+                Builder.splitter(false, -50, Builder.make(new ClippedDrawable<>(radioButtons, true, r -> {
+                            double zz = size.get() - r.getSize().getHeight();
+                            butt.getDisabled().setElem(zz > 0);
+                            return r.withStart(r.getStart()
+                                    .add(new Point(0, Math.min(0, zz * slider.getNow().get()))));
+                        }))
+                                .apply(clippedDrawable -> size = new ChangeableDrawable.ChangeableValue<>(clippedDrawable, 0.0))
+                                .makeAspect(false,1, -1, i -> (double) i.getChild().get().size())
+                                .makeClipped(true, c -> c.withSize(new Size(c.getSize().getWidth(), 9000000)))
+                                .makeClipped(true, r -> new Rectangle(r.getStart(),
+                                    new Size(r.getSize().getWidth(), size.setElem(r.getSize().getHeight()).get()))).get(),
+                        Builder.make(new Button<>(new CheckboxClickable(), null, null, null))
+                                .apply(b -> settingIsOn = b.getChild().get().getOn())
+                                .makeMargin(5)
+                                .get())
+                        .get(),
                 slider)
                 .makeBackgrounded(ColorScheme.getCurrentColorScheme().backgroundColor)
                 .get();
 
         IDrawable gameViewer = Builder.make(new GameViewer(() -> {
-            Integer res = radioButtons.getSelected().get();
-            if (res == null || res == -1) {
-                return null;
-            }
-            return radioButtons.getButton(res).get().getData();
-        }))
+                    Integer res = radioButtons.getSelected().get();
+                    if (res == null || res == -1) {
+                        return null;
+                    }
+                    return radioButtons.getButton(res).get().getData();
+                }))
                 .makeBackgrounded(ColorScheme.getCurrentColorScheme().backgroundColor)
                 .get();
-        main = new Splitter(true, () -> disabled.get() ? -50.0 : -80.0, gameViewer, menu);
-        main = Builder.make(main).makeBackgrounded(ColorScheme.getCurrentColorScheme().backgroundColor).get();
+
+        main = Builder.make(
+                new Splitter(true, () -> butt.getDisabled().get() ? -50.0 : -80.0, gameViewer, menu)).get();
     }
 
     public static String formatString(String format, String... others) {
@@ -130,6 +135,17 @@ public class Game implements IGame {
                 Color.WHITE
         ));
 
+        for(int i = 0; i < 10; ++i) {
+            SystemSpecific.get().preLoad(Parameters.imgDir() + "q" + i + ".png", true);
+            SystemSpecific.get().preLoad(Parameters.imgDir() + "b" + i + ".png", true);
+            SystemSpecific.get().preLoad(Parameters.imgDir() + "f" + i + ".png", true);
+        }
+        for(int i = 1; i < 16; ++i) {
+            SystemSpecific.get().preLoad(Parameters.imgDir() + i + ".jpg", true);
+        }
+        SystemSpecific.get().preLoad(Parameters.imgDir() + "m_on.png", true);
+        SystemSpecific.get().preLoad(Parameters.imgDir() + "m_off.png", true);
+
         readReachableFiles();
         return this;
     }
@@ -158,17 +174,36 @@ public class Game implements IGame {
         int maxButton = radioButtons.size();
         int maxFiles = fileNames.length;
 
+        String selected = null;
+        int selectedIndex = radioButtons.getSelected().get();
+        if(maxButton > 0 && selectedIndex >= 0) {
+            selected = radioButtons.getButton(selectedIndex).get().getData();
+        }
+
         for (; i < Math.min(maxButton, maxFiles); ++i) {
-            radioButtons.getButton(i).setElem(
-                    new ButtonWithData<>(new ColorSchemeClickable(true, true), null, null, null, fileNames[i]));
+            ButtonWithData<ColorSchemeClickable, String> button = radioButtons.getButton(i).get();
+            button.setData(fileNames[i]);
+
+            if(selected != null && selected.equals(fileNames[i])) {
+                button.getChild().get().getOn().setElem(true);
+                button.getAtClick().get().accept(button);
+            }
         }
         for(; i < maxButton; ++i) {
-            radioButtons.getButton(i).setElem(null);
+            radioButtons.getButton(i).get().setData(null);
         }
 
         for(; i < maxFiles; ++i) {
-            radioButtons.addButton(new ButtonWithData<>(new ColorSchemeClickable(true, true), null, null, null, fileNames[i]));
+            ButtonWithData<ColorSchemeClickable, String> button = new ButtonWithData<>(new ColorSchemeClickable(true, true), null, null, null, fileNames[i]);
+
+            radioButtons.addButton(button);
+
+            if(selected != null && selected.equals(fileNames[i])) {
+                button.getChild().get().getOn().setElem(true);
+                button.getAtClick().get().accept(button);
+            }
         }
+        SystemSpecific.get().runAfter(() -> readReachableFiles(), 60000);
     }
 
     @Override

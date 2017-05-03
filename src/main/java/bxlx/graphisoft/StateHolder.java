@@ -11,9 +11,11 @@ import bxlx.graphisoft.element.Display;
 import bxlx.graphisoft.element.Field;
 import bxlx.graphisoft.element.Player;
 import bxlx.graphisoft.element.Princess;
+import bxlx.system.SystemSpecific;
 import bxlx.system.Timer;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.function.Consumer;
 import java.util.function.Function;
@@ -23,46 +25,39 @@ import java.util.function.UnaryOperator;
 /**
  * Created by ecosim on 4/27/17.
  */
-public class ElementHolder extends ChangeableDrawable {
-    private final Timer timer = new Timer(4000);
-    private final ChangeableValue<Integer> stateIndex;
-    private final ChangeableValue<Double> time;
+public class StateHolder {
+    private int stateIndex;
     private String[] states;
     private List<Display> displays = new ArrayList<>();
     private List<Princess> princesses = new ArrayList<>();
     private List<Player> players = new ArrayList<>();
     private List<List<Field>> fields = new ArrayList<>();
-    private int maxTick;
-    private int tick;
-    private int whosTurn;
-
+    private List<Point> blocked = new ArrayList<>();
     private List<Field> moveElements = new ArrayList<>();
+    private HashMap<String, int[]> points = new HashMap<>();
+    private boolean isTest;
 
     private Point moveDirection;
 
-    public ElementHolder() {
+    public StateHolder(String everything) {
+        this.stateIndex = 1;
+        this.states = everything.split("PLAYERTURN ");
 
-        this.stateIndex = new ChangeableValue<>(this, 1);
-        this.time = new ChangeableValue<>(this, () -> timer.percent());
 
-        for(int i = 0; i < 4; ++i) {
-            new DrawImage(Parameters.imgDir() + "q" + i + ".png");
-            new DrawImage(Parameters.imgDir() + "b" + i + ".png");
+        String[] preMessages = states[0].split("\nID ");
+        String[] allPoint = preMessages[0].split("\n");
+
+        for(String point : allPoint) {
+            String[] parameters = point.split(" ");
+            if(!parameters[0].equals("#")) {
+                points.put(parameters[0], new int[] {
+                        Integer.parseInt(parameters[1]),
+                        Integer.parseInt(parameters[2])
+                });
+            }
         }
-        for(int i = 1; i < 16; ++i) {
-            new DrawImage(Parameters.imgDir() + i + ".jpg");
-        }
-        new DrawImage(Parameters.imgDir() + "m_on.png");
-        new DrawImage(Parameters.imgDir() + "m_off.png");
-    }
 
-
-    public synchronized void createElements(String[] states) {
-
-        removeElements();
-        this.states = states;
-
-        String[] messages = states[0].split("\n");
+        String[] messages = preMessages[1].split("\n");
 
         for(String message : messages) {
             String[] parameters = message.split(" ");
@@ -91,18 +86,30 @@ public class ElementHolder extends ChangeableDrawable {
                         displays.add(new Display());
                     }
                     break;
-                case "MAXTICK":
-                    maxTick = Integer.parseInt(parameters[1]);
+                case "BLOCKED":
+                    int x = Integer.parseInt(parameters[1]);
+                    int y = Integer.parseInt(parameters[2]);
+                    blocked.add(new Point(x, y));
+                    break;
+                case "TEST":
+                    int t = Integer.parseInt(parameters[1]);
+                    isTest = t == 1;
                     break;
             }
         }
         setState(1);
     }
 
-    public synchronized void setState(Integer stateIndex) {
+    public synchronized void setState(int stateIndex) {
         String state = states[stateIndex];
         for(Display display : displays) {
             display.setStartState();
+        }
+        for(Princess princess : princesses) {
+            princess.setNoMove();
+        }
+        for(Player player : players) {
+            player.setNoMove();
         }
         for(List<Field> line : fields) {
             for(Field field : line) {
@@ -111,26 +118,15 @@ public class ElementHolder extends ChangeableDrawable {
                 }
             }
         }
-        for(Princess princess : princesses) {
-            princess.setNoMove();
-        }
-        for(Player player : players) {
-            player.setNoMove();
-        }
 
         moveElements.clear();
 
         String[] playerInfo = state.split("PLAYER ");
         String[] messages = playerInfo[0].split("\n");
 
-        whosTurn = Integer.parseInt(messages[0]);
-
         for(String message : messages) {
             String[] parameters = message.split(" ");
             switch (parameters[0]) {
-                case "TICK":
-                    tick = Integer.parseInt(parameters[1]);
-                    break;
                 case "FIELDS": {
                     int index = 1;
                     for (int j = 0; j < fields.size(); ++j) {
@@ -217,7 +213,7 @@ public class ElementHolder extends ChangeableDrawable {
                         int x = Integer.parseInt(parameters[1]);
                         int y = Integer.parseInt(parameters[2]);
 
-                        Princess p = princesses.get(whosTurn);
+                        Princess p = princesses.get(getWhosTurn());
                         Point toMove = new Point(x, y);
 
                         p.setMove(toMove);
@@ -225,34 +221,27 @@ public class ElementHolder extends ChangeableDrawable {
                 }
             }
         }
-        this.state = State.FIRST_DRAW;
-        this.stateIndex.setElem(stateIndex);
     }
 
-    @Override
-    public IDrawable.Redraw needRedraw() {
-        return super.needRedraw().setIf(stateIndex.isChanged(), Redraw.PARENT_NEED_REDRAW)
-                .setIf(this.state != State.END, Redraw.I_NEED_REDRAW);
+    private int getWhosTurn() {
+        return (stateIndex - 1) % princesses.size();
     }
 
     public enum State {
         FIRST_DRAW,
+        STOP,
         MOVE_ELEMENTS,
+        AFTER_PUSH,
         MOVE_PRINCESS,
+        AFTER_GOTO,
         END
     }
 
     private State state = State.FIRST_DRAW;
 
-    private ChangeableValue<ICanvas> canvasChanges = new ChangeableValue<ICanvas>(this, (ICanvas) null);
-
-    @Override
+    //@Override
     protected synchronized void forceRedraw(ICanvas canvas) {
-        canvasChanges.setElem(canvas);
-
-        if(canvasChanges.isChanged()) {
-            state = State.FIRST_DRAW;
-        }
+        Timer timer = new Timer(200);
 
         if(fields.size() == 0) {
             return;
@@ -324,7 +313,7 @@ public class ElementHolder extends ChangeableDrawable {
                 break;
             }
             case MOVE_PRINCESS: {
-                Princess princess = princesses.get(whosTurn);
+                Princess princess = princesses.get(getWhosTurn());
                 Point pp = princess.getPosition();
                 Point ptp = princess.getToPosition();
 
@@ -393,18 +382,17 @@ public class ElementHolder extends ChangeableDrawable {
     }
 
     private void setNextState() {
-        int state = stateIndex.get() + 1;
+        int state = stateIndex + 1;
 
         if(states.length > state) {
             setState(state);
         } else {
             this.state = State.END;
-            timer.setPercent(100);
         }
     }
 
     private void commitPrincessMove() {
-        Princess p = princesses.get(whosTurn);
+        Princess p = princesses.get(getWhosTurn());
         Point to;
         p.setPosition(to = p.getToPosition());
 
@@ -429,13 +417,13 @@ public class ElementHolder extends ChangeableDrawable {
         }
         moveElements.clear();
 
-        Princess p = princesses.get(whosTurn);
+        Princess p = princesses.get(getWhosTurn());
         if(p.getToPosition() != null) {
             Point pos = p.getPosition();
             fields.get((int) pos.getY()).get((int) pos.getX()).removePrincess(p);
         }
 
-        players.get(whosTurn).setNoMove();
+        players.get(getWhosTurn()).setNoMove();
     }
 
     public synchronized void removeElements() {

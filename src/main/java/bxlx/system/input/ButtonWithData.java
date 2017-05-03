@@ -7,7 +7,7 @@ import java.util.function.Supplier;
  * Created by ecosim on 4/25/17.
  */
 public class ButtonWithData<T extends Button.Clickable, D> extends Button<T> {
-    private final D data;
+    private D data;
     public ButtonWithData(T clickable, Consumer<Button<T>> atClick, Consumer<Button<T>> atHold, Supplier<Boolean> disabledSuppl, D data) {
         super(clickable, atClick, atHold, disabledSuppl);
         this.data = data;
@@ -15,5 +15,9 @@ public class ButtonWithData<T extends Button.Clickable, D> extends Button<T> {
 
     public D getData() {
         return data;
+    }
+
+    public void setData(D data) {
+        this.data = data;
     }
 }

@@ -4,13 +4,10 @@ import bxlx.graphics.ChangeableDrawable;
 import bxlx.graphics.ICanvas;
 import bxlx.graphics.Point;
 import bxlx.graphics.fill.DrawImage;
-import bxlx.graphisoft.ElementHolder;
-import bxlx.graphisoft.Game;
 import bxlx.graphisoft.Parameters;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.function.Supplier;
 
 /**
  * Created by ecosim on 4/27/17.

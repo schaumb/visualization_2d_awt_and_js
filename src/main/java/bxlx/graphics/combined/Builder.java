@@ -190,6 +190,10 @@ public class Builder<T extends IDrawable> {
         return new Builder<>(new Text(text, referenceText, align));
     }
 
+    public static Builder<Text> text(Supplier<String> text, Supplier<String> referenceText, int align) {
+        return new Builder<>(new Text(text, referenceText, align));
+    }
+
     public static Builder<DrawArc> circle(boolean inside) {
         return new Builder<>(DrawArc.circle(inside));
     }

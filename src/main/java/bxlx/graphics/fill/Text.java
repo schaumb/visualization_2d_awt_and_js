@@ -37,6 +37,12 @@ public class Text extends ChangeableDrawable {
         this.align = new ChangeableValue<>(this, (int) Math.signum(align));
     }
 
+    public Text(Supplier<String> text, Supplier<String> referenceText, int align) {
+        this.text = new ChangeableValue<>(this, text);
+        this.referenceText = new ChangeableValue<>(this, referenceText);
+        this.align = new ChangeableValue<>(this, (int) Math.signum(align));
+    }
+
     @Override
     public Redraw needRedraw() {
         Redraw result = super.needRedraw();

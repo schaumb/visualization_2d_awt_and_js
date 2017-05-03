@@ -79,7 +79,7 @@ public class Include {
             "bxlx/graphisoft/element/Player.js",
             "bxlx/graphisoft/element/Display.js",
             "bxlx/graphisoft/element/Princess.js",
-            "bxlx/graphisoft/ElementHolder.js",
+            "bxlx/graphisoft/StateHolder.js",
             "bxlx/graphisoft/GameViewer.js",
             "bxlx/graphisoft/Game.js",
             "bxlx/general/Renderer.js",

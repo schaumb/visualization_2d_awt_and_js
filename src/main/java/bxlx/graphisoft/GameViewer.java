@@ -11,12 +11,12 @@ import java.util.function.Supplier;
 /**
  * Created by ecosim on 4/26/17.
  */
-public class GameViewer extends DrawableWrapper<ElementHolder> {
+public class GameViewer extends DrawableWrapper<StateHolder> {
     private final ChangeableDrawable.ChangeableValue<String> file;
     private final ChangeableValue<String> fileContent;
 
     public GameViewer(Supplier<String> val) {
-        super(new ElementHolder());
+        super(new StateHolder());
         this.file = new ChangeableValue<>(this, val);
         this.fileContent = new ChangeableValue<>(this, "");
     }

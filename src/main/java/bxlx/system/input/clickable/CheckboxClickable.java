@@ -11,6 +11,7 @@ import bxlx.graphics.drawable.MarginDrawable;
 import bxlx.graphics.fill.Rect;
 import bxlx.graphics.fill.Text;
 import bxlx.graphics.shapes.Rectangle;
+import bxlx.system.ColorScheme;
 
 import java.util.Arrays;
 
@@ -24,15 +25,16 @@ public class CheckboxClickable extends OnOffClickable {
     public CheckboxClickable() {
         rect = new Rect();
         container = new AspectRatioDrawable<>(new Container<>(Arrays.asList(
-                new ColoredDrawable<>(rect, Color.BLACK),
+                new ColoredDrawable<>(rect, () -> ColorScheme.getCurrentColorScheme().buttonBorderColor),
                 new ColoredDrawable<>(
                         new MarginDrawable<>(
-                                rect, 0.1, 0.1
-                        ), () -> disabled.get() ? Color.LIGHT_GRAY : inside.get() ? Color.DARK_GRAY : Color.GRAY
+                                rect, 3, 3
+                        ), () -> disabled.get() ? ColorScheme.getCurrentColorScheme().disabledColor :
+                            inside.get() ? ColorScheme.getCurrentColorScheme().insideColor : ColorScheme.getCurrentColorScheme().buttonColor
                 ),
                 new ColoredDrawable<>(
                         new Text(() -> getOn().get() ? "✔" : "✘"),
-                        () -> disabled.get() ? Color.WHITE : Color.BLACK
+                        () -> ColorScheme.getCurrentColorScheme().buttonTextColor
                 )
         )), false, -1, 0, 1.0);
     }
