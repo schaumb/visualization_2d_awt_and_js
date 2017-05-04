@@ -4,6 +4,7 @@ import bxlx.graphics.ChangeableDrawable;
 import bxlx.graphics.ICanvas;
 import bxlx.graphics.IDrawable;
 import bxlx.graphics.container.Splitter;
+import bxlx.graphics.drawable.AspectRatioDrawable;
 import bxlx.system.SystemSpecific;
 
 import java.util.function.Supplier;
@@ -18,7 +19,7 @@ public class GameViewer extends Splitter {
 
 
     public GameViewer(Supplier<String> val, ChangeableDrawable.ChangeableValue<Boolean> settingIsOn) {
-        super(true, -200, null, null);
+        super(true, -500, null, null);
         this.file = new ChangeableValue<>(this, val);
         this.stateHolder = new ChangeableValue<>(this, (StateHolder) null);
 
@@ -27,6 +28,12 @@ public class GameViewer extends Splitter {
                         stateHolder.transform(state -> generateDrawableWith(state, playState))
                                 .getAsSupplier(), playState));
 
+        getSecond().setSupplier(stateHolder.transform(state -> generateTeamInfos(state, playState)).getAsSupplier());
+
+    }
+
+    private IDrawable generateTeamInfos(StateHolder state, PlayState playState) {
+        return new TeamInfos(state, playState);
     }
 
     private IDrawable generateDrawableWith(StateHolder state, PlayState playState) {
@@ -54,6 +61,8 @@ public class GameViewer extends Splitter {
         if(fileName == null || !SystemSpecific.get().equals(fileName, file.get())) {
             return;
         }
+        stateHolder.setElem(null);
+        playState.reset(null);
         String from = SystemSpecific.get().getArgs()[0];
         String file = Game.formatString(SystemSpecific.get().getArgs()[1], "2", fileName);
         SystemSpecific.get().readTextFileAsync(from, file, r -> start(fileName, r));

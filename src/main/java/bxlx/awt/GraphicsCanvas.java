@@ -11,7 +11,6 @@ import bxlx.graphics.shapes.Arc;
 import bxlx.graphics.shapes.Polygon;
 import bxlx.graphics.shapes.Rectangle;
 import bxlx.graphics.shapes.Shape;
-import bxlx.system.SystemSpecific;
 
 import javax.imageio.ImageIO;
 import java.awt.Dimension;

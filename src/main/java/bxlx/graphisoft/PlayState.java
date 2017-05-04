@@ -26,72 +26,45 @@ public class PlayState extends SplitContainer<IDrawable> {
         return state;
     }
 
-    public static enum States {
-        BEFORE_PUSH(0),
-        PUSH(1000),
-        WAIT_AFTER_PUSH(200),
-        GOTO(1000),
-        WAIT_AFTER_GOTO(200),
-        END_TURN(0);
-
-        private Timer timer;
-
-
-        private States(int i) {
-            timer = new Timer(i);
-        }
-
-        public Timer getTimer() {
-            return timer;
-        }
-    }
-
     public void nextPlayState() {
-        if(stateHolder == null || !state.getTimer().elapsed() || !play.get())
+        if(stateHolder == null || !state.getTimer().elapsed() || !play.get()) {
             return;
+        }
 
-        switch (state) {
-            case BEFORE_PUSH: {
-                Player player = stateHolder.getPlayerWhosTurn();
-                if (player.getPushMessage() == null) {
-                    state = States.END_TURN;
-                    break;
-                }
-
+        if(state == States.BEFORE_PUSH) {
+            Player player = stateHolder.getPlayerWhosTurn();
+            if (player.getPushMessage() == null) {
+                state = States.END_TURN;
+            } else {
                 state = States.PUSH;
-                break;
+
             }
-            case PUSH:
-                state = States.WAIT_AFTER_PUSH;
-                stateHolder.finalizePush();
-                break;
-            case WAIT_AFTER_PUSH: {
+        } else if(state == States.PUSH) {
+            state = States.WAIT_AFTER_PUSH;
+            stateHolder.finalizePush();
+        } else if(state == States.WAIT_AFTER_PUSH) {
                 Player player = stateHolder.getPlayerWhosTurn();
                 Point princessPosition = stateHolder.getPrincesses().get(stateHolder.getWhosTurn()).getPosition();
                 if (player.getGotoMessage() == null || player.getGotoMessage().equals(princessPosition)) {
                     state = States.END_TURN;
-                    break;
+                } else {
+                    state = States.GOTO;
+                    stateHolder.removePrincess();
                 }
-                state = States.GOTO;
-                stateHolder.removePrincess();
-                break;
-            }
-            case GOTO:
-                state = States.WAIT_AFTER_GOTO;
-                stateHolder.finalizeGoto();
-                break;
-            case WAIT_AFTER_GOTO:
-                state = States.END_TURN;
-                break;
-            case END_TURN:
+        } else if(state == States.GOTO) {
+            state = States.WAIT_AFTER_GOTO;
+            stateHolder.finalizeGoto();
+        } else if(state == States.WAIT_AFTER_GOTO) {
+            state = States.END_TURN;
+        } else if(state == States.END_TURN) {
                 if(stateHolder.hasNextState()) {
                     stateHolder.nextState();
                 } else {
                     play.setElem(false);
                 }
                 state = States.BEFORE_PUSH;
-                break;
         }
+
         state.getTimer().setStart();
     }
 }

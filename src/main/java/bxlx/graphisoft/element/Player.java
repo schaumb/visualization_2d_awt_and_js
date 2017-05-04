@@ -105,4 +105,23 @@ public class Player {
         }
     }
 
+    public String getName() {
+        return name;
+    }
+
+    public int getIndex() {
+        return index;
+    }
+
+    public Field getField() {
+        return field;
+    }
+
+    public String getMessage() {
+        return message;
+    }
+
+    public List<Display> getDisplays() {
+        return displays;
+    }
 }

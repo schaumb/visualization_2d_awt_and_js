@@ -6,6 +6,7 @@ import bxlx.graphisoft.element.Display;
 import bxlx.graphisoft.element.Field;
 import bxlx.graphisoft.element.Player;
 import bxlx.graphisoft.element.Princess;
+import bxlx.system.SystemSpecific;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -275,6 +276,7 @@ public class StateHolder {
         affectedRoutes.clear();
         if(from.equals(to))
             return;
+        SystemSpecific.get().log("From: " + from + " TO: " + to);
 
         HashMap<Point, Point> reachable = new HashMap<>();
         Queue<Point> visitQueue = new LinkedList<>();
@@ -282,20 +284,33 @@ public class StateHolder {
         reachable.put(from, from);
 
         while (!visitQueue.isEmpty()) {
-            Point visit = visitQueue.remove();
+            Point visit = visitQueue.peek();
+            SystemSpecific.get().log("Visit: " + visit);
+            visitQueue.remove(visit);
             for (Direction direction : Direction.values()) {
                 Point next = new Point(visit.getX() + direction.getVector().getX(),
                         visit.getY() + direction.getVector().getY());
                 if (!validCoordinate(next))
                     continue;
 
-                if (!reachable.containsKey(next) &&
+                boolean was = false;
+
+                for(HashMap.Entry<Point, Point> entry : reachable.entrySet()) {
+                    if(entry.getKey().equals(next)) {
+                        was = true;
+                        break;
+                    }
+                }
+
+                if (!was &&
                         Field.hasRouteToStatic(getField(visit),
                                 getField(next), direction)) {
+                    SystemSpecific.get().log("OK: " + next + " from " + visit);
 
                     visitQueue.add(next);
                     reachable.put(next, visit);
                     if (next.equals(to)) {
+                        SystemSpecific.get().log("Break");
                         break;
                     }
                 }
@@ -304,7 +319,22 @@ public class StateHolder {
         Point backward = to;
         while(!backward.equals(from)) {
             affectedRoutes.add(getField(backward));
-            backward = reachable.get(backward);
+            SystemSpecific.get().log("backward from: " + backward);
+
+            boolean was = false;
+
+            for(HashMap.Entry<Point, Point> entry : reachable.entrySet()) {
+                if(entry.getKey().equals(backward)) {
+                    was = true;
+                    backward = entry.getValue();
+                    SystemSpecific.get().log("backward to: " + backward);
+
+                    break;
+                }
+            }
+
+            if(!was)
+                break;
         }
         affectedRoutes.add(getField(from));
     }
@@ -511,9 +541,10 @@ public class StateHolder {
         Princess princess = princesses.get(getWhosTurn());
         player.commitPushMessage();
 
-        calculateAffectedRoutes(princess.getPosition(),
-                player.getGotoMessage());
-
+        if(player.getGotoMessage() != null) {
+            calculateAffectedRoutes(princess.getPosition(),
+                    player.getGotoMessage());
+        }
     }
 
     public void removePrincess() {
@@ -554,8 +585,14 @@ public class StateHolder {
         return blocked;
     }
 
-    public HashMap<String, int[]> getPoints() {
-        return points;
+    public int[] getPointTo(String someone) {
+        int[] point = points.get(someone);
+        if(point == null) {
+            point = new int[] {0, 0};
+            points.put(someone, point);
+        }
+
+        return point;
     }
 
     public boolean isTest() {
