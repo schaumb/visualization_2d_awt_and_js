@@ -103,18 +103,18 @@ public class Rectangle extends Shape {
     }
 
     @Override
-    public Shape getTranslated(Point vector) {
+    public Rectangle getTranslated(Point vector) {
         return withStart(start.add(vector));
     }
 
     @Override
-    public Shape getScaled(double scale) {
+    public Rectangle getScaled(double scale) {
         Point center = getCenter();
         return new Rectangle(center.add(start.add(center.negate()).multiple(scale)), size.asPoint().multiple(scale).asSize());
     }
 
     @Override
-    public Shape getRotated(double rotate) {
+    public Rectangle getRotated(double rotate) {
         if ((rotate + 7 * Math.PI / 4) % Math.PI > Math.PI / 2) {
             return this;
         }

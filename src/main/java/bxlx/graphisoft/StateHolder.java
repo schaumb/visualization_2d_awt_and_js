@@ -273,7 +273,6 @@ public class StateHolder {
 
     private void calculateAffectedRoutes(Point from, Point to) {
         affectedRoutes.clear();
-        affectedRoutes.add(getField(from));
         if(from.equals(to))
             return;
 
@@ -304,9 +303,10 @@ public class StateHolder {
         }
         Point backward = to;
         while(!backward.equals(from)) {
-            affectedRoutes.add(getField(from));
+            affectedRoutes.add(getField(backward));
             backward = reachable.get(backward);
         }
+        affectedRoutes.add(getField(from));
     }
 
     private boolean validCoordinate(Point newPoint) {
@@ -328,7 +328,7 @@ public class StateHolder {
         return (stateIndex - 1) / princesses.size();
     }
 
-    private int getWhosTurn() {
+    public int getWhosTurn() {
         return (stateIndex - 1) % princesses.size();
     }
 
@@ -504,7 +504,6 @@ public class StateHolder {
             if(validCoordinate(pos))
                 setField(pos, field);
         }
-        moveFields.get(0).moveElements(moveFields.get(moveFields.size() - 1));
         moveFields.clear();
         moveDirection = null;
 

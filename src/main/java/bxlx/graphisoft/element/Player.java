@@ -67,6 +67,14 @@ public class Player {
         setExtra(new Field(getPushMessage().fieldType));
     }
 
+    public Display getTargetDisplay() {
+        for(int i = 0; i < displays.size(); ++i) {
+            if(displays.get(i).isActive())
+                return displays.get(i);
+        }
+        return null;
+    }
+
     public static class PushMessage {
         private final boolean column;
         private final boolean positive;

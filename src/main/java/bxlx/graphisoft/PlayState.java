@@ -2,8 +2,10 @@ package bxlx.graphisoft;
 
 import bxlx.graphics.ChangeableDrawable;
 import bxlx.graphics.IDrawable;
+import bxlx.graphics.Point;
 import bxlx.graphics.container.SplitContainer;
 import bxlx.graphisoft.element.Player;
+import bxlx.graphisoft.element.Princess;
 import bxlx.system.Timer;
 
 /**
@@ -65,8 +67,8 @@ public class PlayState extends SplitContainer<IDrawable> {
                 break;
             case WAIT_AFTER_PUSH: {
                 Player player = stateHolder.getPlayerWhosTurn();
-
-                if (player.getGotoMessage() == null) {
+                Point princessPosition = stateHolder.getPrincesses().get(stateHolder.getWhosTurn()).getPosition();
+                if (player.getGotoMessage() == null || player.getGotoMessage().equals(princessPosition)) {
                     state = States.END_TURN;
                     break;
                 }

@@ -61,8 +61,10 @@ public class Field {
         for(Princess p : princesses) {
             f.setPrincess(p);
         }
+        /*
         display = null;
         clearPrincesses();
+        */
     }
 
     public void clearPrincesses() {
