@@ -69,15 +69,14 @@ public class ElementDrawable extends ChangeableDrawable {
             canvas.restore();
         };
 
-        switch (currentState) {
-            case BEFORE_PUSH:
-                for (List<Field> line : fields) {
-                    for (Field field : line) {
-                        forceDrawField.accept(field);
-                    }
+        if(currentState == PlayState.States.BEFORE_PUSH || needRedraw().iNeedRedraw()) {
+            for (List<Field> line : fields) {
+                for (Field field : line) {
+                    forceDrawField.accept(field);
                 }
-
-                break;
+            }
+        }
+        switch (currentState) {
             case PUSH:
                 for (Field field : stateHolder.getMoveFields()) {
                     Point moveAdd = stateHolder.getMoveDirection().multiple(elemSize * Math.min(1, percent));

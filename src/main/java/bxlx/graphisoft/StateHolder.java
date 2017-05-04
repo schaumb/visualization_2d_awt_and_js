@@ -509,13 +509,19 @@ public class StateHolder {
 
         Player player = getPlayerWhosTurn();
         Princess princess = princesses.get(getWhosTurn());
-        if(player.getGotoMessage() != null) {
-            getField(princess.getPosition()).removePrincess(princess);
-        }
         player.commitPushMessage();
 
         calculateAffectedRoutes(princess.getPosition(),
                 player.getGotoMessage());
+
+    }
+
+    public void removePrincess() {
+        Player player = getPlayerWhosTurn();
+        Princess princess = princesses.get(getWhosTurn());
+        if(player.getGotoMessage() != null && !player.getGotoMessage().equals(princess.getPosition())) {
+            getField(princess.getPosition()).removePrincess(princess);
+        }
 
     }
 

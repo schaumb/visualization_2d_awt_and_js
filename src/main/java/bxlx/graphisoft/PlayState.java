@@ -73,7 +73,7 @@ public class PlayState extends SplitContainer<IDrawable> {
                     break;
                 }
                 state = States.GOTO;
-
+                stateHolder.removePrincess();
                 break;
             }
             case GOTO:
