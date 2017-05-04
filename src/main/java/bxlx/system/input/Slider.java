@@ -43,14 +43,15 @@ public class Slider extends DrawableWrapper<Container<IDrawable>> implements IMo
 
         Stick mainStick = new Stick(0, 0.1, 0.5, null, null);
         mainStick.getAngle().setSupplier(() -> this.xDraw.get() ? 0 : Math.PI / 2);
-        mainStick.getLength().setDepFun(r -> r.getSize().getWidth() / r.getSize().getHeight());
+        mainStick.getLength().setDepFun(r -> this.xDraw.get() ? r.getSize().getHeight() / r.getSize().getWidth() : r.getSize().getWidth() / r.getSize().getHeight());
 
         getChild().get().add(new ColoredDrawable<>(mainStick, Color.LIGHT_GRAY));
         getChild().get().add(new ClippedDrawable<>(new ZoomDrawable<>(new AspectRatioDrawable<>(
                 new ColoredDrawable<>(this.button, Color.GRAY)
                 , true, -1, -1, () -> this.xDraw.get() ? 2 : 0.5)
-                , true, r -> 1.0, r -> this.xDraw.get() ? now.get() * (1 - 3 * r.getSize().getHeight() / r.getSize().getWidth()) : 0.0,
-                r -> this.xDraw.get() ? 0.0 : 0.5 * r.getSize().getWidth() / r.getSize().getHeight() + now.get() * (1 - 1.5 * r.getSize().getWidth() / r.getSize().getHeight()))
+                , true, r -> 1.0,
+                r -> this.xDraw.get() ? 0.5 * r.getSize().getHeight() / r.getSize().getWidth() + now.get() * (1 - 1.5 * r.getSize().getHeight() / r.getSize().getWidth()) : 0.0,
+                r -> this.xDraw.get() ? 0 : 0.5 * r.getSize().getWidth() / r.getSize().getHeight() + now.get() * (1 - 1.5 * r.getSize().getWidth() / r.getSize().getHeight()))
                 , true, r -> lastRectangle = mainStick.getBoundingRectangle(r)));
 
         SystemSpecific.get().setMouseEventListenerQueue(this);
@@ -78,7 +79,9 @@ public class Slider extends DrawableWrapper<Container<IDrawable>> implements IMo
         if (draggedPoint != null && lastRectangle.isContains(position) && MouseInfo.get().isLeftClicked() &&
                 !button.getDisabled().get()) {
             Point p = this.xDraw.get() ? Direction.RIGHT.getVector() : Direction.DOWN.getVector();
-            Point percent = position.add(draggedPoint.negate()).multiple(p).multiple(lastRectangle.getSize().asPoint().multiple(1 - 1.5 * lastRectangle.getSize().getWidth() / lastRectangle.getSize().getHeight()).inverse());
+            Point percent = position.add(draggedPoint.negate()).multiple(p).multiple(lastRectangle.getSize().asPoint().multiple(
+                    this.xDraw.get() ? 1 - 1.5 * lastRectangle.getSize().getHeight() / lastRectangle.getSize().getWidth() :
+                    1 - 1.5 * lastRectangle.getSize().getWidth() / lastRectangle.getSize().getHeight()).inverse());
 
             double d = percent.getX();
             if (d == 0.0) {

@@ -1,12 +1,14 @@
 package bxlx.graphisoft;
 
 import bxlx.graphics.ChangeableDrawable;
+import bxlx.graphics.ICanvas;
 import bxlx.graphics.IDrawable;
 import bxlx.graphics.Point;
 import bxlx.graphics.container.SplitContainer;
 import bxlx.graphisoft.element.Player;
-import bxlx.graphisoft.element.Princess;
-import bxlx.system.Timer;
+import bxlx.system.input.Button;
+import bxlx.system.input.Slider;
+import bxlx.system.input.clickable.ColorSchemeClickable;
 
 /**
  * Created by ecosim on 2017.05.04..
@@ -15,6 +17,45 @@ public class PlayState extends SplitContainer<IDrawable> {
     private ChangeableDrawable.ChangeableValue<Boolean> play = new ChangeableValue<>(this, true);
     private States state;
     private StateHolder stateHolder;
+
+    private Slider sliderTime0 = new Slider(new Button<>(new ColorSchemeClickable(true, false), null, null, null), true, 0);
+    private Slider sliderTime1 = new Slider(new Button<>(new ColorSchemeClickable(true, false), null, null, null), true, 0.5);
+    private Slider sliderTime2 = new Slider(new Button<>(new ColorSchemeClickable(true, false), null, null, null), true, 0.1);
+    private Slider sliderTime3 = new Slider(new Button<>(new ColorSchemeClickable(true, false), null, null, null), true, 0.5);
+    private Slider sliderTime4 = new Slider(new Button<>(new ColorSchemeClickable(true, false), null, null, null), true, 0.1);
+
+
+    public PlayState() {
+        super(true);
+
+        add(sliderTime0);
+        add(sliderTime1);
+        add(sliderTime2);
+        add(sliderTime3);
+        add(sliderTime4);
+
+    }
+
+    @Override
+    public void forceRedraw(ICanvas canvas) {
+        if(sliderTime0.getNow().isChanged()) {
+            States.BEFORE_PUSH.getTimer().setLength((long) (sliderTime0.getNow().get() * 2000));
+        }
+        if(sliderTime1.getNow().isChanged()) {
+            States.PUSH.getTimer().setLength((long) (sliderTime1.getNow().get() * 2000));
+        }
+        if(sliderTime2.getNow().isChanged()) {
+            States.WAIT_AFTER_PUSH.getTimer().setLength((long) (sliderTime2.getNow().get() * 2000));
+        }
+        if(sliderTime3.getNow().isChanged()) {
+            States.GOTO.getTimer().setLength((long) (sliderTime3.getNow().get() * 2000));
+        }
+        if(sliderTime4.getNow().isChanged()) {
+            States.WAIT_AFTER_GOTO.getTimer().setLength((long) (sliderTime4.getNow().get() * 2000));
+        }
+
+        super.forceRedraw(canvas);
+    }
 
     public void reset(StateHolder stateHolder) {
         this.stateHolder = stateHolder;
