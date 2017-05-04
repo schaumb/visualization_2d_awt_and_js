@@ -156,6 +156,7 @@ public class JSweetSystemSpecific extends SystemSpecific {
                             return null;
                         });
             }
+            listeners.clear();
         }
     }
 

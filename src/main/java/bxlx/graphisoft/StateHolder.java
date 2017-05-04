@@ -276,7 +276,6 @@ public class StateHolder {
         affectedRoutes.clear();
         if(from.equals(to))
             return;
-        SystemSpecific.get().log("From: " + from + " TO: " + to);
 
         HashMap<Point, Point> reachable = new HashMap<>();
         Queue<Point> visitQueue = new LinkedList<>();
@@ -285,7 +284,6 @@ public class StateHolder {
 
         while (!visitQueue.isEmpty()) {
             Point visit = visitQueue.peek();
-            SystemSpecific.get().log("Visit: " + visit);
             visitQueue.remove(visit);
             for (Direction direction : Direction.values()) {
                 Point next = new Point(visit.getX() + direction.getVector().getX(),
@@ -305,12 +303,10 @@ public class StateHolder {
                 if (!was &&
                         Field.hasRouteToStatic(getField(visit),
                                 getField(next), direction)) {
-                    SystemSpecific.get().log("OK: " + next + " from " + visit);
 
                     visitQueue.add(next);
                     reachable.put(next, visit);
                     if (next.equals(to)) {
-                        SystemSpecific.get().log("Break");
                         break;
                     }
                 }
@@ -319,7 +315,6 @@ public class StateHolder {
         Point backward = to;
         while(!backward.equals(from)) {
             affectedRoutes.add(getField(backward));
-            SystemSpecific.get().log("backward from: " + backward);
 
             boolean was = false;
 
@@ -327,8 +322,6 @@ public class StateHolder {
                 if(entry.getKey().equals(backward)) {
                     was = true;
                     backward = entry.getValue();
-                    SystemSpecific.get().log("backward to: " + backward);
-
                     break;
                 }
             }
