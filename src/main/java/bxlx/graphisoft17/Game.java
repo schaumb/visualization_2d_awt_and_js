@@ -60,7 +60,12 @@ public class Game implements IGame {
         Slider slider = new Slider(butt, false, 0);
 
         IDrawable menu = Builder.splitter(true, () -> butt.getDisabled().get() ? 0.0 : -30.0,
-                Builder.splitter(false, -50, Builder.make(new ClippedDrawable<>(radioButtons, true, r -> {
+                Builder.splitter(false, 50,
+                        Builder.make(new Button<>(new CheckboxClickable(), null, null, null))
+                                .applyer(b -> settingIsOn = b.getChild().get().getOn())
+                                .makeMargin(5)
+                                .get(),
+                        Builder.make(new ClippedDrawable<>(radioButtons, true, r -> {
                             double zz = size.get() - r.getSize().getHeight();
                             butt.getDisabled().setElem(zz > 0);
                             return r.withStart(r.getStart()
@@ -70,11 +75,7 @@ public class Game implements IGame {
                                 .makeAspect(false,1, -1, i -> (double) i.getChild().get().size())
                                 .makeClipped(true, c -> c.withSize(new Size(c.getSize().getWidth(), 9000000)))
                                 .makeClipped(true, r -> new Rectangle(r.getStart(),
-                                    new Size(r.getSize().getWidth(), size.setElem(r.getSize().getHeight()).get()))).get(),
-                        Builder.make(new Button<>(new CheckboxClickable(), null, null, null))
-                                .applyer(b -> settingIsOn = b.getChild().get().getOn())
-                                .makeMargin(5)
-                                .get())
+                                    new Size(r.getSize().getWidth(), size.setElem(r.getSize().getHeight()).get()))).get())
                         .get(),
                 slider)
                 .makeBackgrounded(ColorScheme.getCurrentColorScheme().backgroundColor)

@@ -114,6 +114,11 @@ public class StateHolder {
 
     public synchronized void setState(int stateIndex) {
         this.stateIndex = stateIndex;
+
+        if(states.length <= stateIndex) {
+            return;
+        }
+
         String state = states[stateIndex];
 
         for(Display display : displays) {
@@ -266,6 +271,13 @@ public class StateHolder {
 
                         players.get(getWhosTurn()).setGotoMessage(movePrincessTo);
                         break;
+                }
+            }
+        }
+        if(stateIndex == 1) {
+            for(Point blocked1 : blocked) {
+                for(Point blocked2 : blocked) {
+                    getField(new Point(blocked1.getX(), blocked2.getY())).setBlocked();
                 }
             }
         }

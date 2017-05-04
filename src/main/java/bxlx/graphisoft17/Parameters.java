@@ -46,5 +46,10 @@ public class Parameters {
         }
         SystemSpecific.get().preLoad(imgDir() + "m_on.png", true);
         SystemSpecific.get().preLoad(imgDir() + "m_off.png", true);
+        SystemSpecific.get().preLoad(imgDir() + "blocked.png", true);
+    }
+
+    public static DrawImage blocked() {
+        return new DrawImage(imgDir() + "blocked.png");
     }
 }

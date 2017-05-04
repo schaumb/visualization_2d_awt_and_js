@@ -17,6 +17,7 @@ public class Field {
     private Display display;
     private List<Princess> princesses = new ArrayList<>();
     private Point position;
+    private boolean blocked = false;
 
     public Field(int type) {
         this.type = type;
@@ -101,6 +102,10 @@ public class Field {
 
         result.add(Parameters.getField(getType()));
 
+        if(blocked) {
+            result.add(Parameters.blocked());
+        }
+
         if(display != null) {
             display.addMyselfTo(result);
         }
@@ -110,5 +115,9 @@ public class Field {
         }
 
         return result;
+    }
+
+    public void setBlocked() {
+        blocked = true;
     }
 }

@@ -67,7 +67,7 @@ public class Text extends ChangeableDrawable {
         String nowReferenceText = referenceText.get();
         int nowAlign = align.get();
 
-        if (nowText.isEmpty())
+        if (nowText == null && nowText.isEmpty())
             return;
 
         Rectangle rectangle = canvas.getBoundingRectangle();

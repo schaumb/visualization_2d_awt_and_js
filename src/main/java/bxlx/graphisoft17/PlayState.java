@@ -39,19 +39,19 @@ public class PlayState extends SplitContainer<IDrawable> {
     @Override
     public void forceRedraw(ICanvas canvas) {
         if(sliderTime0.getNow().isChanged()) {
-            States.BEFORE_PUSH.getTimer().setLength((long) (sliderTime0.getNow().get() * 2000));
+            States.BEFORE_PUSH.getTimer().setLength((long) (sliderTime0.getNow().get() * 1500));
         }
         if(sliderTime1.getNow().isChanged()) {
-            States.PUSH.getTimer().setLength((long) (sliderTime1.getNow().get() * 2000));
+            States.PUSH.getTimer().setLength((long) (sliderTime1.getNow().get() * 1500));
         }
         if(sliderTime2.getNow().isChanged()) {
-            States.WAIT_AFTER_PUSH.getTimer().setLength((long) (sliderTime2.getNow().get() * 2000));
+            States.WAIT_AFTER_PUSH.getTimer().setLength((long) (sliderTime2.getNow().get() * 1500));
         }
         if(sliderTime3.getNow().isChanged()) {
-            States.GOTO.getTimer().setLength((long) (sliderTime3.getNow().get() * 2000));
+            States.GOTO.getTimer().setLength((long) (sliderTime3.getNow().get() * 1500));
         }
         if(sliderTime4.getNow().isChanged()) {
-            States.WAIT_AFTER_GOTO.getTimer().setLength((long) (sliderTime4.getNow().get() * 2000));
+            States.WAIT_AFTER_GOTO.getTimer().setLength((long) (sliderTime4.getNow().get() * 1500));
         }
 
         super.forceRedraw(canvas);
