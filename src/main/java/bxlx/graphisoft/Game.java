@@ -11,7 +11,6 @@ import bxlx.graphics.combined.Builder;
 import bxlx.graphics.container.SplitContainer;
 import bxlx.graphics.container.Splitter;
 import bxlx.graphics.drawable.ClippedDrawable;
-import bxlx.graphics.drawable.MarginDrawable;
 import bxlx.graphics.shapes.Rectangle;
 import bxlx.system.ColorScheme;
 import bxlx.system.SystemSpecific;
@@ -56,8 +55,8 @@ public class Game implements IGame {
             return longest;
         });
 
+        // the slider for the games
         Button<ColorSchemeClickable> butt = new Button<>(new ColorSchemeClickable(true, false), null, null, () -> true);
-
         Slider slider = new Slider(butt, false, 0);
 
         IDrawable menu = Builder.splitter(true, () -> butt.getDisabled().get() ? 0.0 : -30.0,
@@ -67,13 +66,13 @@ public class Game implements IGame {
                             return r.withStart(r.getStart()
                                     .add(new Point(0, Math.min(0, zz * slider.getNow().get()))));
                         }))
-                                .apply(clippedDrawable -> size = new ChangeableDrawable.ChangeableValue<>(clippedDrawable, 0.0))
+                                .applyer(clippedDrawable -> size = new ChangeableDrawable.ChangeableValue<>(clippedDrawable, 0.0))
                                 .makeAspect(false,1, -1, i -> (double) i.getChild().get().size())
                                 .makeClipped(true, c -> c.withSize(new Size(c.getSize().getWidth(), 9000000)))
                                 .makeClipped(true, r -> new Rectangle(r.getStart(),
                                     new Size(r.getSize().getWidth(), size.setElem(r.getSize().getHeight()).get()))).get(),
                         Builder.make(new Button<>(new CheckboxClickable(), null, null, null))
-                                .apply(b -> settingIsOn = b.getChild().get().getOn())
+                                .applyer(b -> settingIsOn = b.getChild().get().getOn())
                                 .makeMargin(5)
                                 .get())
                         .get(),
@@ -87,7 +86,7 @@ public class Game implements IGame {
                         return null;
                     }
                     return radioButtons.getButton(res).get().getData();
-                }))
+                }, settingIsOn))
                 .makeBackgrounded(ColorScheme.getCurrentColorScheme().backgroundColor)
                 .get();
 
@@ -117,7 +116,7 @@ public class Game implements IGame {
     public Game init() {
         if(SystemSpecific.get().getArgs().length < 2) {
             SystemSpecific.get().setArgs(new String[] {
-                    "/game/inc/process/p.gameLoad.php", // "."
+                    "/get", // "."
                     "process=%s&level=%s", // "%s.txt"
                     "img/"
             });
@@ -135,16 +134,7 @@ public class Game implements IGame {
                 Color.WHITE
         ));
 
-        for(int i = 0; i < 10; ++i) {
-            SystemSpecific.get().preLoad(Parameters.imgDir() + "q" + i + ".png", true);
-            SystemSpecific.get().preLoad(Parameters.imgDir() + "b" + i + ".png", true);
-            SystemSpecific.get().preLoad(Parameters.imgDir() + "f" + i + ".png", true);
-        }
-        for(int i = 1; i < 16; ++i) {
-            SystemSpecific.get().preLoad(Parameters.imgDir() + i + ".jpg", true);
-        }
-        SystemSpecific.get().preLoad(Parameters.imgDir() + "m_on.png", true);
-        SystemSpecific.get().preLoad(Parameters.imgDir() + "m_off.png", true);
+        Parameters.preloadAllImg();
 
         readReachableFiles();
         return this;

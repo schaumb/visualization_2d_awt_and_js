@@ -23,6 +23,11 @@ public class Direction {
     public static final Direction LEFT = new Direction(-1, 0);
     public static final Direction RIGHT = new Direction(1, 0);
 
+    public static Direction[] values() {
+        return new Direction[] {
+                UP, LEFT, DOWN, RIGHT
+        };
+    }
     public static Direction fromRadian(double radian) {
         return new Direction(Math.cos(radian), -Math.sin(radian));
     }
@@ -51,5 +56,18 @@ public class Direction {
         return "Direction{" +
                 "vector=" + vector +
                 '}';
+    }
+
+    public Direction opposite() {
+        if(this == UP)
+            return DOWN;
+        if(this == DOWN)
+            return UP;
+        if(this == LEFT)
+            return RIGHT;
+        if(this == RIGHT)
+            return LEFT;
+
+        return new Direction(-vector.getX(), -vector.getY());
     }
 }

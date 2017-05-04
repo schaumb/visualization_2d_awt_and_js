@@ -26,6 +26,11 @@ public class Splitter extends DrawableContainer<IDrawable> {
         this(xSplit, r -> separate.get(), first, second);
     }
 
+    public Splitter(boolean xSplit, Supplier<Double> separate, Supplier<IDrawable> first, IDrawable second) {
+        this(xSplit, r -> separate.get(), null, second);
+        getFirst().setSupplier(first);
+    }
+
     public Splitter(boolean xSplit, Function<Rectangle, Double> separate, IDrawable first, IDrawable second) {
         super(Arrays.asList(first, second));
         this.xSplit = new ChangeableValue<>(this, xSplit);

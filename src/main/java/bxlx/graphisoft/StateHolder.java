@@ -1,26 +1,18 @@
 package bxlx.graphisoft;
 
-import bxlx.graphics.ChangeableDrawable;
-import bxlx.graphics.ICanvas;
-import bxlx.graphics.IDrawable;
+import bxlx.graphics.Direction;
 import bxlx.graphics.Point;
-import bxlx.graphics.Size;
-import bxlx.graphics.fill.DrawImage;
-import bxlx.graphics.shapes.Rectangle;
 import bxlx.graphisoft.element.Display;
 import bxlx.graphisoft.element.Field;
 import bxlx.graphisoft.element.Player;
 import bxlx.graphisoft.element.Princess;
-import bxlx.system.SystemSpecific;
-import bxlx.system.Timer;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
-import java.util.function.Consumer;
-import java.util.function.Function;
+import java.util.Queue;
 import java.util.function.IntFunction;
-import java.util.function.UnaryOperator;
 
 /**
  * Created by ecosim on 4/27/17.
@@ -33,16 +25,19 @@ public class StateHolder {
     private List<Player> players = new ArrayList<>();
     private List<List<Field>> fields = new ArrayList<>();
     private List<Point> blocked = new ArrayList<>();
-    private List<Field> moveElements = new ArrayList<>();
     private HashMap<String, int[]> points = new HashMap<>();
     private boolean isTest;
+    private int maxTick;
+    private int level;
 
+    private List<Field> moveFields = new ArrayList<>();
     private Point moveDirection;
 
-    public StateHolder(String everything) {
-        this.stateIndex = 1;
-        this.states = everything.split("PLAYERTURN ");
+    private List<Field> affectedRoutes = new ArrayList<>();
 
+
+    public StateHolder(String everything) {
+        this.states = everything.split("PLAYERTURN ");
 
         String[] preMessages = states[0].split("\nID ");
         String[] allPoint = preMessages[0].split("\n");
@@ -68,6 +63,9 @@ public class StateHolder {
                         princesses.add(new Princess(i - 1));
                         players.add(new Player(i - 1, parameters[i]));
                     }
+                    break;
+                case "LEVEL":
+                    this.level = Integer.parseInt(parameters[1]);
                     break;
                 case "SIZE":
                     int n = Integer.parseInt(parameters[1]);
@@ -95,31 +93,38 @@ public class StateHolder {
                     int t = Integer.parseInt(parameters[1]);
                     isTest = t == 1;
                     break;
+                case "MAXTICK":
+                    maxTick = Integer.parseInt(parameters[1]);
+                    break;
+                case "TARGETS":
+                    int player = Integer.parseInt(parameters[1]);
+                    List<Display> playerDisplays = new ArrayList<>();
+                    for(int i = 2; i < parameters.length; ++i) {
+                        playerDisplays.add(displays.get(
+                                Integer.parseInt(parameters[i])
+                        ));
+                    }
+
+                    players.get(player).setDisplays(playerDisplays);
+                    break;
             }
         }
         setState(1);
     }
 
     public synchronized void setState(int stateIndex) {
+        this.stateIndex = stateIndex;
         String state = states[stateIndex];
+
         for(Display display : displays) {
-            display.setStartState();
-        }
-        for(Princess princess : princesses) {
-            princess.setNoMove();
-        }
-        for(Player player : players) {
-            player.setNoMove();
-        }
-        for(List<Field> line : fields) {
-            for(Field field : line) {
-                if(field != null) {
-                    field.setNoMove();
-                }
-            }
+            display.deactivate();
         }
 
-        moveElements.clear();
+        moveFields.clear();
+        moveDirection = null;
+        affectedRoutes.clear();
+
+        players.get(getWhosTurn()).setZeroCommands();
 
         String[] playerInfo = state.split("PLAYER ");
         String[] messages = playerInfo[0].split("\n");
@@ -131,11 +136,27 @@ public class StateHolder {
                     int index = 1;
                     for (int j = 0; j < fields.size(); ++j) {
                         List<Field> line = fields.get(j);
-                        for (int i = 0; i < line.size(); ++i) {
-                            Field newField = new Field(Integer.parseInt(parameters[index]));
-                            line.set(i, newField);
-                            newField.setPosition(new Point(i, j));
-                            ++index;
+                        for (int i = 0; i < line.size(); ++i, ++index) {
+                            Field f = line.get(i);
+
+                            int type = Integer.parseInt(parameters[index]);
+                            Point point = new Point(i, j);
+
+                            if(f != null && f.getType() != type) {
+                                //SystemSpecific.get().log("NOT EQUAL TYPES");
+                                f = null;
+                            }
+
+                            if(f == null) {
+                                f = new Field(type);
+                                line.set(i, f);
+                                f.setPosition(point);
+                            }
+                            if(!f.getPosition().equals(point)) {
+                                //SystemSpecific.get().log("NOT EQUAL POSITION");
+                                f.setPosition(point);
+                            }
+                            f.clearPrincesses();
                         }
                     }
                     break;
@@ -144,19 +165,37 @@ public class StateHolder {
                     int index = Integer.parseInt(parameters[1]);
                     int x = Integer.parseInt(parameters[2]);
                     int y = Integer.parseInt(parameters[3]);
-                    Display display = displays.get(index);
-                    fields.get(y).get(x).setDisplay(display);
-                    display.setActive();
+                    Field field = fields.get(y).get(x);
+                    Display fieldDisplay = field.getDisplay();
+                    Display setToDisplay = displays.get(index);
+
+                    if(fieldDisplay != null && fieldDisplay != setToDisplay) {
+                        //SystemSpecific.get().log("NOT EQUAL DISPLAY ON FIELD");
+                        fieldDisplay = null;
+                    }
+
+                    if(fieldDisplay == null) {
+                        field.setDisplay(setToDisplay);
+                    }
+
+                    setToDisplay.activate();
                     break;
                 }
                 case "POSITION": {
                     int index = Integer.parseInt(parameters[1]);
                     int x = Integer.parseInt(parameters[2]);
                     int y = Integer.parseInt(parameters[3]);
-
+                    Field field = fields.get(y).get(x);
                     Princess princess = princesses.get(index);
-                    fields.get(y).get(x).setPrincess(princess);
-                    princess.setPosition(new Point(x, y));
+
+                    Point point = new Point(x, y);
+                    Point princessPosition = princess.getPosition();
+
+                    if(princessPosition != null && !princessPosition.equals(point)) {
+                        //SystemSpecific.get().log("NOT EQUAL PRINCESS POSITION");
+                    }
+
+                    field.setPrincess(princess);
                     break;
                 }
             }
@@ -166,6 +205,7 @@ public class StateHolder {
 
             Princess princess = princesses.get(i - 1);
             Player player = players.get(i - 1);
+
             for(String line : lines) {
                 String[] parameters = line.split(" ");
                 switch (parameters[0]) {
@@ -174,11 +214,19 @@ public class StateHolder {
                         break;
                     case "TARGET":
                         int target = Integer.parseInt(parameters[1]);
+
                         displays.get(target).setPrincess(princess);
                         break;
                     case "EXTRAFIELD":
                         int extra = Integer.parseInt(parameters[1]);
-                        player.addExtra(extra);
+                        player.setExtra(new Field(extra));
+                        break;
+                    case "GAMESCORE":
+                        int score = Integer.parseInt(parameters[1]);
+                        if(player.getScore() != score) {
+                            //SystemSpecific.get().log("NOT EQUAL GAMESCORE");
+                            player.setScore(score);
+                        }
                         break;
                     case "PUSH":
                         boolean column = Integer.parseInt(parameters[1]) == 1;
@@ -193,53 +241,102 @@ public class StateHolder {
                         IntFunction<Field> getField = j -> column ? fields.get(j).get(nTh) : fields.get(nTh).get(j);
 
                         moveDirection = new Point(column ? 0 : -by, column ? -by : 0);
-                        for (int j = to; j != from; j -= by) {
-                            getField.apply(j).setMove();
-                            moveElements.add(getField.apply(j));
-                        }
+
                         Field fromField = getField.apply(from);
-                        fromField.setMove();
-                        moveElements.add(fromField);
+                        moveFields.add(fromField);
+
+                        for (int j = to; j != from; j -= by) {
+                            moveFields.add(getField.apply(j));
+                        }
 
                         Field f = new Field(fieldType);
-                        fromField.addElements(f);
                         f.setPosition(getField.apply(to).getPosition().add(moveDirection.multiple(-1)));
-                        f.setMove();
-                        moveElements.add(f);
+                        moveFields.add(f);
 
-                        player.setMove(getField.apply(from).getType(), fieldType);
+                        fromField.moveElements(f);
+
+                        players.get(getWhosTurn()).setPushMessage(
+                                new Player.PushMessage(column, positive, nTh, fieldType));
                         break;
                     case "GOTO":
                         int x = Integer.parseInt(parameters[1]);
                         int y = Integer.parseInt(parameters[2]);
 
-                        Princess p = princesses.get(getWhosTurn());
-                        Point toMove = new Point(x, y);
+                        Point movePrincessTo = new Point(x, y);
 
-                        p.setMove(toMove);
+                        players.get(getWhosTurn()).setGotoMessage(movePrincessTo);
                         break;
                 }
             }
         }
     }
 
+    private void calculateAffectedRoutes(Point from, Point to) {
+        affectedRoutes.clear();
+        affectedRoutes.add(getField(from));
+        if(from.equals(to))
+            return;
+
+        HashMap<Point, Point> reachable = new HashMap<>();
+        Queue<Point> visitQueue = new LinkedList<>();
+        visitQueue.add(from);
+        reachable.put(from, from);
+
+        while (!visitQueue.isEmpty()) {
+            Point visit = visitQueue.remove();
+            for (Direction direction : Direction.values()) {
+                Point next = new Point(visit.getX() + direction.getVector().getX(),
+                        visit.getY() + direction.getVector().getY());
+                if (!validCoordinate(next))
+                    continue;
+
+                if (!reachable.containsKey(next) &&
+                        Field.hasRouteToStatic(getField(visit),
+                                getField(next), direction)) {
+
+                    visitQueue.add(next);
+                    reachable.put(next, visit);
+                    if (next.equals(to)) {
+                        break;
+                    }
+                }
+            }
+        }
+        Point backward = to;
+        while(!backward.equals(from)) {
+            affectedRoutes.add(getField(from));
+            backward = reachable.get(backward);
+        }
+    }
+
+    private boolean validCoordinate(Point newPoint) {
+        return 0 <= newPoint.getY() && newPoint.getY() < fields.size()
+                && 0 <= newPoint.getX() && newPoint.getX() < fields.get(0).size();
+    }
+
+    private Field getField(Point position) {
+        return fields.get((int) position.getY())
+                .get((int) position.getX());
+    }
+
+    private void setField(Point position, Field field) {
+        fields.get((int) position.getY())
+                .set((int) position.getX(), field);
+    }
+
+    private int getTick() {
+        return (stateIndex - 1) / princesses.size();
+    }
+
     private int getWhosTurn() {
         return (stateIndex - 1) % princesses.size();
     }
 
-    public enum State {
-        FIRST_DRAW,
-        STOP,
-        MOVE_ELEMENTS,
-        AFTER_PUSH,
-        MOVE_PRINCESS,
-        AFTER_GOTO,
-        END
+    public Player getPlayerWhosTurn() {
+        return players.get(getWhosTurn());
     }
 
-    private State state = State.FIRST_DRAW;
-
-    //@Override
+/*
     protected synchronized void forceRedraw(ICanvas canvas) {
         Timer timer = new Timer(200);
 
@@ -260,10 +357,10 @@ public class StateHolder {
                 .withSize(r.getSize().asPoint().multiple(1 + 2.0 / 6).add(2).asSize());
 
         Consumer<Field> forceDrawField = field -> {
-            Rectangle clip = clipping.apply(field.getPosition());
+            Rectangle clip = clipping.applyer(field.getPosition());
 
             canvas.clip(clip);
-            canvas.fakeClip(fake.apply(clip));
+            canvas.fakeClip(fake.applyer(clip));
 
             field.forceDraw(canvas);
 
@@ -283,23 +380,23 @@ public class StateHolder {
                     }
                 }
 
-                state = State.MOVE_ELEMENTS;
+                state = States.MOVE_ELEMENTS;
                 break;
             }
             case MOVE_ELEMENTS: {
-                if(moveElements.isEmpty()) {
+                if(moveFields.isEmpty()) {
                     setNextState();
                     timer.setStart();
                     break;
                 }
-                for (Field field : moveElements) {
+                for (Field field : moveFields) {
                     Point moveAdd = moveDirection.multiple(elemSize * Math.min(1, timer.percent() * 2));
 
-                    Rectangle clip = clipping.apply(field.getPosition());
+                    Rectangle clip = clipping.applyer(field.getPosition());
                     clip = clip.withStart(clip.getStart().add(moveAdd));
 
                     canvas.clip(clip);
-                    canvas.fakeClip(fake.apply(clip));
+                    canvas.fakeClip(fake.applyer(clip));
 
                     field.forceDraw(canvas);
 
@@ -307,7 +404,7 @@ public class StateHolder {
                     canvas.restore();
                 }
                 if(timer.percent() >= 0.5) {
-                    state = State.MOVE_PRINCESS;
+                    state = States.MOVE_PRINCESS;
                     commitMovements();
                 }
                 break;
@@ -320,7 +417,7 @@ public class StateHolder {
                 if(ptp == null || pp.equals(ptp)) {
                     setNextState();
                     timer.setStart();
-                    state = State.MOVE_ELEMENTS;
+                    state = States.MOVE_ELEMENTS;
                     break;
                 }
 
@@ -329,7 +426,7 @@ public class StateHolder {
 
                 Point moveAdd = new Point(0.5, 0).multiple(elemSize * Math.max(0, timer.percent() * 2 - 1));
 
-                Rectangle clip = clipping.apply(pp);
+                Rectangle clip = clipping.applyer(pp);
                 Rectangle clip2 = clip.withStart(clip.getStart().add(moveAdd));
 
                 canvas.clip(clip2);
@@ -339,7 +436,7 @@ public class StateHolder {
                                 new Point(clip.getSize().getWidth() / 3.0,0)))
                         .withSize(clip.getSize().asPoint().multiple(new Point(1 / 3.0, 1)).asSize()));
 
-                canvas.fakeClip(fake.apply(clip2));
+                canvas.fakeClip(fake.applyer(clip2));
 
                 princess.forceDraw(canvas);
 
@@ -349,19 +446,19 @@ public class StateHolder {
                 canvas.restore();
 
 
-                clip = clipping.apply(ptp.add(new Point(-0.5, 0)));
+                clip = clipping.applyer(ptp.add(new Point(-0.5, 0)));
                 clip = clip.withStart(clip.getStart().add(moveAdd));
 
                 canvas.clip(clip);
 
-                Rectangle ptpClip = clipping.apply(ptp);
+                Rectangle ptpClip = clipping.applyer(ptp);
 
                 canvas.clip(ptpClip
                         .withStart(ptpClip.getStart().add(
                                 new Point(ptpClip.getSize().getWidth() / 3.0,0)))
                         .withSize(ptpClip.getSize().asPoint().multiple(new Point(1 / 3.0, 1)).asSize()));
 
-                canvas.fakeClip(fake.apply(clip));
+                canvas.fakeClip(fake.applyer(clip));
 
                 princess.forceDraw(canvas);
 
@@ -370,7 +467,7 @@ public class StateHolder {
                 canvas.restore();
 
                 if(timer.elapsed()) {
-                    state = State.MOVE_ELEMENTS;
+                    state = States.MOVE_ELEMENTS;
                     timer.setStart();
                     commitPrincessMove();
                     setNextState();
@@ -380,57 +477,103 @@ public class StateHolder {
         }
         canvas.restore();
     }
+*/
 
-    private void setNextState() {
+    public int getStateIndex() {
+        return stateIndex;
+    }
+
+    public boolean hasNextState() {
+        return states.length > stateIndex + 1;
+    }
+
+    public void nextState() {
         int state = stateIndex + 1;
 
         if(states.length > state) {
             setState(state);
-        } else {
-            this.state = State.END;
         }
     }
 
-    private void commitPrincessMove() {
-        Princess p = princesses.get(getWhosTurn());
-        Point to;
-        p.setPosition(to = p.getToPosition());
-
-        fields.get((int) to.getY()).get((int) to.getX()).setPrincess(p);
-
-        p.setNoMove();
-    }
-
-    private void commitMovements() {
-        for(Field field : moveElements) {
+    public void finalizePush() {
+        for(Field field : moveFields) {
             field.setPosition(field.getPosition().add(moveDirection));
 
             Point pos = field.getPosition();
 
-            if(0 <= pos.getY() && pos.getY() < fields.size()) {
-                List<Field> line = fields.get((int) pos.getY());
-                if(0 <= pos.getX() && pos.getX() < line.size()) {
-                    line.set((int) pos.getX(), field);
-                }
-            }
-            field.setNoMove();
+            if(validCoordinate(pos))
+                setField(pos, field);
         }
-        moveElements.clear();
+        moveFields.get(0).moveElements(moveFields.get(moveFields.size() - 1));
+        moveFields.clear();
+        moveDirection = null;
 
-        Princess p = princesses.get(getWhosTurn());
-        if(p.getToPosition() != null) {
-            Point pos = p.getPosition();
-            fields.get((int) pos.getY()).get((int) pos.getX()).removePrincess(p);
+        Player player = getPlayerWhosTurn();
+        Princess princess = princesses.get(getWhosTurn());
+        if(player.getGotoMessage() != null) {
+            getField(princess.getPosition()).removePrincess(princess);
         }
+        player.commitPushMessage();
 
-        players.get(getWhosTurn()).setNoMove();
+        calculateAffectedRoutes(princess.getPosition(),
+                player.getGotoMessage());
+
     }
 
-    public synchronized void removeElements() {
-        displays.clear();
-        princesses.clear();
-        players.clear();
-        fields.clear();
-        moveElements.clear();
+    public void finalizeGoto() {
+        Player player = getPlayerWhosTurn();
+        Princess princess = princesses.get(getWhosTurn());
+
+        getField(player.getGotoMessage()).setPrincess(princess);
+
+        affectedRoutes.clear();
+    }
+
+    public List<Display> getDisplays() {
+        return displays;
+    }
+
+    public List<Princess> getPrincesses() {
+        return princesses;
+    }
+
+    public List<Player> getPlayers() {
+        return players;
+    }
+
+    public List<List<Field>> getFields() {
+        return fields;
+    }
+
+    public List<Point> getBlocked() {
+        return blocked;
+    }
+
+    public HashMap<String, int[]> getPoints() {
+        return points;
+    }
+
+    public boolean isTest() {
+        return isTest;
+    }
+
+    public int getMaxTick() {
+        return maxTick;
+    }
+
+    public int getLevel() {
+        return level;
+    }
+
+    public List<Field> getMoveFields() {
+        return moveFields;
+    }
+
+    public Point getMoveDirection() {
+        return moveDirection;
+    }
+
+    public List<Field> getAffectedRoutes() {
+        return affectedRoutes;
     }
 }

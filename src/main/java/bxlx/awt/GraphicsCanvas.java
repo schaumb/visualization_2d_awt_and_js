@@ -11,6 +11,7 @@ import bxlx.graphics.shapes.Arc;
 import bxlx.graphics.shapes.Polygon;
 import bxlx.graphics.shapes.Rectangle;
 import bxlx.graphics.shapes.Shape;
+import bxlx.system.SystemSpecific;
 
 import javax.imageio.ImageIO;
 import java.awt.Dimension;
@@ -39,6 +40,7 @@ public class GraphicsCanvas implements ICanvas {
         try {
             return ImageIO.read(new File(str));
         } catch (IOException e) {
+            System.err.println(e.getMessage() + " file : " + str);
             return null;
         }
     });

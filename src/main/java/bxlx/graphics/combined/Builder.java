@@ -142,7 +142,7 @@ public class Builder<T extends IDrawable> {
         return new Builder<>(new ClippedDrawable<>(get(), fake, clip));
     }
 
-    public Builder<T> apply(Consumer<T> consumer) {
+    public Builder<T> applyer(Consumer<T> consumer) {
         consumer.accept(get());
         return this;
     }

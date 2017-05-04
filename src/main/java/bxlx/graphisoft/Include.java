@@ -80,6 +80,8 @@ public class Include {
             "bxlx/graphisoft/element/Display.js",
             "bxlx/graphisoft/element/Princess.js",
             "bxlx/graphisoft/StateHolder.js",
+            "bxlx/graphisoft/PlayState.js",
+            "bxlx/graphisoft/ElementDrawable.js",
             "bxlx/graphisoft/GameViewer.js",
             "bxlx/graphisoft/Game.js",
             "bxlx/general/Renderer.js",

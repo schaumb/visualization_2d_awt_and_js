@@ -1,7 +1,7 @@
 package bxlx.graphisoft.element;
 
-import bxlx.graphics.ChangeableDrawable;
-import bxlx.graphics.ICanvas;
+import bxlx.graphics.Point;
+import bxlx.graphics.container.Container;
 import bxlx.graphics.fill.DrawImage;
 import bxlx.graphisoft.Parameters;
 
@@ -11,49 +11,45 @@ import java.util.List;
 /**
  * Created by ecosim on 4/27/17.
  */
-public class Display extends ChangeableDrawable {
+public class Display {
     private final List<Princess> princesses = new ArrayList<>();
-    private final DrawImage monitor;
-    private boolean isActive = true;
-    private boolean isOn = false;
-
-    private boolean isDeactivating = false;
-    private Player who;
-
-    public Display() {
-        this.monitor = new DrawImage(Parameters.imgDir() + "m_off.png");
-    }
+    private boolean active = true;
+    private Point position;
 
     public void setPrincess(Princess princess) {
         princesses.add(princess);
-        if(!isOn) {
-            isOn = true;
-            monitor.setFileName(Parameters.imgDir() + "m_on.png");
-        }
     }
 
-    public void setActive() {
-        isActive = true;
+    public void setPosition(Point position) {
+        this.position = position;
     }
 
-    public void setStartState() {
-        isActive = false;
-        isDeactivating = false;
+    public Point getPosition() {
+        return position;
     }
 
-    public void setToDeactivating(Player player) {
-        isDeactivating = true;
-        who = player;
+    public boolean isOn() {
+        return !princesses.isEmpty();
     }
 
-    @Override
-    protected void forceRedraw(ICanvas canvas) {
-        if(!isActive)
-            return;
+    public void deactivate() {
+        active = false;
+        princesses.clear();
+    }
 
-        monitor.forceDraw(canvas);
+    public void activate() {
+        active = true;
+    }
+
+    public boolean isActive() {
+        return active;
+    }
+
+    public void addMyselfTo(Container<DrawImage> result) {
+        result.add(Parameters.getMonitor(isOn()));
+
         for(Princess princess : princesses) {
-            princess.getDisplayButton().forceDraw(canvas);
+            result.add(Parameters.getPrincessButton(princess.getIndex()));
         }
     }
 }

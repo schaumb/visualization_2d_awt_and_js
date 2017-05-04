@@ -3,7 +3,7 @@ package bxlx.graphisoft;
 import bxlx.graphics.ChangeableDrawable;
 import bxlx.graphics.ICanvas;
 import bxlx.graphics.IDrawable;
-import bxlx.graphics.drawable.DrawableWrapper;
+import bxlx.graphics.container.Splitter;
 import bxlx.system.SystemSpecific;
 
 import java.util.function.Supplier;
@@ -11,28 +11,39 @@ import java.util.function.Supplier;
 /**
  * Created by ecosim on 4/26/17.
  */
-public class GameViewer extends DrawableWrapper<StateHolder> {
+public class GameViewer extends Splitter {
     private final ChangeableDrawable.ChangeableValue<String> file;
-    private final ChangeableValue<String> fileContent;
+    private final ChangeableValue<StateHolder> stateHolder;
+    private PlayState playState = new PlayState();
 
-    public GameViewer(Supplier<String> val) {
-        super(new StateHolder());
+
+    public GameViewer(Supplier<String> val, ChangeableDrawable.ChangeableValue<Boolean> settingIsOn) {
+        super(true, -200, null, null);
         this.file = new ChangeableValue<>(this, val);
-        this.fileContent = new ChangeableValue<>(this, "");
+        this.stateHolder = new ChangeableValue<>(this, (StateHolder) null);
+
+        getFirst().setElem(
+                new Splitter(false, () -> settingIsOn.get() ? -50.0 : 0.0,
+                        stateHolder.transform(state -> generateDrawableWith(state, playState))
+                                .getAsSupplier(), playState));
+
     }
 
-    @Override
-    protected void forceRedraw(ICanvas canvas) {
-        if(file.isChanged()) {
-            fileContent.setElem("");
-            readFile(file.get());
-        }
-        super.forceRedraw(canvas);
+    private IDrawable generateDrawableWith(StateHolder state, PlayState playState) {
+        return new ElementDrawable(state, playState);
     }
 
     @Override
     public IDrawable.Redraw needRedraw() {
-        return super.needRedraw().setIf(file.isChanged() || fileContent.isChanged(), Redraw.PARENT_NEED_REDRAW);
+        return super.needRedraw().setIf(file.isChanged() || stateHolder.isChanged(), Redraw.PARENT_NEED_REDRAW);
+    }
+
+    @Override
+    public void forceRedraw(ICanvas canvas) {
+        if(file.isChanged()) {
+            readFile(file.get());
+        }
+        super.forceRedraw(canvas);
     }
 
     public void readFile(String fileName) {
@@ -53,16 +64,26 @@ public class GameViewer extends DrawableWrapper<StateHolder> {
             return;
         }
 
-        getChild().get().removeElements();
+        String realFileName = Game.formatString(SystemSpecific.get().getArgs()[1], "2", fileName);
+
         if(file == null) {
-            SystemSpecific.get().log("Can not reach file: " + fileName + ", try again after 2 sec");
+            SystemSpecific.get().log("Can not reach file: " + realFileName + ", try again after 2 sec");
             SystemSpecific.get().runAfter(() -> readFile(fileName), 2000);
             return;
         }
-        fileContent.setElem(file);
+        if(file.trim().equals("")) {
+            SystemSpecific.get().log("File " + realFileName + " is empty, try again 10 sec");
+            SystemSpecific.get().runAfter(() -> readFile(fileName), 10000);
+            return;
+        }
+        if(file.indexOf("<html>") == 0) {
+            SystemSpecific.get().log("File " + realFileName + " is not found, try again 10 sec");
+            SystemSpecific.get().runAfter(() -> readFile(fileName), 10000);
+            return;
+        }
 
-        String[] states = file.split("PLAYERTURN ");
-
-        getChild().get().createElements(states);
+        StateHolder newStateHolder = new StateHolder(file);
+        stateHolder.setElem(newStateHolder);
+        playState.reset(newStateHolder);
     }
 }
