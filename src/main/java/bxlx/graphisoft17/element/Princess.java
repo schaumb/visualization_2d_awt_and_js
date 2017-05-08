@@ -1,4 +1,4 @@
-package bxlx.graphisoft.element;
+package bxlx.graphisoft17.element;
 
 import bxlx.graphics.Point;
 

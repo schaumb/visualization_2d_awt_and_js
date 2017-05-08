@@ -1,11 +1,11 @@
-package bxlx.graphisoft;
+package bxlx.graphisoft17;
 
 import bxlx.graphics.ChangeableDrawable;
 import bxlx.graphics.ICanvas;
 import bxlx.graphics.IDrawable;
 import bxlx.graphics.Point;
 import bxlx.graphics.container.SplitContainer;
-import bxlx.graphisoft.element.Player;
+import bxlx.graphisoft17.element.Player;
 import bxlx.system.input.Button;
 import bxlx.system.input.Slider;
 import bxlx.system.input.clickable.ColorSchemeClickable;

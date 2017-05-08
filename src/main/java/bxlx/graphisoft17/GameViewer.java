@@ -1,10 +1,9 @@
-package bxlx.graphisoft;
+package bxlx.graphisoft17;
 
 import bxlx.graphics.ChangeableDrawable;
 import bxlx.graphics.ICanvas;
 import bxlx.graphics.IDrawable;
 import bxlx.graphics.container.Splitter;
-import bxlx.graphics.drawable.AspectRatioDrawable;
 import bxlx.system.SystemSpecific;
 
 import java.util.function.Supplier;

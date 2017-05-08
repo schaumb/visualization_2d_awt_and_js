@@ -1,4 +1,4 @@
-package bxlx.graphisoft;
+package bxlx.graphisoft17;
 
 import bxlx.general.IGame;
 import bxlx.graphics.ChangeableDrawable;

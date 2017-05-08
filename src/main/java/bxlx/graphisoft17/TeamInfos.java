@@ -1,8 +1,7 @@
-package bxlx.graphisoft;
+package bxlx.graphisoft17;
 
 import bxlx.graphics.ChangeableDrawable;
 import bxlx.graphics.Color;
-import bxlx.graphics.ICanvas;
 import bxlx.graphics.IDrawable;
 import bxlx.graphics.combined.Builder;
 import bxlx.graphics.combined.Stick;
@@ -12,7 +11,7 @@ import bxlx.graphics.drawable.AspectRatioDrawable;
 import bxlx.graphics.fill.DrawImage;
 import bxlx.graphics.fill.DrawNGon;
 import bxlx.graphics.fill.Text;
-import bxlx.graphisoft.element.Player;
+import bxlx.graphisoft17.element.Player;
 import bxlx.system.ColorScheme;
 
 /**

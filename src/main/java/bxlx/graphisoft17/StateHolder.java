@@ -1,12 +1,11 @@
-package bxlx.graphisoft;
+package bxlx.graphisoft17;
 
 import bxlx.graphics.Direction;
 import bxlx.graphics.Point;
-import bxlx.graphisoft.element.Display;
-import bxlx.graphisoft.element.Field;
-import bxlx.graphisoft.element.Player;
-import bxlx.graphisoft.element.Princess;
-import bxlx.system.SystemSpecific;
+import bxlx.graphisoft17.element.Display;
+import bxlx.graphisoft17.element.Field;
+import bxlx.graphisoft17.element.Player;
+import bxlx.graphisoft17.element.Princess;
 
 import java.util.ArrayList;
 import java.util.HashMap;

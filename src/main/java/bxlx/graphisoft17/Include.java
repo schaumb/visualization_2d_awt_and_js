@@ -1,4 +1,4 @@
-package bxlx.graphisoft;
+package bxlx.graphisoft17;
 
 import static jsweet.dom.Globals.document;
 
@@ -74,18 +74,18 @@ public class Include {
             "bxlx/graphics/combined/Navigator.js",
             "bxlx/graphics/combined/Builder.js",
             "bxlx/general/IGame.js",
-            "bxlx/graphisoft/Parameters.js",
-            "bxlx/graphisoft/element/Field.js",
-            "bxlx/graphisoft/element/Player.js",
-            "bxlx/graphisoft/element/Display.js",
-            "bxlx/graphisoft/element/Princess.js",
-            "bxlx/graphisoft/States.js",
-            "bxlx/graphisoft/StateHolder.js",
-            "bxlx/graphisoft/PlayState.js",
-            "bxlx/graphisoft/ElementDrawable.js",
-            "bxlx/graphisoft/TeamInfos.js",
-            "bxlx/graphisoft/GameViewer.js",
-            "bxlx/graphisoft/Game.js",
+            "bxlx/graphisoft17/Parameters.js",
+            "bxlx/graphisoft17/element/Field.js",
+            "bxlx/graphisoft17/element/Player.js",
+            "bxlx/graphisoft17/element/Display.js",
+            "bxlx/graphisoft17/element/Princess.js",
+            "bxlx/graphisoft17/States.js",
+            "bxlx/graphisoft17/StateHolder.js",
+            "bxlx/graphisoft17/PlayState.js",
+            "bxlx/graphisoft17/ElementDrawable.js",
+            "bxlx/graphisoft17/TeamInfos.js",
+            "bxlx/graphisoft17/GameViewer.js",
+            "bxlx/graphisoft17/Game.js",
             "bxlx/general/Renderer.js",
             "bxlx/general/EntryPoint.js",
             "bxlx/jsweet/TestMain.js"

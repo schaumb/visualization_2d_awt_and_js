@@ -1,4 +1,4 @@
-package bxlx.graphisoft;
+package bxlx.graphisoft17;
 
 import bxlx.graphics.ChangeableDrawable;
 import bxlx.graphics.ICanvas;
@@ -7,8 +7,8 @@ import bxlx.graphics.Size;
 import bxlx.graphics.container.Container;
 import bxlx.graphics.fill.DrawImage;
 import bxlx.graphics.shapes.Rectangle;
-import bxlx.graphisoft.element.Display;
-import bxlx.graphisoft.element.Field;
+import bxlx.graphisoft17.element.Display;
+import bxlx.graphisoft17.element.Field;
 
 import java.util.List;
 import java.util.function.Consumer;

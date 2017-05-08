@@ -1,9 +1,9 @@
-package bxlx.graphisoft.element;
+package bxlx.graphisoft17.element;
 
 import bxlx.graphics.Point;
 import bxlx.graphics.container.Container;
 import bxlx.graphics.fill.DrawImage;
-import bxlx.graphisoft.Parameters;
+import bxlx.graphisoft17.Parameters;
 
 import java.util.ArrayList;
 import java.util.List;
