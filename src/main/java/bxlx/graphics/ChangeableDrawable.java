@@ -1,5 +1,6 @@
 package bxlx.graphics;
 
+import bxlx.system.Timer;
 import bxlx.system.functional.ValueOrSupplier;
 
 import java.util.ArrayList;
@@ -46,6 +47,19 @@ public abstract class ChangeableDrawable implements IDrawable {
         public ChangeableDependentValue<T, U> setDepFun(Function<U, T> fun) {
             depFun.setElem(fun);
             return this;
+        }
+    }
+
+    public static class ChangeableTimer extends ChangeableValue<Double> {
+        private final Timer timer;
+
+        public ChangeableTimer(ChangeableDrawable parent, Timer timer) {
+            super(parent, () -> timer.percent());
+            this.timer = timer;
+        }
+
+        public Timer getTimer() {
+            return timer;
         }
     }
 

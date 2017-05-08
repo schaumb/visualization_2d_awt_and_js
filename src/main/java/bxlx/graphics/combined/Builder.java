@@ -7,18 +7,16 @@ import bxlx.graphics.container.SizeChangeableContainer;
 import bxlx.graphics.container.SplitContainer;
 import bxlx.graphics.container.Splitter;
 import bxlx.graphics.container.TransformerContainer;
-import bxlx.graphics.drawable.AspectRatioDrawable;
-import bxlx.graphics.drawable.ClippedDrawable;
-import bxlx.graphics.drawable.ColoredDrawable;
-import bxlx.graphics.drawable.MarginDrawable;
-import bxlx.graphics.drawable.VisibleDrawable;
+import bxlx.graphics.drawable.*;
 import bxlx.graphics.fill.DrawArc;
 import bxlx.graphics.fill.DrawImage;
 import bxlx.graphics.fill.DrawNGon;
 import bxlx.graphics.fill.DrawNumber;
 import bxlx.graphics.fill.DrawRectangle;
 import bxlx.graphics.fill.Text;
+import bxlx.graphics.shapes.Polygon;
 import bxlx.graphics.shapes.Rectangle;
+import bxlx.graphics.shapes.Shape;
 import bxlx.system.ColorScheme;
 import bxlx.system.FPS;
 import bxlx.system.functional.ValueOrSupplier;
@@ -57,6 +55,10 @@ public class Builder<T extends IDrawable> {
 
     public ContainerBuilder<IDrawable, Container<IDrawable>> withFPS() {
         return container().add(get()).add(new FPS());
+    }
+
+    public static Builder<ShapeDrawable> shape(Shape shape) {
+        return new Builder<>(new ShapeDrawable(shape));
     }
 
     public static class ContainerBuilder<T extends IDrawable, C extends SizeChangeableContainer<T, ?>> extends Builder<C> {
@@ -159,9 +161,15 @@ public class Builder<T extends IDrawable> {
         return new Builder<>(new VisibleDrawable<>(builder.get(), visibility));
     }
 
-    public Builder<Container<IDrawable>> makeBackgrounded(Color color) {
-        Builder<Container<IDrawable>> result = new Builder<>(new Container<>(new ArrayList<>(), 1));
+    public ContainerBuilder<IDrawable, Container<IDrawable>> makeBackgrounded(Color color) {
+        ContainerBuilder<IDrawable, Container<IDrawable>> result = new ContainerBuilder<>(new Container<>(new ArrayList<>(), 1));
         result.get().add(background().makeColored(color).get());
+        result.get().add(get());
+        return result;
+    }
+
+    public ContainerBuilder<IDrawable, Container<IDrawable>> toContainer() {
+        ContainerBuilder<IDrawable, Container<IDrawable>> result = new ContainerBuilder<>(new Container<>(new ArrayList<>(), 1));
         result.get().add(get());
         return result;
     }

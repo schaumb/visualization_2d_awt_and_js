@@ -51,7 +51,7 @@ public class Navigator extends DrawableWrapper<Container> {
         getChild().get().add(
                 Splitter.threeWaySplit(false, buttThick,
                         Splitter.threeWaySplit(true, buttThick,
-                                null,
+                                (IDrawable) null,
                                 makeMargin(new Button<>(new RectClickable(new DrawNGon(3, Math.PI / 2, true)),
                                         null, b -> up(), () -> shiftY <= 0)),
                                 null),

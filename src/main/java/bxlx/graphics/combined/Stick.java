@@ -19,13 +19,14 @@ public class Stick extends DrawableContainer<IDrawable> {
     private final ChangeableValue<Double> angle;
     private final ChangeableDependentValue<Double, Rectangle> length;
     private final ChangeableValue<Double> thickness;
+    private final ChangeableValue<Boolean> half;
 
     public Stick(double angle, double length, double thickness, IDrawable start, IDrawable end) {
         super(Arrays.asList(start, end));
         this.angle = new ChangeableValue<>(this, angle);
         this.length = new ChangeableDependentValue<>(this, r -> length);
         this.thickness = new ChangeableValue<>(this, thickness);
-
+        this.half = new ChangeableValue<>(this, false);
     }
 
     public ChangeableValue<Double> getAngle() {
@@ -49,6 +50,7 @@ public class Stick extends DrawableContainer<IDrawable> {
         double nowAngle = angle.get();
         double nowLength = length.setDep(bound).get();
         double nowThickness = thickness.get();
+        boolean nowHalf = half.get();
 
         Redraw redraw = needRedraw();
         boolean noNeedRedraw = redraw.noNeedRedraw();
@@ -79,20 +81,20 @@ public class Stick extends DrawableContainer<IDrawable> {
             canvas.fill(new Polygon(Arrays.asList(
                     center.add(stickVector.multiple(stickSize / 2 - stickThick * 2 / 3)).add(stickThickVector.multiple(stickThick * nowThickness / 2)),
                     center.add(stickVector.multiple(stickSize / 2 - stickThick * 2 / 3)).add(stickThickVector.multiple(-stickThick * nowThickness / 2)),
-                    center.add(stickVector.multiple(stickThick * 2 / 3 - stickSize / 2)).add(stickThickVector.multiple(-stickThick * nowThickness / 2)),
-                    center.add(stickVector.multiple(stickThick * 2 / 3 - stickSize / 2)).add(stickThickVector.multiple(stickThick * nowThickness / 2))
+                    center.add(stickVector.multiple((nowHalf ? 0 : stickThick * 2 / 3 - stickSize / 2))).add(stickThickVector.multiple(-stickThick * nowThickness / 2)),
+                    center.add(stickVector.multiple((nowHalf ? 0 : stickThick * 2 / 3 - stickSize / 2))).add(stickThickVector.multiple(stickThick * nowThickness / 2))
             )));
         }
 
         IDrawable child0 = get(0).get();
         if (child0 == null && (noNeedRedraw || iNeedRedraw)) {
-            canvas.fill(Arc.circle(center.add(stickVector.multiple(stickThick * 2 / 3 - stickSize / 2)), stickThick * nowThickness / 2));
+            canvas.fill(Arc.circle(center.add(stickVector.multiple((nowHalf ? 0 : stickThick * 2 / 3 - stickSize / 2))), stickThick * nowThickness / 2));
         } else if (child0 != null) {
             Polygon p = new Polygon(Arrays.asList(
-                    center.add(stickVector.multiple(-stickSize / 2)).add(stickThickVector.multiple(stickThick / 2)),
-                    center.add(stickVector.multiple(-stickSize / 2)).add(stickThickVector.multiple(-stickThick / 2)),
-                    center.add(stickVector.multiple(-stickSize / 2 + stickThick)).add(stickThickVector.multiple(-stickThick / 2)),
-                    center.add(stickVector.multiple(-stickSize / 2 + stickThick)).add(stickThickVector.multiple(stickThick / 2))
+                    center.add(stickVector.multiple((nowHalf ? 0 : -stickSize / 2))).add(stickThickVector.multiple(stickThick / 2)),
+                    center.add(stickVector.multiple((nowHalf ? 0 : -stickSize / 2))).add(stickThickVector.multiple(-stickThick / 2)),
+                    center.add(stickVector.multiple((nowHalf ? 0 : -stickSize / 2 + stickThick))).add(stickThickVector.multiple(-stickThick / 2)),
+                    center.add(stickVector.multiple((nowHalf ? 0 : -stickSize / 2 + stickThick))).add(stickThickVector.multiple(stickThick / 2))
             ));
             canvas.clip(p.getBoundingRectangle());
 

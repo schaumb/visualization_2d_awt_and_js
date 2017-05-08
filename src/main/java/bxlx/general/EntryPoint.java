@@ -1,6 +1,6 @@
 package bxlx.general;
 
-import bxlx.graphisoft17.Game;
+import bxlx.conticup17.Game;
 
 /**
  * Created by qqcs on 2017.01.03..
