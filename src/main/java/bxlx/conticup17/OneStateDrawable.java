@@ -24,14 +24,6 @@ public class OneStateDrawable extends Container<IDrawable> {
         super();
         this.player = player;
 
-        SplitContainer<SplitContainer<IDrawable>> stationHolder = new SplitContainer<>(false);
-        for(int i = 0; i < 4; ++i) {
-            SplitContainer<IDrawable> drawableSplitContainer = new SplitContainer<>(true);
-            for(int j = 0; j < 4; ++j) {
-                drawableSplitContainer.add((IDrawable) null);
-            }
-            stationHolder.add(drawableSplitContainer);
-        }
         List<RobotStates.Station> stateStations = player.getStations();
 
         double centerSize = 0.5;

@@ -11,15 +11,15 @@ import java.util.List;
  * Created by qqcs on 5/8/17.
  */
 public class RobotStates {
-    public enum StationOutputType {
-        GOOD(Color.GREEN),
-        BAD(Color.RED),
-        TO(Color.CYAN),
-        FROM(Color.LIGHT_GRAY);
+    public final static class StationOutputType {
+        public final static StationOutputType GOOD = new StationOutputType(Color.GREEN);
+        public final static StationOutputType BAD = new StationOutputType(Color.RED);
+        public final static StationOutputType TO = new StationOutputType(Color.CYAN);
+        public final static StationOutputType FROM = new StationOutputType(Color.LIGHT_GRAY);
 
         private final Color color;
 
-        StationOutputType(Color color) {
+        private StationOutputType(Color color) {
             this.color = color;
         }
 
@@ -28,25 +28,23 @@ public class RobotStates {
         }
     }
 
-    public enum StationType {
-        CONVEYOR_IN(5, StationOutputType.FROM),
-        WORKSTATION(StationOutputType.GOOD,
-                StationOutputType.FROM,
-                StationOutputType.BAD),
-        PUFFER(StationOutputType.TO),
-        REPAIR(StationOutputType.FROM,
-                StationOutputType.TO),
-        CONVEYOR_OUT(StationOutputType.GOOD,
+    public final static class StationType {
+        public final static StationType CONVEYOR_IN = new StationType(StationOutputType.FROM, StationOutputType.FROM, StationOutputType.FROM, StationOutputType.FROM, StationOutputType.FROM);
+        public final static StationType WORKSTATION = new StationType(StationOutputType.GOOD,
+                StationOutputType.TO,
+                StationOutputType.BAD);
+        public final static StationType PUFFER = new StationType(StationOutputType.TO);
+        public final static StationType REPAIR = new StationType(StationOutputType.FROM,
+                StationOutputType.TO);
+        public final static StationType CONVEYOR_OUT = new StationType(StationOutputType.GOOD,
                      StationOutputType.BAD);
 
-        private final List<StationOutputType> outputs;
+        private final List<StationOutputType> outputs = new ArrayList<>();
 
-        StationType(int stationCount, StationOutputType stationOutputType) {
-            outputs = Collections.nCopies(stationCount, stationOutputType);
-        }
-
-        StationType(StationOutputType... stationOutputTypes) {
-            outputs = Arrays.asList(stationOutputTypes);
+        private StationType(StationOutputType... stationOutputTypes) {
+            for(int i = 0; i < stationOutputTypes.length; ++i) {
+                outputs.add(stationOutputTypes[i]);
+            }
         }
 
         public List<StationOutputType> getOutputs() {

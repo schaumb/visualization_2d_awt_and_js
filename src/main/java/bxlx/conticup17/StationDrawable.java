@@ -7,6 +7,7 @@ import bxlx.graphics.combined.Builder;
 import bxlx.graphics.container.Container;
 import bxlx.graphics.container.SplitContainer;
 import bxlx.system.ColorScheme;
+import bxlx.system.SystemSpecific;
 
 /**
  * Created by qqcs on 5/8/17.
@@ -36,11 +37,13 @@ public class StationDrawable extends Container<IDrawable> {
                 innerContainer.add((IDrawable) null);
             }
 
-            innerContainer.add(Builder.background().makeColored(station.getType().getOutputs().get(i).getColor())
+            RobotStates.StationOutputType outp = station.getType().getOutputs().get(i);
+            SystemSpecific.get().log("outp: " + outp + " aaaand " + outp.getClass().getName());
+            innerContainer.add(Builder.background().makeColored(outp.getColor())
                     .makeMargin(
-                            x ? 2 : 0,
-                            x ? 0 : 2)
-                    .makeBackgrounded(Color.DARK_GRAY).makeMargin(3).get());
+                            x ? 0.1 : 0,
+                            x ? 0 : 0.1)
+                    .makeBackgrounded(Color.DARK_GRAY).makeMargin(0.2).get());
         }
         if (outputSize < 4) {
             innerContainer.add((IDrawable) null);
@@ -54,12 +57,12 @@ public class StationDrawable extends Container<IDrawable> {
 
 
         add(Builder.container()
-                .add(Builder.background().makeColored(Color.WHITE).makeMargin(2)
-                        .makeBackgrounded(Color.DARK_GRAY).makeMargin(10).get())
+                .add(Builder.background().makeColored(Color.WHITE).makeMargin(0.1/5)
+                        .makeBackgrounded(Color.DARK_GRAY).makeMargin(0.1).get())
                 .add(Builder.make(outerContainer)
                     .makeMargin(
-                            x ? 7 : 0,
-                            x ? 0 : 7
+                            x ? 0.1 : 0,
+                            x ? 0 : 0.1
                     ).get())
                 .add(Builder.text(station.getName(), "CON", 0)
                         .makeColored(ColorScheme.getCurrentColorScheme().textColor)

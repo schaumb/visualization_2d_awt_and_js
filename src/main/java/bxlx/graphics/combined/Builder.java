@@ -7,14 +7,19 @@ import bxlx.graphics.container.SizeChangeableContainer;
 import bxlx.graphics.container.SplitContainer;
 import bxlx.graphics.container.Splitter;
 import bxlx.graphics.container.TransformerContainer;
-import bxlx.graphics.drawable.*;
+import bxlx.graphics.drawable.AspectRatioDrawable;
+import bxlx.graphics.drawable.ClippedDrawable;
+import bxlx.graphics.drawable.ColoredDrawable;
+import bxlx.graphics.drawable.MarginDrawable;
+import bxlx.graphics.drawable.ShapeClippedDrawable;
+import bxlx.graphics.drawable.ShapeDrawable;
+import bxlx.graphics.drawable.VisibleDrawable;
 import bxlx.graphics.fill.DrawArc;
 import bxlx.graphics.fill.DrawImage;
 import bxlx.graphics.fill.DrawNGon;
 import bxlx.graphics.fill.DrawNumber;
 import bxlx.graphics.fill.DrawRectangle;
 import bxlx.graphics.fill.Text;
-import bxlx.graphics.shapes.Polygon;
 import bxlx.graphics.shapes.Rectangle;
 import bxlx.graphics.shapes.Shape;
 import bxlx.system.ColorScheme;
@@ -142,6 +147,9 @@ public class Builder<T extends IDrawable> {
 
     public Builder<ClippedDrawable<T>> makeClipped(boolean fake, UnaryOperator<Rectangle> clip) {
         return new Builder<>(new ClippedDrawable<>(get(), fake, clip));
+    }
+    public Builder<ShapeClippedDrawable<T>> makeShapeClipped(Shape shape) {
+        return new Builder<>(new ShapeClippedDrawable<>(get(), shape));
     }
 
     public Builder<T> applyer(Consumer<T> consumer) {

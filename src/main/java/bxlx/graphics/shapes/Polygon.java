@@ -15,7 +15,11 @@ public class Polygon extends Shape {
 
     public Polygon(List<Point> points) {
         super(Type.POLYGON);
-        this.points = points;
+        this.points = new ArrayList<>(points);
+
+        if(this.points.size() == 0) {
+            this.points.add(Point.ORIGO);
+        }
     }
 
     public List<Point> getPoints() {
