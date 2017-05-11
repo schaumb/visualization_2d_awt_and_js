@@ -77,6 +77,7 @@ public class Include {
             "bxlx/graphics/combined/Builder.js",
             "bxlx/general/IGame.js",
             "bxlx/conticup17/RobotStates.js",
+            "bxlx/conticup17/RobotStateTimer.js",
             "bxlx/conticup17/PacketDrawable.js",
             "bxlx/conticup17/RobotDrawable.js",
             "bxlx/conticup17/OneStateDrawable.js",
@@ -91,5 +92,11 @@ public class Include {
         for(String include : includes) {
             document.writeln("<script language=\"javascript\" src=\"target/js/" + include + "\"></script>");
         }
+        document.writeln("<script language=\"javascript\">" +
+                "if(typeof requestedFileName !== 'undefined') {" +
+                "   bxlx.system.SystemSpecific.get().setArgs(['/game?', requestedFileName])" +
+                "}" +
+                "</script>");
+
     }
 }

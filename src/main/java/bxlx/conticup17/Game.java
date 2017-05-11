@@ -21,7 +21,6 @@ public class Game implements IGame {
             .makeBackgrounded(ColorScheme.getCurrentColorScheme().backgroundColor)
             .get();
 
-    private final ValueOrSupplier<RobotStates> states = new ValueOrSupplier<>((RobotStates) null);
     private IDrawable main = wait;
 
     @Override
@@ -39,7 +38,7 @@ public class Game implements IGame {
                 Color.WHITE
         ));
 
-        tryToReadStates();
+        SystemSpecific.get().runAfter(() -> tryToReadStates(), 0);
 
         return this;
     }
@@ -56,7 +55,7 @@ public class Game implements IGame {
 
         if(args == null || args.length < 2) {
             system.setArgs(args = new String[] {
-                ".", "tester.txt"
+                "./", "log.log"
             });
         }
 
@@ -72,16 +71,23 @@ public class Game implements IGame {
             if(args == null || args.length < 2) {
                 system.log("Not set argument - cannot known which file to download");
             } else {
-                system.log("Can not reach file: " + system.getArgs()[0] + " ? " + system.getArgs()[1] + ", try again after 10 sec");
+                system.log("Can not reach file: " + system.getArgs()[0] + " ? " + system.getArgs()[1] + ", try again after 2 sec");
             }
-            system.runAfter(() -> tryToReadStates(), 10000);
+            system.runAfter(() -> tryToReadStates(), 2000);
 
             return;
         }
 
-        main = new Builder.ContainerBuilder<>(new StateDrawable(new RobotStates(s)))
-                .makeAspect(-1, -1, 0.5)
-                .makeBackgrounded(ColorScheme.getCurrentColorScheme().backgroundColor)
-                .get();
+        try {
+            RobotStates states = new RobotStates(s);
+            RobotStateTimer timer = new RobotStateTimer(states);
+            main = new Builder.ContainerBuilder<>(new StateDrawable(states, timer))
+                    .makeAspect(-1, -1, 0.5)
+                    .makeBackgrounded(ColorScheme.getCurrentColorScheme().backgroundColor)
+                    .add(timer)
+                    .get();
+        } catch (Throwable throwable) {
+            throwable.printStackTrace();
+        }
     }
 }

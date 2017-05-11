@@ -209,7 +209,7 @@ public class JSweetSystemSpecific extends SystemSpecific {
         request.send(fileName);
         */
 
-        request.open("GET", fileName, true);
+        request.open("GET", from + fileName, true);
         request.send();
     }
 

@@ -6,6 +6,7 @@ import bxlx.graphics.IDrawable;
 import bxlx.graphics.combined.Builder;
 import bxlx.graphics.container.Container;
 import bxlx.graphics.container.SplitContainer;
+import bxlx.graphics.drawable.AspectRatioDrawable;
 import bxlx.system.ColorScheme;
 import bxlx.system.SystemSpecific;
 
@@ -14,8 +15,12 @@ import bxlx.system.SystemSpecific;
  */
 public class StationDrawable extends Container<IDrawable> {
 
-    public StationDrawable(Direction direction, RobotStates.Station station) {
+    public StationDrawable(Direction direction, RobotStates states, int playerNum, int stationNum) {
         super();
+
+        RobotStates.StationType station = states.getState().getPlayers()[playerNum].getStations().get(stationNum);
+        if(station == null || station.isOutDrew())
+            return;
 
         boolean x = direction.getVector().getX() == 0;
         SplitContainer<IDrawable> outerContainer = new SplitContainer<>(!x);
@@ -25,31 +30,29 @@ public class StationDrawable extends Container<IDrawable> {
 
         SplitContainer<IDrawable> innerContainer = new SplitContainer<>(x);
 
-        int outputSize = station.getType().getOutputs().size();
-        if (outputSize < 4) {
-            innerContainer.add((IDrawable) null);
-        }
-        if (outputSize < 2) {
-            innerContainer.add((IDrawable) null);
-        }
+        int outputSize = station.getOutputs().size();
         for(int i = 0; i < outputSize; ++i) {
-            if(outputSize % 2 == 0 && outputSize / 2 == i) {
-                innerContainer.add((IDrawable) null);
-            }
+            RobotStates.StationOutputType outp = station.getOutputs().get(((stationNum + 1) % 8 > 3) == (playerNum == 0) ? outputSize - 1 - i : i);
 
-            RobotStates.StationOutputType outp = station.getType().getOutputs().get(i);
-            SystemSpecific.get().log("outp: " + outp + " aaaand " + outp.getClass().getName());
-            innerContainer.add(Builder.background().makeColored(outp.getColor())
+            if(outp == null) {
+                innerContainer.add((IDrawable) null);
+                continue;
+            }
+            innerContainer.add(Builder.container()
+                    .add(new AspectRatioDrawable<>(new PacketDrawable(() -> {
+                        if(states.getState() == null)
+                            return null;
+                        RobotStates.StationType stationX = states.getState().getPlayers()[playerNum].getStations().get(stationNum);
+                        RobotStates.Unit unit = states.getState().getUnits().get(stationX.getString(
+                                states.getState().getPlayers()[playerNum].getName()
+                        ) + "-" + outp.getAbbr());
+                        return unit;
+                    }), false,  (int) -direction.getVector().getX(), (int) -direction.getVector().getY(), 1.0))
+                    .makeBackgrounded(outp.getColor())
                     .makeMargin(
                             x ? 0.1 : 0,
                             x ? 0 : 0.1)
                     .makeBackgrounded(Color.DARK_GRAY).makeMargin(0.2).get());
-        }
-        if (outputSize < 4) {
-            innerContainer.add((IDrawable) null);
-        }
-        if (outputSize < 2) {
-            innerContainer.add((IDrawable) null);
         }
 
         outerContainer.get(direction.getVector().asSize().getLongerDimension() == 0 ? 0 : outerContainer.size() - 1)
@@ -64,7 +67,7 @@ public class StationDrawable extends Container<IDrawable> {
                             x ? 0.1 : 0,
                             x ? 0 : 0.1
                     ).get())
-                .add(Builder.text(station.getName(), "CON", 0)
+                .add(Builder.text(station.getAbbr(), "CON", 0)
                         .makeColored(ColorScheme.getCurrentColorScheme().textColor)
                         .makeAspect(0, 0, 1)
                         .makeMargin(0.5).get())

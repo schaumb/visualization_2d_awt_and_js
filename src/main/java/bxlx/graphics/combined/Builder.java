@@ -80,6 +80,11 @@ public class Builder<T extends IDrawable> {
             return this;
         }
 
+        public ContainerBuilder<T, C> add(Supplier<T> elem) {
+            get().add(elem);
+            return this;
+        }
+
         public ContainerBuilder<T, C> add(Builder<T> elem) {
             get().add(elem.get());
             return this;

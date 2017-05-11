@@ -6,15 +6,15 @@ import bxlx.graphics.container.SplitContainer;
 /**
  * Created by qqcs on 5/8/17.
  */
-public class StateDrawable extends SplitContainer<OneStateDrawable> {
+public class StateDrawable extends SplitContainer<IDrawable> {
     private final RobotStates states;
 
-    public StateDrawable(RobotStates states) {
+    public StateDrawable(RobotStates states, RobotStateTimer timer) {
         super(true);
         this.states = states;
 
-        for (RobotStates.RobotPlayer robotPlayer : this.states.getPlayers()) {
-            add(new OneStateDrawable(robotPlayer));
+        for (int i = 0; i < this.states.getState().getPlayers().length; ++i) {
+            add(new OneStateDrawable(states, timer, i));
         }
     }
 }

@@ -11,6 +11,7 @@ import bxlx.graphics.combined.Builder;
 import bxlx.graphics.shapes.Arc;
 import bxlx.graphics.shapes.Polygon;
 import bxlx.graphics.shapes.Rectangle;
+import bxlx.system.SystemSpecific;
 import bxlx.system.Timer;
 
 import java.util.Arrays;
@@ -19,12 +20,16 @@ import java.util.Arrays;
  * Created by qqcs on 5/8/17.
  */
 public class RobotDrawable extends ChangeableDrawable {
-    private final RobotStates.RobotPlayer player;
+    private final RobotStates states;
+    private final int playerNum;
+    private final ChangeableValue<Double> timerFun;
+    private final ChangeableValue<Integer> mainTime;
 
-    private final ChangeableTimer timer = new ChangeableTimer(this, new Timer(5000));
-
-    public RobotDrawable(RobotStates.RobotPlayer player) {
-        this.player = player;
+    public RobotDrawable(RobotStates states, RobotStateTimer timer, int playerNum) {
+        this.states = states;
+        this.playerNum = playerNum;
+        this.timerFun = new ChangeableValue<>(this, () -> timer.getTimer().percent());
+        this.mainTime = new ChangeableValue<>(this, () -> states.getTime());
     }
 
     @Override
@@ -32,21 +37,72 @@ public class RobotDrawable extends ChangeableDrawable {
         return super.needRedraw().setIf(super.needRedraw().iNeedRedraw(), Redraw.PARENT_NEED_REDRAW);
     }
 
+    int timeCounter = 0;
     @Override
     protected void forceRedraw(ICanvas canvas) {
-        double time = timer.get();
+        if(states.getState() == null)
+            return;
+        // Math.atan(1 - 9 * x / 43)
+        double time = timerFun.get();
+        RobotStates.RobotPlayer player = states.getState().getPlayers()[playerNum];
+        RobotStates.Unit unit = player.getOwnedUnit();
+
+        if(mainTime.isChanged()) {
+            timeCounter++;
+        }
+
+
+
+        Point from = player.getFrom();
+        long box = (long) from.getX();
+        long station = (long) from.getY();
+
+        double robotLengthFrom = station == -1 ? 0.5 : 1;
+        double armClosedFrom = unit == null && !player.isPrevPutted() ? 1 : 0;
+        if(station == -1)
+            station = 2;
+        if(playerNum == 1)
+            station = 4 - station;
+
+        double robotAngleFrom = box % 2 == 0 ? Math.atan(1.0 - 9.0 * station / 43.0) + Math.PI * box / 4 : Math.atan(1 / (1.0 - 9.0 * (4 - station) / 43.0)) - Math.PI / 4 + Math.PI * box / 4;
+        double headAngleFrom = Math.PI * box / 4 -robotAngleFrom + (box%2 == 1 ? +Math.PI / 4 : 0);
+
+        if(playerNum == 1 && robotAngleFrom >= Math.PI) {
+            robotAngleFrom -= Math.PI * 2;
+        }
+
+
+        Point to = player.getTo();
+        long boxTo = (long) to.getX();
+        long stationTo = (long) to.getY();
+
+        double robotLengthTo= stationTo == -1 ? 0.5 : 1;
+        double armClosedTo = player.getNextUnit() == null && unit == null ? 1 : 0;
+        if(stationTo == -1)
+            stationTo = 2;
+        if(playerNum == 1)
+            stationTo = 4 - stationTo;
+
+        double robotAngleTo = boxTo % 2 == 0 ? Math.atan(1.0 - 9.0 * stationTo / 43.0) + Math.PI * boxTo / 4 : Math.atan(1 / (1.0 - 9.0 * (4 - stationTo) / 43.0)) - Math.PI / 4 + Math.PI * boxTo / 4;
+        double headAngleTo = Math.PI * boxTo / 4 -robotAngleTo + (boxTo%2 == 1 ? +Math.PI / 4 : 0);
+
+        if(playerNum == 1 && robotAngleTo >= Math.PI) {
+            robotAngleTo -= Math.PI * 2;
+        }
+
+
+        // input parameters:
+        double robotAngle = robotAngleFrom + (robotAngleTo - robotAngleFrom) * time; // 0 -> Math.PI * 2
+        double headAngleFromRobotAngle = headAngleFrom + (headAngleTo - headAngleFrom) * time; // (time * 2 % 1 - 0.5) * Math.PI; // -Math.PI / 2 -> Math.PI / 2
+        double robotLength = robotLengthFrom + (robotLengthTo - robotLengthFrom) * time; // time; // 0 -> 1
+        double armClosed = armClosedFrom + (armClosedTo - armClosedFrom) * time; // 0.0 closed -> 1.0 open
+
+        PacketDrawable element = new PacketDrawable(player.getOwnedUnit()); // new PacketDrawable();
+
 
         /*
             double len = 2 - 1 / (normAngle < Math.PI / 4 ? Math.cos(normAngle) : Math.sin(normAngle));
         */
-
-        // input parameters:
-        double robotAngle = Math.atan(1 - 9 * Math.floor(time * 4.99999) / 43); // 0 -> Math.PI * 2
-        double headAngleFromRobotAngle = - robotAngle; // (time * 2 % 1 - 0.5) * Math.PI; // -Math.PI / 2 -> Math.PI / 2
-        double robotLength = 1; // time; // 0 -> 1
-        double armClosed = 0; // 0.0 closed -> 1.0 open
-        PacketDrawable element = null ; // new PacketDrawable();
-
 
         // pre - constants
         double robotNormAngle = Math.asin(Math.abs(Math.sin(robotAngle * 2))) / 2;
@@ -175,7 +231,7 @@ public class RobotDrawable extends ChangeableDrawable {
         // armDefaultDistance + Math.sin(armFromAngle) * armFirstSize * 2 == elementSize
         // Math.asin((elementSize - armDefaultDistance) / armFirstSize / 2)
         double armFromAngle = Math.asin((elementSize - armDefaultDistance) / armFirstSize / 2);
-        double armToAngle = Math.PI / 2;
+        double armToAngle = Math.PI / 3;
 
         double armRealAngle = armFromAngle + (armToAngle - armFromAngle) * armClosed;
 
@@ -423,7 +479,7 @@ public class RobotDrawable extends ChangeableDrawable {
                         .makeColored(armWristColor)
                         .get())
 
-                .add(element == null ? null : Builder.make(element)
+                .add(Builder.make(element)
                         .makeShapeClipped(new Polygon(Arrays.asList(
                                 armMiddle2.add(headDir.multiple(armSecondSize)).add(headOthDir.multiple(armStartRadius)),
                                 armMiddle2.add(headDir.multiple(0)).add(headOthDir.multiple(armStartRadius)),
@@ -432,9 +488,5 @@ public class RobotDrawable extends ChangeableDrawable {
                         .get())
 
                 .get().forceDraw(canvas);
-
-        if(time >= 1.0) {
-            timer.getTimer().setStart();
-        }
     }
 }
