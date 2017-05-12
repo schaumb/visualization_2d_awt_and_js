@@ -5,9 +5,13 @@ import bxlx.graphics.Color;
 import bxlx.graphics.Font;
 import bxlx.graphics.IDrawable;
 import bxlx.graphics.combined.Builder;
+import bxlx.graphics.container.Splitter;
 import bxlx.system.ColorScheme;
 import bxlx.system.SystemSpecific;
 import bxlx.system.functional.ValueOrSupplier;
+import bxlx.system.input.Button;
+import bxlx.system.input.Slider;
+import bxlx.system.input.clickable.ColorSchemeClickable;
 
 /**
  * Created by qqcs on 5/8/17.
@@ -79,13 +83,24 @@ public class Game implements IGame {
         }
 
         try {
+            Slider timeSlider = new Slider(new Button<>(new ColorSchemeClickable(false, false), null, null, null), true, 0);
+            Slider speedSlider = new Slider(new Button<>(new ColorSchemeClickable(false, false), null, null, null), true, 0.5);
             RobotStates states = new RobotStates(s);
-            RobotStateTimer timer = new RobotStateTimer(states);
-            main = new Builder.ContainerBuilder<>(new StateDrawable(states, timer))
-                    .makeAspect(-1, -1, 0.5)
-                    .makeBackgrounded(ColorScheme.getCurrentColorScheme().backgroundColor)
-                    .add(timer)
-                    .get();
+
+            RobotStateTimer timer = new RobotStateTimer(states, timeSlider.getNow(), speedSlider.getNow());
+            main = new Splitter(false, r -> Math.min(r.getSize().getWidth() / 2.0, r.getSize().getHeight() - 40),
+                    new Builder.ContainerBuilder<>(new StateDrawable(states, timer))
+                            .makeAspect(-1, -1, 0.5)
+                            .makeBackgrounded(ColorScheme.getCurrentColorScheme().backgroundColor)
+                            .add(timer)
+                            .get(),
+                    new Splitter(false, 40, new Splitter(true, 0.5,
+                            Builder.make(timeSlider)
+                                .makeBackgrounded(ColorScheme.getCurrentColorScheme().backgroundColor)
+                                .get(),
+                            Builder.make(speedSlider)
+                                .makeBackgrounded(ColorScheme.getCurrentColorScheme().backgroundColor)
+                                .get()), null));
         } catch (Throwable throwable) {
             throwable.printStackTrace();
         }

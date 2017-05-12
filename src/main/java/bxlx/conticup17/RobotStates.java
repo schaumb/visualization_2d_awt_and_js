@@ -420,53 +420,61 @@ public class RobotStates {
         }
     }
 
-    private final Map<Integer, WholeState> timeStates = new HashMap<>();
+    private final Map<Long, WholeState> timeStates = new HashMap<>();
     private WholeState currentState;
-    private int time = 0;
+    private long time = 0;
+    private long startTime = -1000;
+    private long maxTime = 0;
 
     public boolean setNextState() {
-        int closestBigger = -1;
-        for(Map.Entry<Integer, WholeState> entry : timeStates.entrySet()) {
-            if(entry.getKey() > time && closestBigger < time) {
+        long closestBigger = -1;
+        for (Map.Entry<Long, WholeState> entry : timeStates.entrySet()) {
+            if (entry.getKey() > time && closestBigger < time) {
                 closestBigger = entry.getKey();
-            } else if(entry.getKey() > time && entry.getKey() < closestBigger) {
+            } else if (entry.getKey() > time && entry.getKey() < closestBigger) {
                 closestBigger = entry.getKey();
             }
         }
-        currentState = timeStates.get(time);
         time = closestBigger;
+        currentState = timeStates.get(time);
         return closestBigger != -1;
-
     }
 
     public WholeState getState() {
         if(currentState == null) {
-            int closestBigger = -1;
-            for (Map.Entry<Integer, WholeState> entry : timeStates.entrySet()) {
+            long closestBigger = -1;
+            for (Map.Entry<Long, WholeState> entry : timeStates.entrySet()) {
                 if (entry.getKey() >= time && closestBigger < time) {
                     closestBigger = entry.getKey();
                 } else if (entry.getKey() >= time && entry.getKey() < closestBigger) {
                     closestBigger = entry.getKey();
                 }
             }
+            time = closestBigger;
             return currentState = timeStates.get(closestBigger);
         } else {
             return currentState;
         }
     }
 
-    public int getTime() {
+    public long getTime() {
         return time;
     }
 
+    public double getTimePercent() {
+        return (time - startTime) / (double) (maxTime - startTime);
+    }
+
+    public void setTimePercent(double percent) {
+        currentState = null;
+        time = Math.round(percent * (maxTime - startTime) + startTime);
+    }
 
     public RobotStates(String s) {
         String[] lines = s.split("\n");
 
         WholeState state = new WholeState();
-        timeStates.put(0, state);
-
-        long startTime = -1000;
+        timeStates.put(0L, state);
 
         HashMap<String, String> incomings = new HashMap<>(); // Robot_id,Message_id -> time,command,oth
         for(String line : lines) {
@@ -489,6 +497,10 @@ public class RobotStates {
                     Long.parseLong(time[2].substring(time[2].indexOf(".") + 1));
             if(startTime == -1000) {
                 startTime = timestamp - 100;
+            }
+
+            if(timestamp < maxTime) {
+                SystemSpecific.get().log("WARNING - MALFORMED LOG - Back to time - " + timestamp + " " + maxTime + " aka " + infos[0]);
             }
 
             String player = infos[1];
@@ -553,6 +565,8 @@ public class RobotStates {
                     case "UNITS_ON_CONVEYOR":
                     case "UNITS_ON_STATION":
                     case "QTY_INFO":
+                        maxTime = Math.max(maxTime, (int) timestamp);
+
                         state = state.clone();
                         wasNew = true;
 
@@ -569,6 +583,7 @@ public class RobotStates {
                                 state.getUnits().put(from, robotPlayer.getOwnedUnit());
                                 robotPlayer.setPrevPutted(true);
                                 state.addChangedTo(robotPlayer.getOwnedUnit());
+                                robotPlayer.setTo(new Point(robotPlayer.getFrom().getX(), -1));
                             } else {
                                 state.getUnits().remove(from);
                             }
@@ -708,7 +723,7 @@ public class RobotStates {
                                 }
                             }
 
-                            for(Map.Entry<Integer, WholeState> stateEntry : timeStates.entrySet()) {
+                            for(Map.Entry<Long, WholeState> stateEntry : timeStates.entrySet()) {
                                 StationType stationType = StationType.CONVEYOR_IN;
                                 for(int j = 0; j < 5; ++j) {
                                     StationOutputType stationOutputType = stationType.getOutputs().get(j);
@@ -797,10 +812,10 @@ public class RobotStates {
                     }
                 }
                 if(wasNew) {
-                    while (timeStates.containsKey((int) timestamp)) {
+                    while (timeStates.containsKey(timestamp)) {
                         ++timestamp;
                     }
-                    timeStates.put((int) timestamp, state);
+                    timeStates.put(timestamp, state);
                 }
             }
 

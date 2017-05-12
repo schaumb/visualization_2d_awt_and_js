@@ -23,7 +23,7 @@ public class RobotDrawable extends ChangeableDrawable {
     private final RobotStates states;
     private final int playerNum;
     private final ChangeableValue<Double> timerFun;
-    private final ChangeableValue<Integer> mainTime;
+    private final ChangeableValue<Long> mainTime;
 
     public RobotDrawable(RobotStates states, RobotStateTimer timer, int playerNum) {
         this.states = states;
