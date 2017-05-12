@@ -21,6 +21,10 @@ public class PacketDrawable extends ChangeableDrawable {
         this.unit = new ChangeableValue<>(this, unit);
     }
 
+    public ChangeableValue<RobotStates.Unit> getUnit() {
+        return unit;
+    }
+
     @Override
     protected void forceRedraw(ICanvas canvas) {
         RobotStates.Unit myUnit = unit.get();

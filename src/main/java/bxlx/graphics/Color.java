@@ -65,6 +65,8 @@ public class Color {
     public final static Color PINK = new Color(255, 175, 175);
     public final static Color ORANGE = new Color(255, 200, 0);
 
+    public final static Color CONTI_COLOR = new Color(0xf4, 0x99, 0x18);
+
     public final static Color OPAQUE = new Color(0, 0, 0, 0);
 
     public Color getScale(Color to, double percent) {

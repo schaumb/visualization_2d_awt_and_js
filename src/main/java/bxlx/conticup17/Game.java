@@ -55,7 +55,7 @@ public class Game implements IGame {
 
         if(args == null || args.length < 2) {
             system.setArgs(args = new String[] {
-                "./", "log.log"
+                "./", "log2.log"
             });
         }
 

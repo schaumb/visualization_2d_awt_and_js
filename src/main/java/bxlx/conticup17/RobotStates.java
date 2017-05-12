@@ -24,11 +24,12 @@ public class RobotStates {
             this.type = type;
 
             switch (type) {
-                case "":
-                    typeColor = Color.BLUE.getScale(Color.WHITE, 0.5).getScale(Color.OPAQUE, 0.1);
+                case "ERC1":
+                    typeColor = Color.MAGENTA.getScale(Color.WHITE, 0.5).getScale(Color.OPAQUE, 0.1);
                     break;
                 default:
-                    typeColor = Color.MAGENTA.getScale(Color.WHITE, 0.5).getScale(Color.OPAQUE, 0.1);
+                    typeColor = Color.BLUE.getScale(Color.WHITE, 0.5).getScale(Color.OPAQUE, 0.1);
+                    break;
             }
         }
 
@@ -125,7 +126,7 @@ public class RobotStates {
         }
 
         public boolean isOutDrew() {
-            return false; // TODO this == CONVEYOR_IN || this == CONVEYOR_OUT;
+            return this == CONVEYOR_IN;
         }
 
         public String getAbbr() {
@@ -153,14 +154,14 @@ public class RobotStates {
     public final static class RobotPlayer implements Cloneable {
         private final int index;
         private boolean identified = false;
-        private String name = null;
+        private String name = "";
         private Unit ownedUnit = null;
         private Unit nextUnit = null;
         private String nextUnitFrom = null;
         private boolean prevPutted = false;
         private Point from;
         private Point to;
-        private String scores;
+        private String scores = "PASS: 0,0;FAIL: 0,0";
         private String errorMessage = null;
         private final List<StationType> stations;
 
@@ -289,9 +290,12 @@ public class RobotStates {
     public static final class WholeState implements Cloneable {
         private final RobotPlayer[] players;
         private final HashMap<String, Unit> units;
-        private String from;
-        private String to;
+        private final List<Unit> changedTo = new ArrayList<>();
+        private final List<Integer> changedFromPlayerIndex = new ArrayList<>();
+        private final List<Unit> changedFrom = new ArrayList<>();
+        private List<String[]> switchUnits = new ArrayList<>();
         private String command = "";
+        private boolean changedName = true;
 
         private WholeState(RobotPlayer[] players, HashMap<String, Unit> units) {
             this.players = new RobotPlayer[] {
@@ -309,16 +313,16 @@ public class RobotStates {
                             StationType.WORKSTATIONS[1],
                             StationType.WORKSTATIONS[2],
                             StationType.WORKSTATIONS[3],
-                            StationType.REWORK,
-                            StationType.CONVEYOR_OUT
+                            StationType.CONVEYOR_OUT,
+                            StationType.REWORK
                     )),
                     new RobotPlayer(1, new Point(1, -1), Arrays.asList(
                             StationType.WORKSTATIONS[1],
                             StationType.WORKSTATIONS[0],
                             null,
                             StationType.CONVEYOR_IN,
-                            StationType.CONVEYOR_OUT,
                             StationType.REWORK,
+                            StationType.CONVEYOR_OUT,
                             StationType.WORKSTATIONS[3],
                             StationType.WORKSTATIONS[2]
                     ))
@@ -330,7 +334,9 @@ public class RobotStates {
         @Override
         public WholeState clone() {
             WholeState result = new WholeState(players, units);
-            result.switchUnits(from, to);
+            for(String[] switchableUnits : switchUnits) {
+                result.switchUnits(switchableUnits[0], switchableUnits[1]);
+            }
             return result;
         }
 
@@ -351,20 +357,29 @@ public class RobotStates {
         }
 
         public void switchUnits(String unitKeyFrom, String unitKeyTo) {
-            from = unitKeyFrom;
-            to = unitKeyTo;
+            switchUnits.add(new String[]{unitKeyFrom, unitKeyTo});
+        }
+
+        public String hasSwitchUnit(Unit unit) {
+            for(String[] switchUnit : switchUnits) {
+                if(units.get(switchUnit[0]) == unit)
+                    return switchUnit[1];
+            }
+            return null;
         }
 
         public void makeSwitch() {
-            if(from == null || to == null)
-                return;
-
-            Unit fromUnit = units.get(from);
-            units.put(from, units.get(to));
-            units.put(to, fromUnit);
-
-            from = null;
-            to = null;
+            List<String[]> switchUnitNotReady = new ArrayList<>();
+            for(String[] switchableUnits : switchUnits) {
+                Unit toUnit = units.get(switchableUnits[0]);
+                if(toUnit == null) {
+                    switchUnitNotReady.add(switchableUnits);
+                } else {
+                    units.put(switchableUnits[0], units.get(switchableUnits[1]));
+                    units.put(switchableUnits[1], toUnit);
+                }
+            }
+            switchUnits = switchUnitNotReady;
         }
 
         public String getCommand() {
@@ -374,9 +389,39 @@ public class RobotStates {
         public void setCommand(String command) {
             this.command = command;
         }
+
+        public boolean isChangedName() {
+            return changedName;
+        }
+
+        public void setChangedName() {
+            this.changedName = true;
+        }
+
+        public void addChangedTo(Unit u) {
+            changedTo.add(u);
+        }
+
+        public void addChangedFrom(Unit u, int playerIndex) {
+            changedFrom.add(u);
+            changedFromPlayerIndex.add(playerIndex);
+        }
+
+        public List<Unit> getChangedTo() {
+            return changedTo;
+        }
+
+        public List<Unit> getChangedFrom() {
+            return changedFrom;
+        }
+
+        public List<Integer> getChangedFromPlayerIndex() {
+            return changedFromPlayerIndex;
+        }
     }
 
     private final Map<Integer, WholeState> timeStates = new HashMap<>();
+    private WholeState currentState;
     private int time = 0;
 
     public boolean setNextState() {
@@ -388,21 +433,26 @@ public class RobotStates {
                 closestBigger = entry.getKey();
             }
         }
-        WholeState state = timeStates.get(time);
+        currentState = timeStates.get(time);
         time = closestBigger;
         return closestBigger != -1;
+
     }
 
     public WholeState getState() {
-        int closestBigger = -1;
-        for(Map.Entry<Integer, WholeState> entry : timeStates.entrySet()) {
-            if(entry.getKey() >= time && closestBigger < time) {
-                closestBigger = entry.getKey();
-            } else if(entry.getKey() >= time && entry.getKey() < closestBigger) {
-                closestBigger = entry.getKey();
+        if(currentState == null) {
+            int closestBigger = -1;
+            for (Map.Entry<Integer, WholeState> entry : timeStates.entrySet()) {
+                if (entry.getKey() >= time && closestBigger < time) {
+                    closestBigger = entry.getKey();
+                } else if (entry.getKey() >= time && entry.getKey() < closestBigger) {
+                    closestBigger = entry.getKey();
+                }
             }
+            return currentState = timeStates.get(closestBigger);
+        } else {
+            return currentState;
         }
-        return timeStates.get(closestBigger);
     }
 
     public int getTime() {
@@ -518,6 +568,7 @@ public class RobotStates {
                             if(unit == null) {
                                 state.getUnits().put(from, robotPlayer.getOwnedUnit());
                                 robotPlayer.setPrevPutted(true);
+                                state.addChangedTo(robotPlayer.getOwnedUnit());
                             } else {
                                 state.getUnits().remove(from);
                             }
@@ -539,9 +590,12 @@ public class RobotStates {
                     switch (messagePieces[0]) {
                         case "IDENTIFICATION":
                             for(RobotPlayer robotPlayer : state.getPlayers()) {
-                                if(robotPlayer.getName() == null) {
+                                if(robotPlayer.getName().isEmpty()) {
                                     robotPlayer.setName(player);
                                     robotPlayer.setIdentified(true);
+                                    state.setChangedName();
+                                    break;
+                                } else if(robotPlayer.getName().equals(player)) {
                                     break;
                                 }
                             }
@@ -575,8 +629,11 @@ public class RobotStates {
 
                                         if(stationOutputType.getAbbr().equals(pos)) {
                                             String unitMapKey = stationType.getString(robotPlayer.getName()) + "-" + pos;
-                                            robotPlayer.setNextUnit(state.getUnits().get(unitMapKey), unitMapKey);
+                                            Unit unit = state.getUnits().get(unitMapKey);
+
+                                            robotPlayer.setNextUnit(unit, unitMapKey);
                                             //state.getUnits().remove(unitMapKey);
+                                            state.addChangedFrom(unit, i);
 
                                             robotPlayer.setTo(new Point(robotPlayer.getFrom().getX(), k));
                                             break;
@@ -650,6 +707,18 @@ public class RobotStates {
                                     break;
                                 }
                             }
+
+                            for(Map.Entry<Integer, WholeState> stateEntry : timeStates.entrySet()) {
+                                StationType stationType = StationType.CONVEYOR_IN;
+                                for(int j = 0; j < 5; ++j) {
+                                    StationOutputType stationOutputType = stationType.getOutputs().get(j);
+                                    String unitMapKey = stationType.getString("") + "-" + stationOutputType.getAbbr();
+
+                                    if(stateEntry.getValue().getUnits().get(unitMapKey) == null) {
+                                        stateEntry.getValue().getUnits().put(unitMapKey, state.getUnits().get(unitMapKey));
+                                    }
+                                }
+                            }
                             break;
                         case "UNITS_ON_STATION":
                             for(int i = 0; i < state.getPlayers().length; ++i) {
@@ -696,13 +765,13 @@ public class RobotStates {
                                     break;
                                 }
                             }
-
+                            // DIREKT NINCS BREAK
                         case "END_GAME":
                             String good;
                             String bad = "";
                             if(messagePieces[1].startsWith("PASS")) {
-                                good = messagePieces[1].substring(messagePieces[1].indexOf("=") + 1);
-                                bad = messagePieces[2].substring(messagePieces[2].indexOf("=") + 1);
+                                good = messagePieces[1].substring(messagePieces[1].indexOf("=") + 1) + ",0";
+                                bad = messagePieces[2].substring(messagePieces[2].indexOf("=") + 1) + ",0";
                             } else {
                                 good = messagePieces[1].substring(messagePieces[1].lastIndexOf("="));
                                 for(int i = 2; i < messagePieces.length - 1; ++i) {
@@ -720,7 +789,7 @@ public class RobotStates {
                             for(int i = 0; i < state.getPlayers().length; ++i) {
                                 RobotPlayer robotPlayer = state.getPlayers()[i];
                                 if (robotPlayer.getName().equals(player)) {
-                                    robotPlayer.setScores("PASS: " + good + ", FAIL: " + bad);
+                                    robotPlayer.setScores("PASS: " + good + ";FAIL: " + bad);
                                     break;
                                 }
                             }

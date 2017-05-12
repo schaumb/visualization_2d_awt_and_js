@@ -78,6 +78,7 @@ public class Include {
             "bxlx/general/IGame.js",
             "bxlx/conticup17/RobotStates.js",
             "bxlx/conticup17/RobotStateTimer.js",
+            "bxlx/conticup17/PlayerPointDrawable.js",
             "bxlx/conticup17/PacketDrawable.js",
             "bxlx/conticup17/RobotDrawable.js",
             "bxlx/conticup17/OneStateDrawable.js",
