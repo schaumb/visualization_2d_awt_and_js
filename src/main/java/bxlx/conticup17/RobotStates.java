@@ -7,6 +7,7 @@ import bxlx.system.SystemSpecific;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 
@@ -15,30 +16,37 @@ import java.util.Map;
  */
 public class RobotStates {
     public final static class Unit implements Cloneable {
-        private final String id;
-        private final String type;
-        private final Color typeColor;
+        private String id = "";
+        private Color typeColor = Color.CONTI_COLOR;
 
         public Unit(String id, String type) {
-            this.id = id;
-            this.type = type;
+            setId(id);
+            setType(type);
+        }
 
+        public Unit() {
+
+        }
+
+        public Unit setId(String id) {
+            this.id = id;
+            return this;
+        }
+
+        public Unit setType(String type) {
             switch (type) {
                 case "ERC1":
-                    typeColor = Color.MAGENTA.getScale(Color.WHITE, 0.5).getScale(Color.OPAQUE, 0.1);
+                    typeColor = Color.MAGENTA.getScale(Color.WHITE, 0.5);
                     break;
                 default:
-                    typeColor = Color.BLUE.getScale(Color.WHITE, 0.5).getScale(Color.OPAQUE, 0.1);
+                    typeColor = Color.BLUE.getScale(Color.WHITE, 0.5);
                     break;
             }
+            return this;
         }
 
         public String getId() {
             return id;
-        }
-
-        public String getType() {
-            return type;
         }
 
         public Color getTypeColor() {
@@ -49,7 +57,7 @@ public class RobotStates {
         public String toString() {
             return "Unit{" +
                     "id='" + id + '\'' +
-                    ", type='" + type + '\'' +
+                    ", typeColor='" + typeColor + '\'' +
                     '}';
         }
     }
@@ -65,8 +73,6 @@ public class RobotStates {
                 new StationOutputType("POS_3", Color.LIGHT_GRAY),
                 new StationOutputType("POS_4", Color.LIGHT_GRAY),
         };
-        public final static StationOutputType PASS_GRAY =
-                new StationOutputType("PASS", Color.LIGHT_GRAY);
 
         private final String abbr;
         private final Color color;
@@ -106,7 +112,7 @@ public class RobotStates {
                 new StationType(3, "S3", null, StationOutputType.PASS, StationOutputType.WORK, StationOutputType.FAIL, null),
                 new StationType(4, "S4", null, StationOutputType.PASS, StationOutputType.WORK, StationOutputType.FAIL, null)
         };
-        public final static StationType REWORK = new StationType(5, "RW", null, StationOutputType.PASS_GRAY, null, StationOutputType.WORK, null);
+        public final static StationType REWORK = new StationType(5, "RW", null, StationOutputType.PASS, null, StationOutputType.WORK, null);
         public final static StationType CONVEYOR_OUT = new StationType(6, "END", null, StationOutputType.PASS, null, StationOutputType.FAIL, null);
 
         private final List<StationOutputType> outputs = new ArrayList<>();
@@ -125,7 +131,7 @@ public class RobotStates {
             return outputs;
         }
 
-        public boolean isOutDrew() {
+        public boolean isCommon() {
             return this == CONVEYOR_IN;
         }
 
@@ -369,17 +375,13 @@ public class RobotStates {
         }
 
         public void makeSwitch() {
-            List<String[]> switchUnitNotReady = new ArrayList<>();
             for(String[] switchableUnits : switchUnits) {
-                Unit toUnit = units.get(switchableUnits[0]);
-                if(toUnit == null) {
-                    switchUnitNotReady.add(switchableUnits);
-                } else {
-                    units.put(switchableUnits[0], units.get(switchableUnits[1]));
-                    units.put(switchableUnits[1], toUnit);
+                if(units.get(switchableUnits[1]) == null) {
+                    units.put(switchableUnits[1], units.get(switchableUnits[0]));
+                    units.put(switchableUnits[0], null);
                 }
             }
-            switchUnits = switchUnitNotReady;
+            switchUnits.clear();
         }
 
         public String getCommand() {
@@ -477,14 +479,22 @@ public class RobotStates {
         timeStates.put(0L, state);
 
         HashMap<String, String> incomings = new HashMap<>(); // Robot_id,Message_id -> time,command,oth
-        for(String line : lines) {
+
+        HashSet<String> stationReady = new HashSet<>();
+        for(int l = 0; l < lines.length; ++l) {
+            String line = lines[l];
             if((line = line.trim()).isEmpty()) {
+                continue;
+            }
+            if(l > 0 && line.equals(lines[l-1])) {
                 continue;
             }
 
             if(line.indexOf("|") == -1 ||
                     line.indexOf("|", line.indexOf("|") + 1) == -1) {
-                SystemSpecific.get().log("WARNING - MALFORMED LOG - not enough separator " + line);
+                SystemSpecific.get().log("WARNING " + l + "  - MALFORMED LOG - not enough separator " + line);
+
+
 
                 continue;
 
@@ -508,7 +518,7 @@ public class RobotStates {
             }
 
             if(timestamp < maxTime) {
-                SystemSpecific.get().log("WARNING - MALFORMED LOG - Back to time - " + timestamp + " " + maxTime + " aka " + infos[0]);
+                SystemSpecific.get().log("WARNING " + l + "  - MALFORMED LOG - Back to time - " + timestamp + " " + maxTime + " aka " + infos[0]);
             }
 
             String player = infos[1];
@@ -521,7 +531,7 @@ public class RobotStates {
 
             if(message.charAt(0) == '<') {
                 if(message.length() < 10) {
-                    SystemSpecific.get().log("WARNING - MALFORMED LOG - message length < 10 " + message + " --- " + line);
+                    SystemSpecific.get().log("WARNING " + l + "  - MALFORMED LOG - message length < 10 " + message + " --- " + line);
                     continue;
 
                 }
@@ -548,13 +558,13 @@ public class RobotStates {
                 String prev = incomings.get(key);
 
                 if(prev != null) {
-                    SystemSpecific.get().log("WARNING - MALFORMED LOG - " + infos[0] + " MORE THAN 1 KEY AT THE SAME TIME OF: " + key + " IGNORING --- " + timestamp + "," + message + " --- " + prev);
+                    SystemSpecific.get().log("WARNING " + l + "  - MALFORMED LOG - " + infos[0] + " MORE THAN 1 KEY AT THE SAME TIME OF: " + key + " IGNORING --- " + timestamp + "," + message + " --- " + prev);
                 } else {
                     incomings.put(key, value);
                 }
             } else {
                 if(messagePieces.length < 2) {
-                    SystemSpecific.get().log("WARNING - MALFORMED LOG - NOT enough message pieces " + line);
+                    SystemSpecific.get().log("WARNING " + l + "  - MALFORMED LOG - NOT enough message pieces " + line);
                     continue;
                 }
 
@@ -570,7 +580,7 @@ public class RobotStates {
                     case "UNIT_INFO":
                     case "ERROR":
                         if(prev == null) {
-                            SystemSpecific.get().log("WARNING - MALFORMED LOG - " + infos[0] + " NO KEY FOR THIS MESSAGE: " + timestamp + "," + message + " IGNORING");
+                            SystemSpecific.get().log("WARNING " + l + "  - MALFORMED LOG - " + infos[0] + " NO KEY FOR THIS MESSAGE: " + timestamp + "," + message + " IGNORING");
                             continue;
                         }
                         break;
@@ -602,7 +612,7 @@ public class RobotStates {
                                 state.getUnits().put(from, robotPlayer.getOwnedUnit());
                                 robotPlayer.setPrevPutted(true);
                                 if(robotPlayer.getOwnedUnit() == null) {
-                                    SystemSpecific.get().log("WARNING - unit is empty on get!!!!");
+                                    SystemSpecific.get().log("WARNING " + l + "  - unit is empty on get!!!!");
                                 } else {
                                     state.addChangedTo(robotPlayer.getOwnedUnit());
                                 }
@@ -634,6 +644,19 @@ public class RobotStates {
                                     state.setChangedName();
                                     break;
                                 } else if(robotPlayer.getName().equals(player)) {
+                                    for(StationType stationType : robotPlayer.getStations()) {
+                                        if(stationType != null && !stationType.isCommon()) {
+                                            for(StationOutputType outType : stationType.getOutputs()) {
+                                                if(outType == null)
+                                                    continue;
+                                                String unitKeyTo = stationType.getString(player) + "-" + outType.getAbbr();
+                                                state.getUnits().remove(unitKeyTo);
+                                            }
+                                        }
+                                    }
+                                    robotPlayer.setScores("PASS: 0,0;FAIL: 0,0");
+                                    robotPlayer.setOwnedUnit(null);
+                                    robotPlayer.setNextUnit(null, null);
                                     break;
                                 }
                             }
@@ -669,14 +692,31 @@ public class RobotStates {
                                             String unitMapKey = stationType.getString(robotPlayer.getName()) + "-" + pos;
                                             Unit unit = state.getUnits().get(unitMapKey);
 
-                                            robotPlayer.setNextUnit(unit, unitMapKey);
                                             //state.getUnits().remove(unitMapKey);
                                             if(unit == null) {
-                                                SystemSpecific.get().log("WARNING - unit is empty on pick!!!!");
-                                            } else {
-                                                state.addChangedFrom(unit, i);
-                                                robotPlayer.setTo(new Point(robotPlayer.getFrom().getX(), k));
+                                                SystemSpecific.get().log("WARNING " + l + "  - unit is empty on pick!!!!" + prev + " " + pos + " " + unitMapKey + " && " + line + " possible before WARNING " + l + " s");
+
+                                                if(stationType != StationType.CONVEYOR_IN) {
+                                                    SystemSpecific.get().log("ERROR " + l + " not conveyor, cannot what to do this time");
+                                                    break;
+                                                }
+                                                unit = new Unit();
+                                                state.getUnits().put(unitMapKey, unit);
+
+                                                for(Map.Entry<Long, WholeState> stateEntry : timeStates.entrySet()) {
+                                                    StationType stationTypeX = StationType.CONVEYOR_IN;
+                                                    StationOutputType stationOutputTypeX = stationTypeX.getOutputs().get(
+                                                            Integer.parseInt(pos.substring(4)));
+                                                    String unitMapKeyX = stationTypeX.getString("") + "-" + stationOutputTypeX.getAbbr();
+
+                                                    if(null == stateEntry.getValue().getUnits().get(unitMapKeyX)) {
+                                                        stateEntry.getValue().getUnits().put(unitMapKeyX, unit);
+                                                    }
+                                                }
                                             }
+                                            robotPlayer.setNextUnit(unit, unitMapKey);
+                                            state.addChangedFrom(unit, i);
+                                            robotPlayer.setTo(new Point(robotPlayer.getFrom().getX(), k));
 
                                             break;
                                         }
@@ -739,11 +779,12 @@ public class RobotStates {
                                     for(int j = 0; j < 5; ++j) {
                                         StationOutputType stationOutputType = stationType.getOutputs().get(j);
                                         String unitMapKey = stationType.getString(robotPlayer.getName()) + "-" + stationOutputType.getAbbr();
-
-                                        if(state.getUnits().get(unitMapKey) == null && !tokens[j * 2 + 3].trim().isEmpty()) {
+                                        Unit beforeUnit = state.getUnits().get(unitMapKey);
+                                        if(!tokens[j * 2 + 3].trim().isEmpty()) {
                                             String[] unitStrings = tokens[j * 2 + 3].split(";");
-
-                                            state.getUnits().put(unitMapKey, new Unit(unitStrings[0], unitStrings.length > 1 ? unitStrings[1] : "-"));
+                                            if(beforeUnit == null || !beforeUnit.getId().equals(unitStrings[0])) {
+                                                state.getUnits().put(unitMapKey, new Unit(unitStrings[0], unitStrings.length > 1 ? unitStrings[1] : "-"));
+                                            }
                                         }
                                     }
                                     break;
@@ -767,22 +808,67 @@ public class RobotStates {
                                 RobotPlayer robotPlayer = state.getPlayers()[i];
                                 if (player.equals(robotPlayer.getName())) {
                                     robotPlayer.setFrom(robotPlayer.getTo());
+
+                                    StationType stationType = robotPlayer.getStations().get((int) robotPlayer.getFrom().getX());
+                                    String[] tokens = messagePieces[1].split("\"");
+
+                                    if(tokens.length != 9) {
+                                        SystemSpecific.get().log("ERROR " + l + " - not enough token for units on station in line --- " + line);
+                                        break;
+                                    }
+                                    for(int j = 1; j < 4; ++j) {
+                                        String stationOutput = tokens[j * 2];
+                                        stationOutput = stationOutput.substring(stationOutput.indexOf('_') + 1, stationOutput.indexOf('='));
+                                        String value = tokens[j * 2 + 1].trim();
+
+                                        if(value.isEmpty()) {
+                                            continue;
+                                        }
+
+                                        for(StationOutputType stationOutputType : stationType.getOutputs()) {
+                                            if(stationOutputType != null &&
+                                                    stationOutputType.getAbbr().equals(stationOutput.toUpperCase())) {
+                                                String unitMapKey = stationType.getString(robotPlayer.getName()) + "-" +
+                                                        stationOutputType.getAbbr();
+                                                Unit beforeUnit = state.getUnits().get(unitMapKey);
+
+                                                if(beforeUnit == null) {
+                                                    SystemSpecific.get().log("WARNING " + l + "  - NOT KNOWN UNITS ON STATION --- " + line + " --- ");
+                                                    for(Map.Entry<String, Unit> entry : state.getUnits().entrySet()) {
+
+                                                        if(entry.getValue().getId().equals(value)) {
+                                                            SystemSpecific.get().log("unit is here : " + entry.getKey());
+                                                            break;
+                                                        }
+                                                    }
+                                                    // state.getUnits().put(unitMapKey, new Unit().setId(value));
+                                                } else if(beforeUnit.getId().isEmpty()) {
+                                                    beforeUnit.setId(value);
+                                                } else if(!beforeUnit.getId().equals(value)) {
+                                                    SystemSpecific.get().log("ERROR " + l + " - NOT THE SAME UNIT ON STATION!!! - " + line + " AND " + beforeUnit);
+                                                    beforeUnit.setId(value);
+                                                }
+
+                                                break;
+                                            }
+                                        }
+                                    }
+
                                     break;
                                 }
                             }
                             // ...
                             break;
                         case "STATION_READY":
-                            String result;
-                            String station;
-                            if(messagePieces.length > 3) {
-                                result = messagePieces[3].toUpperCase();
-                                station = messagePieces[1];
-                            } else {
-                                String[] quoted = messagePieces[1].split("\"");
-                                result = quoted[5];
-                                station = quoted[1];
+                            if(stationReady.contains(message)) {
+                                break;
                             }
+                            stationReady.add(message);
+
+                            String result = messagePieces[3].toUpperCase();
+                            String station = messagePieces[1];
+                            String id = messagePieces[2];
+
                             for(int i = 0; i < state.getPlayers().length; ++i) {
                                 RobotPlayer robotPlayer = state.getPlayers()[i];
                                 if (robotPlayer.getName().equals(player)) {
@@ -791,6 +877,19 @@ public class RobotStates {
                                         if(stationType != null && stationType.getAbbr().equals(station)) {
                                             String unitKeyFrom = stationType.getString(player) + "-WORK";
                                             String unitKeyTo = stationType.getString(player) + "-" + result;
+
+                                            Unit fromUnit = state.getUnits().get(unitKeyFrom);
+
+                                            if(fromUnit == null) {
+                                                SystemSpecific.get().log("WARNING " + l + "  - Nothing on WORK station is ready :( ");
+
+                                            } else if(fromUnit.getId().isEmpty()) {
+                                                fromUnit.setId(id);
+                                            } else if(!fromUnit.getId().equals(id)) {
+                                                SystemSpecific.get().log("WARNING " + l + "  - NOT THE SAME UNIT AS WORK STATION!!!");
+                                                break;
+                                            }
+
                                             state.switchUnits(unitKeyFrom, unitKeyTo);
                                             break;
                                         }
@@ -799,15 +898,7 @@ public class RobotStates {
                                 }
                             }
                             break;
-                        case "QTY_INFO":
-                            for(int i = 0; i < state.getPlayers().length; ++i) {
-                                RobotPlayer robotPlayer = state.getPlayers()[i];
-                                if (player.equals(robotPlayer.getName())) {
-                                    robotPlayer.setFrom(robotPlayer.getTo());
-                                    break;
-                                }
-                            }
-                            // DIREKT NINCS BREAK
+                        case "QTY_INFO": // DIREKT NINCS BREAK
                         case "END_GAME":
                             String good;
                             String bad = "";
@@ -819,7 +910,7 @@ public class RobotStates {
                                 for(int i = 2; i < messagePieces.length - 1; ++i) {
                                     if(messagePieces[i].indexOf("=") == -1 ||
                                             messagePieces[i].indexOf("<") == -1) {
-                                        SystemSpecific.get().log("WARNING - MALFORMED LOG - messagePieces not contains = or < " + messagePieces[i]);
+                                        SystemSpecific.get().log("WARNING " + l + "  - MALFORMED LOG - messagePieces not contains = or < " + messagePieces[i]);
                                         continue;
                                     }
 
@@ -881,13 +972,13 @@ public class RobotStates {
 
         state = state.clone();
 
-        state.getPlayers()[winnerIndex].setTo(new Point(0, -1));
+        state.getPlayers()[winnerIndex].setTo(new Point(winnerIndex == 0 ? 0 : 3, -1));
         timeStates.put(maxTime = maxTime + (maxTime - startTime) / timeStates.size(), state);
 
         state = state.clone();
 
         state.getPlayers()[winnerIndex].setFrom(state.getPlayers()[winnerIndex].getTo());
-        state.getPlayers()[winnerIndex].setTo(new Point(7, -1));
+        state.getPlayers()[winnerIndex].setTo(new Point(winnerIndex == 0 ? 7 : 4, -1));
         timeStates.put(maxTime = maxTime + (maxTime - startTime) / timeStates.size(), state);
 
     }

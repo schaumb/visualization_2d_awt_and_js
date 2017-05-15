@@ -39,14 +39,14 @@ public class StationDrawable extends Container<IDrawable> {
         }
 
         add(Builder.container()
-                .add(station.isOutDrew() ? null : Builder.background().makeColored(Color.WHITE).makeMargin(0.1/5)
+                .add(station.isCommon() ? null : Builder.background().makeColored(Color.WHITE).makeMargin(0.1/5)
                         .makeBackgrounded(Color.DARK_GRAY).makeMargin(0.1).get())
                 .add(Builder.make(outerContainer)
                         .makeMargin(
                                 x ? 0.1 : 0,
                                 x ? 0 : 0.1
                         ).get())
-                .add(station.isOutDrew() ? null : Builder.text(station.getAbbr(), "END", 0)
+                .add(station.isCommon() ? null : Builder.text(station.getAbbr(), "END", 0)
                         .makeColored(ColorScheme.getCurrentColorScheme().textColor)
                         .makeAspect(0, 0, 1)
                         .makeMargin(0.3).get())
@@ -101,7 +101,7 @@ public class StationDrawable extends Container<IDrawable> {
                         Point toCenter = toPlace.getCenter();
                         Point center = r.getScaled(toPlace.getSize().getShorterDimension() / r.getSize().getShorterDimension()).getCenter();
 
-                        if(station.isOutDrew()) {
+                        if(station.isCommon()) {
                             center = new Point(playerNum == 0 ? r.getEnd().getX() : r.getStart().getX(), toCenter.getY());
                         }
 
@@ -121,23 +121,28 @@ public class StationDrawable extends Container<IDrawable> {
                                 }
                             }
 
+                            if (states.getState().getChangedTo().contains(unit)) {
+                                from = toCenter;
+                            }
+
                             String toUnit = states.getState().hasSwitchUnit(unit);
                             if(toUnit != null) {
                                 String state = toUnit.substring(toUnit.lastIndexOf("-") + 1);
-                                int stateIndex = 0;
-                                for(int st = 0; st < outputSize; ++st) {
+                                RobotStates.Unit destinationUnit = states.getState().getUnits().get(station.getString(
+                                        states.getState().getPlayers()[playerNum].getName()) + "-" + state);
+
+                                for (int st = 0; st < outputSize; ++st) {
                                     RobotStates.StationOutputType statOut = station.getOutputs().get(st);
 
-                                    if(statOut != null && statOut.getAbbr().equals(state)) {
-                                        stateIndex = st;
+                                    if (statOut != null && statOut.getAbbr().equals(state)) {
+                                        to = lastRectangles[st].getCenter();
                                         break;
                                     }
                                 }
-                                to = lastRectangles[stateIndex].getCenter();
-                            }
-
-                            if (states.getState().getChangedTo().contains(unit)) {
-                                from = toCenter;
+                                if(destinationUnit != null) {
+                                    to = from.add(to).multiple(0.5);
+                                    nowTime = 1 - Math.abs(nowTime * 2 - 1);
+                                }
                             }
                         } else {
                             from = to = toCenter;

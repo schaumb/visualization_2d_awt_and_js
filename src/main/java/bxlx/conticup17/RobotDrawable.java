@@ -97,8 +97,6 @@ public class RobotDrawable extends ChangeableDrawable {
         double robotLength = robotLengthFrom + (robotLengthTo - robotLengthFrom) * time; // time; // 0 -> 1
         double armClosed = armClosedFrom + (armClosedTo - armClosedFrom) * time; // 0.0 closed -> 1.0 open
 
-        PacketDrawable element = new PacketDrawable(player.getOwnedUnit()); // new PacketDrawable();
-
 
         /*
             double len = 2 - 1 / (normAngle < Math.PI / 4 ? Math.cos(normAngle) : Math.sin(normAngle));
@@ -118,6 +116,8 @@ public class RobotDrawable extends ChangeableDrawable {
         double elementSize = maxSize * (1 - baseMultiplier) * 0.5 * 0.9 * 0.2 * 0.8 * 0.9;
         Color marginColor = Color.BLACK;
         Color robotColor = Color.YELLOW;
+
+        PacketDrawable element = new PacketDrawable(player.getOwnedUnit(), elementSize); // new PacketDrawable();
 
         double headAngle = robotAngle + headAngleFromRobotAngle;
         Point headDir = Direction.fromRadian(headAngle).getVector();
