@@ -7,6 +7,7 @@ import bxlx.graphics.combined.Builder;
 import bxlx.graphics.container.Container;
 import bxlx.system.SystemSpecific;
 
+import java.util.HashMap;
 import java.util.function.Supplier;
 
 /**
@@ -25,9 +26,21 @@ public class PlayerPointDrawable extends Container<IDrawable> {
     private String cachedName;
     private String cachedScores;
 
+    private HashMap<String, String> players = new HashMap<>();
 
     public PlayerPointDrawable(RobotStates states, int playerNum) {
         super();
+        players.put("U4IvbV2plbAO","c_sharks");
+        players.put("RHyyXSr2OMN5","mighty_ducks");
+        players.put("am17G2JGIg19","anip");
+        players.put("gDa16nsvVaAT","git_hap");
+        players.put("EEOUw1OiProl","digital_hammer");
+        players.put("arKcBTTB1rch","beni_es_a_villanyosok");
+        players.put("xuwB9QDIVLsK","utolso");
+        players.put("Ag6vCNFTJu9A","petya_es_a_tobbiek");
+        players.put("HyMLvvk1sIKV","omroff");
+        players.put("BVe1wrvIuzvW","scaliermaelstrom");
+
         this.states = states;
         this.playerNum = playerNum;
 
@@ -38,23 +51,14 @@ public class PlayerPointDrawable extends Container<IDrawable> {
         add(Builder.background().makeColored(Color.WHITE).makeMargin(0.1/5)
                 .makeBackgrounded(Color.CONTI_COLOR).makeMargin(0.1).get());
 
-        Supplier<String> maxNameWidth = () -> {
-            if(states.getState() == null || !states.getState().isChangedName())
-                return cachedStringLength;
+        Supplier<String> maxNameWidth = () -> "beni_es_a_villanyosok";
 
-            RobotStates.RobotPlayer[] players = states.getState().getPlayers();
-            String longestTeamName = players[0].getName();
-            for (int i = 1; i < players.length; ++i) {
-                if (SystemSpecific.get().stringLength(null, players[i].getName()) >
-                        SystemSpecific.get().stringLength(null, longestTeamName)) {
-                    longestTeamName = players[i].getName();
-                }
-            }
-            return cachedStringLength = longestTeamName;
-        };
+        if(players.get(states.getState().getPlayers()[playerNum].getName()) == null) {
+            SystemSpecific.get().log("NO PLAYER HASH " + states.getState().getPlayers()[playerNum].getName());
+        }
 
         add(Builder.container(false)
-                .add(Builder.text(() -> states.getState() == null ? cachedName : (cachedName = (cachedIsIdentified = states.getState().getPlayers()[playerNum].isIdentified()) ? states.getState().getPlayers()[playerNum].getName() : "NOT CONN"), maxNameWidth, -1)
+                .add(Builder.text(() -> states.getState() == null ? cachedName : (cachedName = (cachedIsIdentified = states.getState().getPlayers()[playerNum].isIdentified()) ? players.get(states.getState().getPlayers()[playerNum].getName()) : "NOT CONN"), maxNameWidth, -1)
                         .makeColored(() -> (states.getState() == null ? cachedIsIdentified : (cachedIsIdentified = states.getState().getPlayers()[playerNum].isIdentified())) ? Color.CONTI_COLOR : Color.RED )
                         .makeMargin(0.1).get())
                 .add(Builder.container(true)

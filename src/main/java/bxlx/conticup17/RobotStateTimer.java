@@ -16,7 +16,7 @@ import java.util.function.Supplier;
  */
 public class RobotStateTimer extends ChangeableDrawable {
     private final RobotStates states;
-    private Timer timer = new ChangeableTimer(this, new Timer(2000)).getTimer();
+    private Timer timer = new ChangeableTimer(this, new Timer(1500)).getTimer();
     private final ChangeableDrawable.ChangeableValue<Double> now;
     private final ChangeableDrawable.ChangeableValue<Double> speedSlider;
     public RobotStateTimer(RobotStates states, ChangeableValue<Double> now, ChangeableValue<Double> speedSlider) {
@@ -30,7 +30,7 @@ public class RobotStateTimer extends ChangeableDrawable {
     protected void forceRedraw(ICanvas canvas) {
         if(speedSlider.isChanged()) {
             double percent = timer.percent();
-            timer.setLength(Math.round(speedSlider.get() * 3000 + 500));
+            timer.setLength(Math.round(speedSlider.get() * 3000));
             timer.setPercent(percent);
         }
 

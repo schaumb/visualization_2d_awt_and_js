@@ -482,9 +482,17 @@ public class RobotStates {
                 continue;
             }
 
+            if(line.indexOf("|") == -1 ||
+                    line.indexOf("|", line.indexOf("|") + 1) == -1) {
+                SystemSpecific.get().log("WARNING - MALFORMED LOG - not enough separator " + line);
+
+                continue;
+
+            }
             String[] infos = new String[] {
                     line.substring(0, line.indexOf("|")),
-                    line.substring(line.indexOf("|") + 1, line.lastIndexOf("|")),
+                    line.substring(line.indexOf("|") + 1, line.indexOf("|", line.indexOf("|") + 1)),
+                    line.substring(line.indexOf("|", line.indexOf("|") + 1) + 1, line.lastIndexOf("|")),
                     line.substring(line.lastIndexOf("|") + 1)
             };
 
@@ -504,13 +512,19 @@ public class RobotStates {
             }
 
             String player = infos[1];
-            String message = infos[2];
+            String incomeMessage = infos[2];
+            String message = infos[3];
 
-            boolean incoming = message.contains("INCOMING");
+            boolean incoming = incomeMessage.contains("INCOMING");
 
-            message = message.substring(incoming ? 11 : 12, message.length() - 1);
+            message = message.substring(1, message.length() - 1);
 
             if(message.charAt(0) == '<') {
+                if(message.length() < 10) {
+                    SystemSpecific.get().log("WARNING - MALFORMED LOG - message length < 10 " + message + " --- " + line);
+                    continue;
+
+                }
                 message = message.substring(5, message.length() - 5);
             } else {
                 for(int i = 0; i < message.length(); ++i) {
@@ -539,6 +553,11 @@ public class RobotStates {
                     incomings.put(key, value);
                 }
             } else {
+                if(messagePieces.length < 2) {
+                    SystemSpecific.get().log("WARNING - MALFORMED LOG - NOT enough message pieces " + line);
+                    continue;
+                }
+
                 String key = player + "," + messagePieces[1];
 
                 String prev = incomings.get(key);
@@ -582,7 +601,11 @@ public class RobotStates {
                             if(unit == null) {
                                 state.getUnits().put(from, robotPlayer.getOwnedUnit());
                                 robotPlayer.setPrevPutted(true);
-                                state.addChangedTo(robotPlayer.getOwnedUnit());
+                                if(robotPlayer.getOwnedUnit() == null) {
+                                    SystemSpecific.get().log("WARNING - unit is empty on get!!!!");
+                                } else {
+                                    state.addChangedTo(robotPlayer.getOwnedUnit());
+                                }
                                 robotPlayer.setTo(new Point(robotPlayer.getFrom().getX(), -1));
                             } else {
                                 state.getUnits().remove(from);
@@ -648,9 +671,13 @@ public class RobotStates {
 
                                             robotPlayer.setNextUnit(unit, unitMapKey);
                                             //state.getUnits().remove(unitMapKey);
-                                            state.addChangedFrom(unit, i);
+                                            if(unit == null) {
+                                                SystemSpecific.get().log("WARNING - unit is empty on pick!!!!");
+                                            } else {
+                                                state.addChangedFrom(unit, i);
+                                                robotPlayer.setTo(new Point(robotPlayer.getFrom().getX(), k));
+                                            }
 
-                                            robotPlayer.setTo(new Point(robotPlayer.getFrom().getX(), k));
                                             break;
                                         }
                                     }
@@ -713,7 +740,7 @@ public class RobotStates {
                                         StationOutputType stationOutputType = stationType.getOutputs().get(j);
                                         String unitMapKey = stationType.getString(robotPlayer.getName()) + "-" + stationOutputType.getAbbr();
 
-                                        if(state.getUnits().get(unitMapKey) == null) {
+                                        if(state.getUnits().get(unitMapKey) == null && !tokens[j * 2 + 3].trim().isEmpty()) {
                                             String[] unitStrings = tokens[j * 2 + 3].split(";");
 
                                             state.getUnits().put(unitMapKey, new Unit(unitStrings[0], unitStrings.length > 1 ? unitStrings[1] : "-"));
@@ -788,17 +815,23 @@ public class RobotStates {
                                 good = messagePieces[1].substring(messagePieces[1].indexOf("=") + 1) + ",0";
                                 bad = messagePieces[2].substring(messagePieces[2].indexOf("=") + 1) + ",0";
                             } else {
-                                good = messagePieces[1].substring(messagePieces[1].lastIndexOf("="));
+                                good = messagePieces[1].substring(messagePieces[1].lastIndexOf("=") + 1);
                                 for(int i = 2; i < messagePieces.length - 1; ++i) {
-                                    good += "," + messagePieces[i].substring(messagePieces[1].lastIndexOf("="));
+                                    if(messagePieces[i].indexOf("=") == -1 ||
+                                            messagePieces[i].indexOf("<") == -1) {
+                                        SystemSpecific.get().log("WARNING - MALFORMED LOG - messagePieces not contains = or < " + messagePieces[i]);
+                                        continue;
+                                    }
+
+                                    good += "," + messagePieces[i].substring(messagePieces[i].lastIndexOf("=") + 1);
                                     bad += messagePieces[i].substring(
                                             messagePieces[i].indexOf("=") + 1,
-                                            messagePieces[i].indexOf(" ")) + ",";
+                                            messagePieces[i].indexOf("<")) + ",";
 
                                 }
                                 bad += messagePieces[messagePieces.length - 1].substring(
                                         messagePieces[messagePieces.length - 1].indexOf("=") + 1,
-                                        messagePieces[messagePieces.length - 1].indexOf(" "));
+                                        messagePieces[messagePieces.length - 1].indexOf("<"));
                             }
 
                             for(int i = 0; i < state.getPlayers().length; ++i) {
@@ -820,5 +853,42 @@ public class RobotStates {
             }
 
         }
+
+        RobotPlayer player1 = state.getPlayers()[0];
+        String[] player1Score = player1.getScores().split(";");
+
+        if (player1Score[0].substring(player1Score[0].indexOf(" ") + 1, player1Score[0].indexOf(",")).charAt(0) == '=') {
+            SystemSpecific.get().log("Final score contains = " + player1Score[0].substring(player1Score[0].indexOf(" ") + 1, player1Score[0].indexOf(",")));
+            return;
+        }
+
+
+        int player1FinalScore =  Integer.parseInt(player1Score[0].substring(player1Score[0].indexOf(" ") + 1, player1Score[0].indexOf(","))) +
+                Integer.parseInt(player1Score[1].substring(player1Score[1].indexOf(" ") + 1, player1Score[1].indexOf(",")));
+
+        RobotPlayer player2 = state.getPlayers()[1];
+        String[] player2Score = player2.getScores().split(";");
+
+        if (player2Score[0].substring(player2Score[0].indexOf(" ") + 1, player2Score[0].indexOf(",")).charAt(0) == '=') {
+            SystemSpecific.get().log("Final score contains = " + player2Score[0].substring(player2Score[0].indexOf(" ") + 1, player2Score[0].indexOf(",")));
+            return;
+        }
+
+        int player2FinalScore =  Integer.parseInt(player2Score[0].substring(player2Score[0].indexOf(" ") + 1, player2Score[0].indexOf(","))) +
+                Integer.parseInt(player2Score[1].substring(player2Score[1].indexOf(" ") + 1, player2Score[1].indexOf(",")));
+
+        int winnerIndex = player1FinalScore > player2FinalScore ? 0 : 1;
+
+        state = state.clone();
+
+        state.getPlayers()[winnerIndex].setTo(new Point(0, -1));
+        timeStates.put(maxTime = maxTime + (maxTime - startTime) / timeStates.size(), state);
+
+        state = state.clone();
+
+        state.getPlayers()[winnerIndex].setFrom(state.getPlayers()[winnerIndex].getTo());
+        state.getPlayers()[winnerIndex].setTo(new Point(7, -1));
+        timeStates.put(maxTime = maxTime + (maxTime - startTime) / timeStates.size(), state);
+
     }
 }
