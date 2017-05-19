@@ -68,7 +68,7 @@ public class StationDrawable extends Container<IDrawable> {
                 if(states.getState() == null)
                     return null;
                 RobotStates.StationType stationX = states.getState().getPlayers()[playerNum].getStations().get(stationNum);
-                RobotStates.Unit unit = states.getState().getUnits().get(stationX.getString(
+                RobotStates.Unit unit = states.getState().getUnit(stationX.getString(
                         states.getState().getPlayers()[playerNum].getName()
                 ) + "-" + outp.getAbbr());
 
@@ -128,7 +128,7 @@ public class StationDrawable extends Container<IDrawable> {
                             String toUnit = states.getState().hasSwitchUnit(unit);
                             if(toUnit != null) {
                                 String state = toUnit.substring(toUnit.lastIndexOf("-") + 1);
-                                RobotStates.Unit destinationUnit = states.getState().getUnits().get(station.getString(
+                                RobotStates.Unit destinationUnit = states.getState().getUnit(station.getString(
                                         states.getState().getPlayers()[playerNum].getName()) + "-" + state);
 
                                 for (int st = 0; st < outputSize; ++st) {
