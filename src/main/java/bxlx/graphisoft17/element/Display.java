@@ -46,8 +46,9 @@ public class Display {
     }
 
     public void addMyselfTo(Container<DrawImage> result) {
-        result.add(Parameters.getMonitor(isOn()));
-
+        if(isActive()) {
+            result.add(Parameters.getMonitor(isOn()));
+        }
         for(Princess princess : princesses) {
             result.add(Parameters.getPrincessButton(princess.getIndex()));
         }

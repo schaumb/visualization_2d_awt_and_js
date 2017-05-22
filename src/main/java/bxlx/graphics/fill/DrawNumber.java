@@ -16,7 +16,7 @@ public class DrawNumber extends Text {
     }
 
     public DrawNumber(int number, String suffix, String referenceText, int align) {
-        super(null, referenceText, align);
+        super((String) null, referenceText, align);
         this.number = new ChangeableValue<>(this, number);
         this.suffix = new ChangeableValue<>(this, suffix);
         getText().setSupplier(() -> this.number.get() + this.suffix.get());

@@ -358,7 +358,7 @@ public class StateHolder {
                 .set((int) position.getX(), field);
     }
 
-    private int getTick() {
+    public int getTick() {
         return (stateIndex - 1) / princesses.size();
     }
 
@@ -597,6 +597,10 @@ public class StateHolder {
         }
 
         return point;
+    }
+
+    public HashMap<String, int[]> getAllPoints() {
+        return points;
     }
 
     public boolean isTest() {
