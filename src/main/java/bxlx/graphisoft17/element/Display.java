@@ -1,8 +1,8 @@
 package bxlx.graphisoft17.element;
 
+import bxlx.graphics.IDrawable;
 import bxlx.graphics.Point;
 import bxlx.graphics.container.Container;
-import bxlx.graphics.fill.DrawImage;
 import bxlx.graphisoft17.Parameters;
 
 import java.util.ArrayList;
@@ -45,7 +45,7 @@ public class Display {
         return active;
     }
 
-    public void addMyselfTo(Container<DrawImage> result) {
+    public void addMyselfTo(Container<IDrawable> result) {
         if(isActive()) {
             result.add(Parameters.getMonitor(isOn()));
         }

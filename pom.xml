@@ -23,7 +23,6 @@
                 <configuration>
                     <excludes>
                         <exclude>**/awt/**</exclude>
-                        <exclude>**/graphisoft17/**</exclude>
                     </excludes>
                 </configuration>
                 <executions>

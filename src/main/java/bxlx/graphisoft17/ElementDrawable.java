@@ -2,10 +2,10 @@ package bxlx.graphisoft17;
 
 import bxlx.graphics.ChangeableDrawable;
 import bxlx.graphics.ICanvas;
+import bxlx.graphics.IDrawable;
 import bxlx.graphics.Point;
 import bxlx.graphics.Size;
 import bxlx.graphics.container.Container;
-import bxlx.graphics.fill.DrawImage;
 import bxlx.graphics.shapes.Rectangle;
 import bxlx.graphisoft17.element.Display;
 import bxlx.graphisoft17.element.Field;
@@ -68,7 +68,7 @@ public class ElementDrawable extends ChangeableDrawable {
             canvas.clip(clip);
             canvas.fakeClip(fake.apply(clip));
 
-            field.drawable().forceDraw(canvas);
+            field.drawable(stateHolder.getPlayerWhosTurn()).forceDraw(canvas);
 
             canvas.fakeRestore();
             canvas.restore();
@@ -91,7 +91,7 @@ public class ElementDrawable extends ChangeableDrawable {
                 canvas.clip(clip);
                 canvas.fakeClip(fake.apply(clip));
 
-                field.drawable().forceDraw(canvas);
+                field.drawable(stateHolder.getPlayerWhosTurn()).forceDraw(canvas);
 
                 canvas.fakeRestore();
                 canvas.restore();
@@ -145,15 +145,9 @@ public class ElementDrawable extends ChangeableDrawable {
 
             canvas.clip(clip);
 
-            canvas.clip(clip.getScaled(0.7));
-
-            Parameters.getPrincessMoveField(princessIndex).forceDraw(canvas);
-
-            canvas.restore();
-
             canvas.fakeClip(fake.apply(clip));
 
-            Container<DrawImage> images = new Container<>();
+            Container<IDrawable> images = new Container<>();
             display.addMyselfTo(images);
 
             images.forceDraw(canvas);

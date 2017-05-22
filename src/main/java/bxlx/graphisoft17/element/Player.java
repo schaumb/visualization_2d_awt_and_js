@@ -11,6 +11,7 @@ public class Player {
     private final String name;
     private final int index;
     private Field field;
+    private Field fieldTo;
     private int score = 0;
     private String message;
     private List<Display> displays;
@@ -75,6 +76,10 @@ public class Player {
         return null;
     }
 
+    public void setExtraTo(Field field) {
+        fieldTo = field;
+    }
+
     public static class PushMessage {
         private final boolean column;
         private final boolean positive;
@@ -115,6 +120,10 @@ public class Player {
 
     public Field getField() {
         return field;
+    }
+
+    public Field getFieldTo() {
+        return fieldTo;
     }
 
     public String getMessage() {

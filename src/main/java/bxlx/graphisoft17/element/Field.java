@@ -1,9 +1,11 @@
 package bxlx.graphisoft17.element;
 
+import bxlx.graphics.Color;
 import bxlx.graphics.Direction;
+import bxlx.graphics.IDrawable;
 import bxlx.graphics.Point;
+import bxlx.graphics.combined.Builder;
 import bxlx.graphics.container.Container;
-import bxlx.graphics.fill.DrawImage;
 import bxlx.graphisoft17.Parameters;
 
 import java.util.ArrayList;
@@ -97,8 +99,8 @@ public class Field {
         return (type & (1 << ordinal)) > 0;
     }
 
-    public Container<DrawImage> drawable() {
-        Container<DrawImage> result = new Container<>();
+    public Container<IDrawable> drawable(Player playerWhosTurn) {
+        Container<IDrawable> result = new Container<>();
 
         result.add(Parameters.getField(getType()));
 
@@ -107,7 +109,17 @@ public class Field {
         }
 
         if(display != null) {
+            if(display == playerWhosTurn.getTargetDisplay()) {
+                result.add(Builder.make(Parameters.getPrincessMoveField(playerWhosTurn.getIndex())).makeMargin(0.1).makeBackgrounded(Color.BLACK).makeMargin(0.5).get());
+            }
             display.addMyselfTo(result);
+        }
+
+        for(Princess princess : princesses) {
+            if(princess.getIndex() == playerWhosTurn.getIndex()) {
+                result.add(Builder.make(Parameters.getPrincessMoveField(playerWhosTurn.getIndex())).makeMargin(0.1).makeBackgrounded(Color.BLACK).makeMargin(0.5).get());
+                break;
+            }
         }
 
         for(Princess princess : princesses) {

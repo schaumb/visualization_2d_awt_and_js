@@ -529,6 +529,13 @@ public class StateHolder {
         }
     }
 
+    public void beforePush() {
+        Player player = getPlayerWhosTurn();
+        if(moveFields.size() > 0) {
+            player.setExtraTo(new Field(moveFields.get(0).getType()));
+        }
+    }
+
     public void finalizePush() {
         for(Field field : moveFields) {
             field.setPosition(field.getPosition().add(moveDirection));
@@ -543,7 +550,6 @@ public class StateHolder {
 
         Player player = getPlayerWhosTurn();
         Princess princess = princesses.get(getWhosTurn());
-        player.commitPushMessage();
 
         if(player.getGotoMessage() != null) {
             calculateAffectedRoutes(princess.getPosition(),

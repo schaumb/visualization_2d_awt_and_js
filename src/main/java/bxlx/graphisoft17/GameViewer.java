@@ -18,7 +18,7 @@ public class GameViewer extends Splitter {
 
 
     public GameViewer(Supplier<String> val, ChangeableDrawable.ChangeableValue<Boolean> settingIsOn) {
-        super(true, -350, null, null);
+        super(true, -600, null, null);
         this.file = new ChangeableValue<>(this, val);
         this.stateHolder = new ChangeableValue<>(this, (StateHolder) null);
 

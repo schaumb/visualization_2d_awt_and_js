@@ -3,9 +3,9 @@ package bxlx.graphisoft17;
 import bxlx.graphics.ChangeableDrawable;
 import bxlx.graphics.Color;
 import bxlx.graphics.IDrawable;
+import bxlx.graphics.Point;
 import bxlx.graphics.combined.Builder;
 import bxlx.graphics.combined.Stick;
-import bxlx.graphics.container.Container;
 import bxlx.graphics.container.SplitContainer;
 import bxlx.graphics.container.Splitter;
 import bxlx.graphics.drawable.AspectRatioDrawable;
@@ -18,8 +18,6 @@ import bxlx.system.ColorScheme;
 import bxlx.system.SystemSpecific;
 
 import java.util.HashMap;
-import java.util.Set;
-import java.util.TreeSet;
 
 /**
  * Created by ecosim on 2017.05.04..
@@ -66,23 +64,32 @@ public class TeamInfos extends SplitContainer<IDrawable> {
                     .add(new Text(p.getName().substring(0, Math.min(p.getName().length(), 7)), longestText, -1))
                     .add(new ClippedDrawable<>(new AspectRatioDrawable<>(img, false, 0, 0, () -> img.getOriginalAspectRatio()), true,
                             r -> r.getScaled(2.7)))
+                    .add(Builder.container()
+                            .add(Builder.container().add(() -> stateHolder.getPlayers().get(iTh).getField().drawable(stateHolder.getPlayers().get(iTh)))
+                                .makeClipped(true, c -> c.withStart(c.getStart().add(stateHolder.getMoveDirection() == null || stateHolder.getWhosTurn() != iTh ? Point.ORIGO :
+                                        stateHolder.getMoveDirection().multiple(c.getSize().asPoint().multiple(playState.getState().getTimer().percent()))))).get())
+                            .add(Builder.container().add(() -> stateHolder.getPlayers().get(iTh).getFieldTo() == null ? null :
+                                    stateHolder.getPlayers().get(iTh).getFieldTo().drawable(stateHolder.getPlayers().get(iTh)))
+                                    .makeClipped(true, c -> c.withStart(c.getStart().add(stateHolder.getMoveDirection() == null || stateHolder.getWhosTurn() != iTh ? Point.ORIGO :
+                                            stateHolder.getMoveDirection().multiple(c.getSize().asPoint().multiple(playState.getState().getTimer().percent() - 1))))).get())
+                            .makeAspect(0, 0, 1).get())
                     .add(Builder.make(
-                            new Text(() -> p.getScore() + " ; " + stateHolder.getPointTo(p.getName())[0] + " ; " + stateHolder.getPointTo(p.getName())[1]))
+                            new Text(() -> p.getScore() + " ; " + stateHolder.getPointTo(p.getName())[0] + " ; " + stateHolder.getPointTo(p.getName())[1], "10 ; 1000 ; 100", 0))
                             .makeBackgrounded(Color.WHITE)
                             .get())
                     .makeMargin(5, 7)
                     .makeColored(Color.BLACK)
                     .get()));
         }
-            add(Builder.container(true)
-                    .add(Builder.text(() -> stateHolder.getTick() + " / " + stateHolder.getMaxTick(),
-                            stateHolder.getMaxTick() + " / " + stateHolder.getMaxTick(), 1)
-                            .makeMargin(20).get())
-                    .add(Builder.make(new Stick(0, 0.2, 0.2, null, null))
-                            .get())
-                    .makeColored(ColorScheme.getCurrentColorScheme().textColor)
-                    .makeBackgrounded(Color.WHITE)
-                    .get());
+        add(Builder.container(true)
+                .add(Builder.text(() -> stateHolder.getTick() + " / " + stateHolder.getMaxTick(),
+                        stateHolder.getMaxTick() + " / " + stateHolder.getMaxTick(), 1)
+                        .makeMargin(20).get())
+                .add(Builder.make(new Stick(0, 0.2, 0.2, null, null))
+                        .get())
+                .makeColored(ColorScheme.getCurrentColorScheme().textColor)
+                .makeBackgrounded(Color.WHITE)
+                .get());
 
         if(stateHolder.getPlayers().size() < 10) {
 

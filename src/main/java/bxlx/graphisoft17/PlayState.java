@@ -80,6 +80,7 @@ public class PlayState extends SplitContainer<IDrawable> {
                 state = States.PUSH;
 
             }
+            stateHolder.beforePush();
         } else if(state == States.PUSH) {
             state = States.WAIT_AFTER_PUSH;
             stateHolder.finalizePush();
