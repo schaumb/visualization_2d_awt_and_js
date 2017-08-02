@@ -89,6 +89,14 @@ public class Builder<T extends IDrawable> {
             get().add(elem.get());
             return this;
         }
+
+        public ContainerBuilder<T, C> fillN(int count, Function<Integer, T> generator) {
+            for(int i = 0; i < count; ++i) {
+                add(generator.apply(i));
+            }
+
+            return this;
+        }
     }
 
     public static class TransformContainerBuilder<U extends IDrawable, T extends IDrawable, C extends SizeChangeableContainer<T, ?>> extends
@@ -175,14 +183,18 @@ public class Builder<T extends IDrawable> {
     }
 
     public ContainerBuilder<IDrawable, Container<IDrawable>> makeBackgrounded(Color color) {
-        ContainerBuilder<IDrawable, Container<IDrawable>> result = new ContainerBuilder<>(new Container<>(new ArrayList<>(), 1));
+        return makeBackgrounded(color, 1);
+    }
+
+    public ContainerBuilder<IDrawable, Container<IDrawable>> makeBackgrounded(Color color, int forceRedraw) {
+        ContainerBuilder<IDrawable, Container<IDrawable>> result = new ContainerBuilder<>(new Container<>(new ArrayList<>(), forceRedraw));
         result.get().add(background().makeColored(color).get());
         result.get().add(get());
         return result;
     }
 
-    public ContainerBuilder<IDrawable, Container<IDrawable>> toContainer() {
-        ContainerBuilder<IDrawable, Container<IDrawable>> result = new ContainerBuilder<>(new Container<>(new ArrayList<>(), 1));
+    public ContainerBuilder<IDrawable, Container<IDrawable>> toContainer(int forceRedraw) {
+        ContainerBuilder<IDrawable, Container<IDrawable>> result = new ContainerBuilder<>(new Container<>(new ArrayList<>(), forceRedraw));
         result.get().add(get());
         return result;
     }

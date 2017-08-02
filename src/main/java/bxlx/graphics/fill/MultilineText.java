@@ -14,49 +14,36 @@ import java.util.function.Supplier;
  */
 public class MultilineText extends ChangeableDrawable {
     private final ChangeableValue<String> text;
-    private final ChangeableValue<SplitContainer<Text>> texts;
 
     public MultilineText(Supplier<String> text) {
         this.text = new ChangeableValue<>(this, text);
-        this.texts = new ChangeableValue<>(this, new SplitContainer<>());
     }
 
     @Override
     protected void forceRedraw(ICanvas canvas) {
-        SplitContainer<Text> c = texts.get();
-        if(text.isChanged()) {
-            String[] lines = text.get().split("\n");
+        SplitContainer<Text> c = new SplitContainer<>();
+        String[] lines = text.get().split("\n");
 
-            String longest = "i";
-            int longestSize = 0;
-            for(String line : lines) {
-                int lineSize = SystemSpecific.get().stringLength(ColorScheme.getCurrentColorScheme().font, line);
-                if(lineSize > longestSize) {
-                    longest = line;
-                    longestSize = lineSize;
-                }
+        String longest = "i";
+        int longestSize = 0;
+        for(String line : lines) {
+            int lineSize = SystemSpecific.get().stringLength(ColorScheme.getCurrentColorScheme().font, line);
+            if(lineSize > longestSize) {
+                longest = line;
+                longestSize = lineSize;
             }
+        }
 
-            if(c.size() > lines.length) {
-                c = texts.setElem(new SplitContainer<>()).get();
-            }
-            int where = 0;
-            for(; where < Math.min(100, c.size()); ++where) {
-                Text t = c.get(where).get();
-                t.getText().setElem(lines[where]);
-                t.getReferenceText().setElem(longest);
-            }
 
-            for(; where < Math.min(100, lines.length); ++where) {
-                c.add(new Text(lines[where], longest, -1));
-            }
+        for(int where = 0; where < Math.min(100, lines.length); ++where) {
+            c.add(new Text(lines[where], longest, -1));
         }
         c.forceDraw(canvas);
     }
 
     @Override
     public Redraw needRedraw() {
-        return super.needRedraw().orIf(true, texts.get().needRedraw()).setIf(text.isChanged(), Redraw.PARENT_NEED_REDRAW);
+        return super.needRedraw().setIf(text.isChanged(), Redraw.PARENT_NEED_REDRAW);
     }
 
     public ValueOrSupplier<String> getText() {

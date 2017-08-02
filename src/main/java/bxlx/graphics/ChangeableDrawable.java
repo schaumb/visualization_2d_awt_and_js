@@ -94,7 +94,7 @@ public abstract class ChangeableDrawable implements IDrawable {
     @Override
     public final void forceDraw(ICanvas canvas) {
         /* Test what redraw
-        boolean needIndent = false;
+        boolean needIndent = true;
         if (
                 //!Splitter.class.isInstance(this) &&
                 //!Container.class.isInstance(this) &&
@@ -111,11 +111,9 @@ public abstract class ChangeableDrawable implements IDrawable {
             if(ColoredDrawable.class == this.getClass()) {
                 msg += ((ColoredDrawable) this).getColor().get().toString();
             }
-            if(GameViewer.class == this.getClass()) {
-                msg += "ch:" + ((GameViewer) this).getChild().get().needRedraw().toString();
-            }
             msg = msg + this.needRedraw().parentNeedRedraw() + this.needRedraw().iNeedRedraw() + this.needRedraw().childNeedRedraw() + " vcs:" + valueChanged();
-            SystemSpecific.get().log(indent + "ForceRedraw " + this.getClass().getName() + " " + msg + " & " + this.toString());
+            SystemSpecific.get().log(indent + "ForceRedraw " + this.getClass().getName() + " " + msg // + " & " + this.toString()
+        );
             needIndent = true;
             indent += "  ";
         }

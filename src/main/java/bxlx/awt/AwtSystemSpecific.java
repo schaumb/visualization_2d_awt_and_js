@@ -48,7 +48,7 @@ import java.util.stream.Collectors;
  * Created by qqcs on 2016.12.23..
  */
 public class AwtSystemSpecific extends SystemSpecific {
-    private static final ScheduledExecutorService executor = Executors.newScheduledThreadPool(3, runnable -> {
+    private static final ScheduledExecutorService executor = Executors.newScheduledThreadPool(5, runnable -> {
         Thread t = Executors.defaultThreadFactory().newThread(runnable);
         t.setDaemon(true);
         return t;

@@ -23,6 +23,8 @@
                 <configuration>
                     <excludes>
                         <exclude>**/awt/**</exclude>
+                        <exclude>**/conticup17/**</exclude>
+                        <exclude>**/graphisoft17/**</exclude>
                     </excludes>
                 </configuration>
                 <executions>

@@ -52,7 +52,7 @@ public class Text extends ChangeableDrawable {
     @Override
     public Redraw needRedraw() {
         Redraw result = super.needRedraw();
-        return result.setIf(result.iNeedRedraw(), Redraw.PARENT_NEED_REDRAW);
+        return result.setIf(result.iNeedRedraw() || text.isChanged(), Redraw.PARENT_NEED_REDRAW);
     }
 
     public ChangeableValue<String> getText() {
