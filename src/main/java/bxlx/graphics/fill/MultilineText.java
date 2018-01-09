@@ -1,28 +1,27 @@
 package bxlx.graphics.fill;
 
-import bxlx.graphics.ChangeableDrawable;
 import bxlx.graphics.ICanvas;
-import bxlx.graphics.IDrawable;
+import bxlx.graphics.Drawable;
 import bxlx.graphics.container.SplitContainer;
-import bxlx.system.ColorScheme;
-import bxlx.system.SystemSpecific;
-import bxlx.system.functional.ValueOrSupplier;
+import bxlx.system.*;
 
 import java.util.function.Supplier;
 
 /**
  * Created by ecosim on 4/26/17.
  */
-public class MultilineText extends ChangeableDrawable {
-    private final ChangeableDrawable.ChangeableValue<String> text;
+public class MultilineText extends Drawable {
+    private final ObservableValue<String> text;
 
-    public MultilineText(Supplier<String> text) {
-        this.text = new ChangeableDrawable.ChangeableValue<>(this, text);
+    public MultilineText(ObservableValue<String> text) {
+        this.text = text;
+
+        text.addObserver((observable, from) -> setRedraw());
     }
 
     @Override
-    protected void forceRedraw(ICanvas canvas) {
-        SplitContainer<Text> c = new SplitContainer<>();
+    protected void forceDraw(ICanvas canvas) {
+        SplitContainer<Text> c = new SplitContainer<>(false);
         String[] lines = text.get().split("\n");
 
         String longest = "i";
@@ -39,15 +38,7 @@ public class MultilineText extends ChangeableDrawable {
         for(int where = 0; where < Math.min(100, lines.length); ++where) {
             c.add(new Text(lines[where], longest, -1));
         }
-        c.forceDraw(canvas);
-    }
-
-    @Override
-    public IDrawable.Redraw needRedraw() {
-        return super.needRedraw().setIf(text.isChanged(), IDrawable .Redraw.PARENT_NEED_REDRAW);
-    }
-
-    public ValueOrSupplier<String> getText() {
-        return text;
+        c.setRedraw(this);
+        c.draw(canvas);
     }
 }

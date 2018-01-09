@@ -1,31 +1,33 @@
 package bxlx.graphics.fill;
 
-import bxlx.graphics.ChangeableDrawable;
+import bxlx.graphics.Drawable;
 import bxlx.graphics.ICanvas;
 import bxlx.graphics.Point;
 import bxlx.graphics.shapes.Arc;
 import bxlx.graphics.shapes.Rectangle;
+import bxlx.system.ObservableValue;
 
 /**
  * Created by qqcs on 2016.12.24..
  */
-public class Rect extends ChangeableDrawable {
-    private final ChangeableDrawable.ChangeableValue<Double> rate;
+public class Rect extends Drawable {
+    private final ObservableValue<Double> rate;
 
     public Rect() {
         this(1 / 3.0);
     }
 
     public Rect(double rate) {
-        this.rate = new ChangeableDrawable.ChangeableValue<>(this, rate);
+        this.rate = new ObservableValue<>(rate);
+        this.rate.addObserver((x, y) -> setRedraw());
     }
 
-    public ChangeableDrawable.ChangeableValue<Double> getRate() {
+    public ObservableValue<Double> getRate() {
         return rate;
     }
 
     @Override
-    public void forceRedraw(ICanvas canvas) {
+    public void forceDraw(ICanvas canvas) {
         Rectangle bounds = canvas.getBoundingRectangle();
 
         if (bounds.getSize().getWidth() <= 0 || bounds.getSize().getHeight() <= 0) {

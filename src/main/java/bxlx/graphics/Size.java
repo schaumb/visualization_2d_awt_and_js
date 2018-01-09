@@ -12,7 +12,7 @@ public class Size {
         this.height = height;
     }
 
-    public static final Size NULL = square(0);
+    public static final Size ZERO = square(0);
 
     public static Size square(double size) {
         return new Size(size, size);
@@ -36,6 +36,14 @@ public class Size {
 
     public double getLongerDimension() {
         return Math.max(width, height);
+    }
+
+    public Size withWidth(double width) {
+        return new Size(width, height);
+    }
+
+    public Size withHeight(double height) {
+        return new Size(width, height);
     }
 
     @Override

@@ -5,7 +5,7 @@ import java.util.function.Supplier;
 /**
  * Created by qqcs on 2017.01.02..
  */
-public class Timer {
+public class Timer extends ObservableValue<Double> {
     private long start;
     private long length;
 
@@ -65,5 +65,9 @@ public class Timer {
 
     public Supplier<Double> asSupplier(double from, double to) {
         return () -> percent() * (to - from) + from;
+    }
+
+    public void tick() {
+        setValue(percent());
     }
 }

@@ -1,6 +1,7 @@
 package bxlx.general;
 
-import bxlx.ericsson17.Game;
+
+import bxlx.ball18.Game;
 
 /**
  * Created by qqcs on 2017.01.03..

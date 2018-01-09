@@ -1,7 +1,12 @@
 package bxlx.graphics.shapes;
 
+import bxlx.graphics.Direction;
 import bxlx.graphics.Point;
 import bxlx.graphics.Size;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 /**
  * Created by qqcs on 2016.12.23..
@@ -114,11 +119,12 @@ public class Rectangle extends Shape {
     }
 
     @Override
-    public Rectangle getRotated(double rotate) {
-        if ((rotate + 7 * Math.PI / 4) % Math.PI > Math.PI / 2) {
-            return this;
-        }
-        Rectangle r = withSize(new Size(size.getHeight(), size.getWidth()));
-        return r.getTranslated(getCenter().add(r.getCenter().negate()));
+    public Polygon getRotated(double rotate) {
+        return new Polygon(Arrays.asList(
+                start,
+                new Point(start.getX(), start.getY() + size.getHeight()),
+                new Point(start.getX() + size.getWidth(), start.getY()),
+                start.add(size.asPoint())
+        )).getRotated(rotate);
     }
 }

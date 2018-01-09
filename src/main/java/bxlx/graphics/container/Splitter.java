@@ -1,63 +1,42 @@
 package bxlx.graphics.container;
 
-import bxlx.graphics.ChangeableDrawable;
-import bxlx.graphics.Direction;
-import bxlx.graphics.ICanvas;
-import bxlx.graphics.IDrawable;
-import bxlx.graphics.Point;
-import bxlx.graphics.shapes.Rectangle;
-import bxlx.system.functional.ValueOrSupplier;
-
-import java.util.Arrays;
-import java.util.function.Function;
-import java.util.function.Supplier;
+import bxlx.graphics.Drawable;
+import bxlx.graphics.DrawableContainer;
+import bxlx.graphics.drawable_helper.ChangerBuilder;
+import bxlx.graphics.drawable_helper.ObservableRectangleTranslator;
+import bxlx.system.ObservableValue;
 
 /**
  * Created by qqcs on 2017.01.04..
  */
-public class Splitter extends DrawableContainer<IDrawable> {
-    private final ChangeableDrawable.ChangeableValue<Boolean> xSplit;
-    private final ChangeableDependentValue<Double, Rectangle> separate;
+public class Splitter extends DrawableContainer<Drawable> {
+    private final ObservableValue<Boolean> xSplit;
+    private final ObservableValue<Double> separate;
 
-    public Splitter(boolean xSplit, double separate, IDrawable first, IDrawable second) {
-        this(xSplit, r -> separate, first, second);
+    public Splitter(boolean xSplit, double separate, Drawable first, Drawable second) {
+        this(new ObservableValue<>(xSplit), new ObservableValue<>(separate), first, second);
     }
 
-    public Splitter(boolean xSplit, Supplier<Double> separate, IDrawable first, IDrawable second) {
-        this(xSplit, r -> separate.get(), first, second);
-    }
+    public Splitter(ObservableValue<Boolean> xSplit, ObservableValue<Double> separate, Drawable first, Drawable second) {
+        super(ChangerBuilder.ClipperBuilder.clip(ObservableRectangleTranslator.different(
+            ObservableRectangleTranslator.marginObserve(
+                    new ObservableValue<>(0.0),
+                    new ObservableValue<>(xSplit, b -> !(boolean) b ? 1.0 : separate.get()),
+                    new ObservableValue<>(0.0),
+                    new ObservableValue<>(xSplit, b -> (boolean) b ? 1.0 : separate.get())),
+                ObservableRectangleTranslator.marginObserve(
+                        new ObservableValue<>(xSplit, b -> !(boolean) b ? 0.0 : separate.get()),
+                        new ObservableValue<>(1.0),
+                        new ObservableValue<>(xSplit, b -> (boolean) b ? 0.0 : separate.get()),
+                        new ObservableValue<>(1.0)))).get());
 
-    public Splitter(boolean xSplit, Supplier<Double> separate, Supplier<IDrawable> first, IDrawable second) {
-        this(xSplit, r -> separate.get(), null, second);
-        getFirst().setSupplier(first);
-    }
+        this.xSplit = xSplit;
+        this.separate = separate;
+        add(first);
+        add(second);
 
-    public Splitter(boolean xSplit, Supplier<Double> separate, IDrawable first, Supplier<IDrawable> second) {
-        this(xSplit, r -> separate.get(), first, null);
-        getSecond().setSupplier(second);
-    }
-
-    public Splitter(boolean xSplit, Function<Rectangle, Double> separate, IDrawable first, IDrawable second) {
-        super(Arrays.asList(first, second));
-        this.xSplit = new ChangeableDrawable.ChangeableValue<>(this, xSplit);
-        this.separate = new ChangeableDependentValue<>(this, separate);
-    }
-
-    public Splitter(double separate, IDrawable first, IDrawable second) {
-        this(false, separate, first, second);
-    }
-
-    public Splitter(IDrawable first, IDrawable second) {
-        this(false, 0.5, first, second);
-    }
-
-    public Splitter() {
-        this(false, 0.5, null, null);
-    }
-
-    @Override
-    protected boolean parentRedrawSatisfy() {
-        return false;
+        xSplit.addObserver((observable, from) -> this.setRedrawAllChild());
+        separate.addObserver((observable, from) -> this.setRedrawAllChild());
     }
 
     public Splitter(boolean xSplit) {
@@ -65,7 +44,7 @@ public class Splitter extends DrawableContainer<IDrawable> {
     }
 
     public static Splitter threeWaySplit(boolean xSplit, double centerSeparate,
-                                         IDrawable first, IDrawable center, IDrawable last) {
+                                         Drawable first, Drawable center, Drawable last) {
         double separate1;
         double separate2;
 
@@ -88,124 +67,17 @@ public class Splitter extends DrawableContainer<IDrawable> {
 
     }
 
-    public static Splitter threeWaySplit(boolean xSplit, Supplier<Double> centerSeparate,
-                                         IDrawable first, IDrawable center, IDrawable last) {
-        return threeWaySplit(xSplit, centerSeparate, () -> first, center, () -> last);
-    }
 
-    public static Splitter threeWaySplit(boolean xSplit, Supplier<Double> centerSeparate,
-                                         Supplier<IDrawable> first, IDrawable center, Supplier<IDrawable> last) {
-        Supplier<Double> sep1 = new ValueOrSupplier<>(centerSeparate)
-                .transform(cSep -> {
-                    if (cSep <= -1) {
-                        return (double) Math.round(-cSep / 2);
-                    } else if (cSep < 0) {
-                        return -cSep / 2;
-                    } else if (cSep == 0) {
-                        return Double.MIN_VALUE;
-                    } else if (cSep < 1) {
-                        return (1 + cSep) / -2;
-                    } else {
-                        return -cSep;
-                    }
-                }).getAsSupplier();
-
-
-        Supplier<Double> sep2 = new ValueOrSupplier<>(centerSeparate)
-                .transform(cSep -> {
-                    if (cSep <= -1) {
-                        return (double) Math.round(cSep / 2);
-                    } else if (cSep < 0) {
-                        return cSep / (2 + cSep);
-                    } else if (cSep < 1) {
-                        return 2 * cSep / (1 + cSep);
-                    } else {
-                        return cSep;
-                    }
-                }).getAsSupplier();
-
-        return new Splitter(xSplit, sep1, first,
-                new Splitter(xSplit, sep2, center, last));
-    }
-
-    public ChangeableDrawable.ChangeableValue<Boolean> getxSplit() {
+    public ObservableValue<Boolean> getxSplit() {
         return xSplit;
     }
 
-    public ChangeableDependentValue<Double, Rectangle> getSeparate() {
+    public ObservableValue<Double> getSeparate() {
         return separate;
     }
 
-    public ChangeableDrawable.ChangeableValue<IDrawable> getFirst() {
-        return get(0);
-    }
-
-    public ChangeableDrawable.ChangeableValue<IDrawable> getSecond() {
-        return get(1);
-    }
-
     @Override
-    public IDrawable.Redraw needRedraw() {
-        return super.needRedraw().setIf(xSplit.isChanged() || separate.isChanged(), IDrawable.Redraw.PARENT_NEED_REDRAW);
-    }
+    protected void updateFromChild(Drawable drawable) {
 
-    @Override
-    public void forceRedraw(ICanvas canvas) {
-        IDrawable.Redraw redraw = needRedraw();
-        boolean noNeedRedraw = redraw.noNeedRedraw();
-        boolean iNeedRedraw = redraw.iNeedRedraw();
-
-        Rectangle rectangle = canvas.getBoundingRectangle();
-
-        boolean nowXSplit = xSplit.get();
-        double nowSeparate = separate.setDep(rectangle).get();
-
-        Point dimension = nowXSplit ? Direction.RIGHT.getVector() : Direction.DOWN.getVector();
-        Point otherDimension = nowXSplit ? Direction.DOWN.getVector() : Direction.RIGHT.getVector();
-
-        double firstSize = rectangle.getSize().asPoint().multiple(dimension).asSize().getLongerDimension();
-        if (nowSeparate <= -1) {
-            firstSize = Math.max(0, firstSize + nowSeparate);
-        } else if (nowSeparate <= 0) {
-            firstSize *= 1 + nowSeparate;
-        } else if (nowSeparate < 1) {
-            firstSize *= nowSeparate;
-        } else {
-            firstSize = Math.min(firstSize, nowSeparate);
-        }
-
-        IDrawable child0 = getFirst().get();
-        if (child0 != null) {
-            canvas.clip(new Rectangle(
-                    rectangle.getStart(),
-                    rectangle.getStart().add(dimension.multiple(firstSize))
-                            .add(otherDimension.multiple(rectangle.getSize().asPoint()))));
-            if (noNeedRedraw) {
-                child0.forceDraw(canvas);
-            } else if (iNeedRedraw) {
-                child0.setRedraw();
-                child0.forceDraw(canvas);
-            } else {
-                child0.draw(canvas);
-            }
-            canvas.restore();
-        }
-
-        IDrawable child1 = getSecond().get();
-        if (child1 != null) {
-            canvas.clip(new Rectangle(
-                    rectangle.getStart().add(dimension.multiple(firstSize)),
-                    rectangle.getEnd()));
-
-            if (noNeedRedraw) {
-                child1.forceDraw(canvas);
-            } else if (iNeedRedraw) {
-                child1.setRedraw();
-                child1.forceDraw(canvas);
-            } else {
-                child1.draw(canvas);
-            }
-            canvas.restore();
-        }
     }
 }

@@ -9,6 +9,7 @@ import bxlx.graphics.Size;
 import bxlx.system.CommonError;
 import bxlx.system.IMouseEventListener;
 import bxlx.system.IRenderer;
+import bxlx.system.ObservableValue;
 import bxlx.system.SystemSpecific;
 import def.dom.CanvasRenderingContext2D;
 import def.dom.Event;
@@ -20,13 +21,14 @@ import def.dom.XMLHttpRequest;
 import def.js.Date;
 import jsweet.util.StringTypes;
 
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.function.Consumer;
 
-import static def.dom.Globals.console;
 import static def.dom.Globals.document;
-import static def.dom.Globals.setTimeout;
 import static def.dom.Globals.window;
+import static def.dom.Globals.console;
+import static def.dom.Globals.setTimeout;
 import static def.js.Globals.isNaN;
 import static def.js.Globals.parseFloat;
 import static jsweet.util.Lang.$loose;
@@ -214,14 +216,22 @@ public class JSweetSystemSpecific extends SystemSpecific {
     }
 
     @Override
-    public Size preLoad(String src, boolean img) {
+    public void preLoad(String src, boolean img) {
         if (img) {
             HTMLImageElement htmlImageElement = HtmlCanvas.imageCaches.get(src);
-            return new Size(htmlImageElement.naturalWidth, htmlImageElement.naturalHeight);
+            htmlImageElement.onload = o -> imageSize(src);
         } else {
             musicCache.get(src);
-            return null;
         }
+    }
+
+    private final HashMap<String, ObservableValue<Size>> imageSizes = new HashMap<>();
+
+    public ObservableValue<Size> imageSize(String src) {
+        HTMLImageElement htmlImageElement = HtmlCanvas.imageCaches.get(src);
+
+        return imageSizes.computeIfAbsent(src, s -> new ObservableValue<>())
+                .setValue(new Size(htmlImageElement.naturalWidth, htmlImageElement.naturalHeight));
     }
 
     @Override

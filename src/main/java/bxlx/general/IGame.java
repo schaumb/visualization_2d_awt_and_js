@@ -1,7 +1,7 @@
 package bxlx.general;
 
-import bxlx.graphics.IDrawable;
-import bxlx.system.functional.ValueOrSupplier;
+import bxlx.graphics.Drawable;
+import bxlx.system.ObservableValue;
 
 /**
  * Created by qqcs on 2017.02.07..
@@ -9,5 +9,8 @@ import bxlx.system.functional.ValueOrSupplier;
 public interface IGame {
     IGame init();
 
-    ValueOrSupplier<IDrawable> getMain();
+    ObservableValue<Drawable> getMain();
+
+    default void tick() {
+    }
 }

@@ -96,7 +96,7 @@ public class Polygon extends Shape {
     }
 
     @Override
-    public Shape getTranslated(Point vector) {
+    public Polygon getTranslated(Point vector) {
         List<Point> newPoints = new ArrayList<>(points.size());
 
         for (Point p : points) {
@@ -107,7 +107,7 @@ public class Polygon extends Shape {
     }
 
     @Override
-    public Shape getScaled(double scale) {
+    public Polygon getScaled(double scale) {
         Point center = getBoundingRectangle().getCenter();
         List<Point> newPoints = new ArrayList<>(points.size());
 
@@ -119,7 +119,7 @@ public class Polygon extends Shape {
     }
 
     @Override
-    public Shape getRotated(double rotate) {
+    public Polygon getRotated(double rotate) {
         Point center = getBoundingRectangle().getCenter();
         List<Point> newPoints = new ArrayList<>(points.size());
 

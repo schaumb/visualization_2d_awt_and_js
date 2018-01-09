@@ -29,19 +29,27 @@ public class Point {
     }
 
     public Point add(Point other) {
-        return new Point(x + other.x, y + other.y);
+        return add(other.x, other.y);
+    }
+
+    public Point add(double x, double y) {
+        return new Point(this.x + x, this.y + y);
     }
 
     public Point add(double n) {
-        return new Point(x + n, y + n);
+        return add(n, n);
     }
 
     public Point multiple(Point other) {
-        return new Point(x * other.x, y * other.y);
+        return multiple(other.x, other.y);
+    }
+
+    public Point multiple(double x, double y) {
+        return new Point(this.x * x, this.y * y);
     }
 
     public Point multiple(double n) {
-        return new Point(x * n, y * n);
+        return multiple(n, n);
     }
 
     public Point negate() {
@@ -63,6 +71,14 @@ public class Point {
 
     public Point norm() {
         return multiple(1 / length());
+    }
+
+    public Point withX(double x) {
+        return new Point(x, y);
+    }
+
+    public Point withY(double y) {
+        return new Point(x, y);
     }
 
     @Override

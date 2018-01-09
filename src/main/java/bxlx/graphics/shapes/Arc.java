@@ -121,17 +121,17 @@ public class Arc extends Shape {
     }
 
     @Override
-    public Shape getTranslated(Point vector) {
+    public Arc getTranslated(Point vector) {
         return new Arc(center.add(vector), radius, fromRadian, toRadian);
     }
 
     @Override
-    public Shape getScaled(double scale) {
+    public Arc getScaled(double scale) {
         return new Arc(center, radius * scale, fromRadian, toRadian);
     }
 
     @Override
-    public Shape getRotated(double rotate) {
+    public Arc getRotated(double rotate) {
         return new Arc(center, radius, fromRadian + rotate, toRadian + rotate);
     }
 }

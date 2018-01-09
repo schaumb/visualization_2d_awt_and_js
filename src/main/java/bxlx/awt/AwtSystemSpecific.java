@@ -5,11 +5,7 @@ import bxlx.graphics.Cursor;
 import bxlx.graphics.Font;
 import bxlx.graphics.Point;
 import bxlx.graphics.Size;
-import bxlx.system.CommonError;
-import bxlx.system.IMouseEventListener;
-import bxlx.system.IRenderer;
-import bxlx.system.SystemSpecific;
-import bxlx.system.Timer;
+import bxlx.system.*;
 
 import javax.media.Manager;
 import javax.media.MediaLocator;
@@ -37,6 +33,7 @@ import java.net.URI;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.Objects;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
@@ -219,17 +216,26 @@ public class AwtSystemSpecific extends SystemSpecific {
         });
     }
 
-    @Override
-    public Size preLoad(String src, boolean img) {
-        if (img) {
-            BufferedImage imgBuff = GraphicsCanvas.imageCaches.get(src);
-            if (imgBuff == null) {
-                return Size.NULL;
-            }
-            return new Size(imgBuff.getWidth(), imgBuff.getHeight());
-        }
 
-        return null;
+    @Override
+    public void preLoad(String src, boolean img) {
+        if (img) {
+            GraphicsCanvas.imageCaches.get(src);
+        }
+        // TODO music preload
+    }
+
+    private final HashMap<String, ObservableValue<Size>> imageSizes = new HashMap<>();
+
+    public ObservableValue<Size> imageSize(String src) {
+        BufferedImage imgBuff = GraphicsCanvas.imageCaches.get(src);
+
+        if (imgBuff == null) {
+            return imageSizes.computeIfAbsent(src, s -> new ObservableValue<>())
+                    .setValue(Size.ZERO);
+        }
+        return imageSizes.computeIfAbsent(src, s -> new ObservableValue<>())
+                .setValue(new Size(imgBuff.getWidth(), imgBuff.getHeight()));
     }
 
     @Override

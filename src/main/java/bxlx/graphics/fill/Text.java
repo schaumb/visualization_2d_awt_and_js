@@ -1,75 +1,47 @@
 package bxlx.graphics.fill;
 
-import bxlx.graphics.ChangeableDrawable;
+import bxlx.graphics.Drawable;
 import bxlx.graphics.ICanvas;
-import bxlx.graphics.IDrawable;
 import bxlx.graphics.Point;
 import bxlx.graphics.shapes.Rectangle;
-
-import java.util.function.Supplier;
+import bxlx.system.ObservableValue;
 
 /**
  * Created by qqcs on 2017.01.03..
  */
-public class Text extends ChangeableDrawable {
-    private final ChangeableDrawable.ChangeableValue<String> text;
-    private final ChangeableDrawable.ChangeableValue<String> referenceText;
-    private final ChangeableDrawable.ChangeableValue<Integer> align;
+public class Text extends Drawable {
+    private final ObservableValue<String> text;
+    private final ObservableValue<String> referenceText;
+    private final ObservableValue<Integer> align;
 
-    public Text(Supplier<String> text) {
-        this.text = new ChangeableDrawable.ChangeableValue<>(this, text);
-        this.align = new ChangeableDrawable.ChangeableValue<>(this, 0);
-        this.referenceText = new ChangeableDrawable.ChangeableValue<>(this, (String) null);
+    public Text(String str, String ref, int align) {
+        this(new ObservableValue<>(str), new ObservableValue<>(ref), new ObservableValue<>(align));
     }
 
-    public Text(String text) {
-        this(text, (String) null, 0);
+    public Text(ObservableValue<String> text, ObservableValue<String> referenceText, ObservableValue<Integer> align) {
+        this.text = text;
+        this.referenceText = referenceText;
+        this.align = align;
+
+        text.addObserver((x, y) -> setRedraw());
+        referenceText.addObserver((x, y) -> setRedraw());
+        align.addObserver((x, y) -> setRedraw());
     }
 
-    public Text(String text, String referenceText, int align) {
-        this.text = new ChangeableDrawable.ChangeableValue<>(this, text);
-        this.referenceText = new ChangeableDrawable.ChangeableValue<>(this, referenceText);
-        this.align = new ChangeableDrawable.ChangeableValue<>(this, (int) Math.signum(align));
-    }
-
-    public Text(Supplier<String> text, String referenceText, int align) {
-        this.text = new ChangeableDrawable.ChangeableValue<>(this, text);
-        this.referenceText = new ChangeableDrawable.ChangeableValue<>(this, referenceText);
-        this.align = new ChangeableDrawable.ChangeableValue<>(this, (int) Math.signum(align));
-    }
-
-    public Text(String text, Supplier<String> referenceText, int align) {
-        this.text = new ChangeableDrawable.ChangeableValue<>(this, text);
-        this.referenceText = new ChangeableDrawable.ChangeableValue<>(this, referenceText);
-        this.align = new ChangeableDrawable.ChangeableValue<>(this, (int) Math.signum(align));
-    }
-
-    public Text(Supplier<String> text, Supplier<String> referenceText, int align) {
-        this.text = new ChangeableDrawable.ChangeableValue<>(this, text);
-        this.referenceText = new ChangeableDrawable.ChangeableValue<>(this, referenceText);
-        this.align = new ChangeableDrawable.ChangeableValue<>(this, (int) Math.signum(align));
-    }
-
-    @Override
-    public IDrawable.Redraw needRedraw() {
-        IDrawable.Redraw result = super.needRedraw();
-        return result.setIf(result.iNeedRedraw() || text.isChanged(), IDrawable.Redraw.PARENT_NEED_REDRAW);
-    }
-
-    public ChangeableDrawable.ChangeableValue<String> getText() {
+    public ObservableValue<String> getText() {
         return text;
     }
 
-    public ChangeableDrawable.ChangeableValue<String> getReferenceText() {
+    public ObservableValue<String> getReferenceText() {
         return referenceText;
     }
 
-    public ChangeableDrawable.ChangeableValue<Integer> getAlign() {
+    public ObservableValue<Integer> getAlign() {
         return align;
     }
 
     @Override
-    public void forceRedraw(ICanvas canvas) {
+    public void forceDraw(ICanvas canvas) {
         String nowText = text.get();
         String nowReferenceText = referenceText.get();
         int nowAlign = align.get();

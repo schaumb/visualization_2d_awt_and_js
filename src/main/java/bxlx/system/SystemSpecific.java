@@ -17,7 +17,7 @@ public abstract class SystemSpecific {
     protected boolean rendering = false;
     protected String[] args;
     protected List<IMouseEventListener> listeners = new ArrayList<>();
-    protected Size minimumSize = Size.NULL;
+    protected Size minimumSize = Size.ZERO;
 
     public static SystemSpecific get() {
         if (INSTANCE == null) {
@@ -62,7 +62,9 @@ public abstract class SystemSpecific {
 
     abstract public void readTextFileAsync(String from, String fileName, Consumer<String> consumer);
 
-    abstract public Size preLoad(String src, boolean img);
+    abstract public void preLoad(String src, boolean img);
+
+    abstract public ObservableValue<Size> imageSize(String src);
 
     abstract public Color getColor(String pic, double x, double y);
 
