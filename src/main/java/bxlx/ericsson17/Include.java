@@ -1,6 +1,6 @@
 package bxlx.ericsson17;
 
-import static jsweet.dom.Globals.document;
+import static def.dom.Globals.document;
 
 /**
  * Created by ecosim on 4/26/17.
