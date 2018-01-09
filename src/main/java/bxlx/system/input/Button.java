@@ -45,22 +45,22 @@ public class Button<T extends Button.Clickable> extends DrawableWrapper<T> imple
     private boolean isVisible = false;
     private Rectangle lastRectangle = Rectangle.NULL_RECTANGLE;
     private final ChangeableDrawable.ChangeableValue<Consumer<Button<T>>> atClick;
-    private final ChangeableValue<Consumer<Button<T>>> atHold;
-    private final ChangeableValue<Boolean> inside;
+    private final ChangeableDrawable.ChangeableValue<Consumer<Button<T>>> atHold;
+    private final ChangeableDrawable.ChangeableValue<Boolean> inside;
     private final Supplier<Boolean> hover;
-    private final ChangeableValue<Boolean> disabled;
+    private final ChangeableDrawable.ChangeableValue<Boolean> disabled;
     private Timer holdTimer;
 
     public Button(T clickable, Consumer<Button<T>> atClick, Consumer<Button<T>> atHold, Supplier<Boolean> disabledSuppl) {
         super(clickable);
         MouseInfo.get();
 
-        this.atClick = new ChangeableValue<>(this, atClick);
-        this.atHold = new ChangeableValue<>(this, atHold);
-        this.disabled = new ChangeableValue<>(this, disabledSuppl == null ? () -> false : disabledSuppl);
+        this.atClick = new ChangeableDrawable.ChangeableValue<>(this, atClick);
+        this.atHold = new ChangeableDrawable.ChangeableValue<>(this, atHold);
+        this.disabled = new ChangeableDrawable.ChangeableValue<>(this, disabledSuppl == null ? () -> false : disabledSuppl);
         this.hover = () -> lastRectangle != null && lastRectangle.isContains(MouseInfo.get().getPosition()) &&
                 getClickableChild().isContains(lastRectangle, MouseInfo.get().getPosition());
-        this.inside = new ChangeableValue<>(this, () -> MouseInfo.get().isLeftClicked() && hover.get());
+        this.inside = new ChangeableDrawable.ChangeableValue<>(this, () -> MouseInfo.get().isLeftClicked() && hover.get());
         clickable.inside = inside.getAsSupplier();
         clickable.disabled = disabled.getAsSupplier();
         clickable.hover = this.hover;
@@ -80,28 +80,28 @@ public class Button<T extends Button.Clickable> extends DrawableWrapper<T> imple
 
     @Override
     public IDrawable.Redraw needRedraw() {
-        return super.needRedraw().setIf(holdTimer != null && holdTimer.elapsed(), Redraw.I_NEED_REDRAW);
+        return super.needRedraw().setIf(holdTimer != null && holdTimer.elapsed(), IDrawable.Redraw.I_NEED_REDRAW);
     }
 
     public boolean isInsideNow() {
         return inside.get();
     }
 
-    public ChangeableValue<Boolean> getDisabled() {
+    public ChangeableDrawable.ChangeableValue<Boolean> getDisabled() {
         return disabled;
     }
 
-    public ChangeableValue<Consumer<Button<T>>> getAtClick() {
+    public ChangeableDrawable.ChangeableValue<Consumer<Button<T>>> getAtClick() {
         return atClick;
     }
 
-    public ChangeableValue<Consumer<Button<T>>> getAtHold() {
+    public ChangeableDrawable.ChangeableValue<Consumer<Button<T>>> getAtHold() {
         return atHold;
     }
 
     @Override
     public void forceRedraw(ICanvas canvas) {
-        Redraw redraw = needRedraw();
+        IDrawable.Redraw redraw = needRedraw();
         boolean nowDisabled = disabled.get();
         boolean nowInside = inside.get();
 

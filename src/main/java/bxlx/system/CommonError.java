@@ -3,7 +3,7 @@ package bxlx.system;
 /**
  * Created by qqcs on 2016.12.23..
  */
-public class CommonError extends jsweet.lang.Error {
+public class CommonError extends def.js.Error {
     public CommonError(String name, String message) {
         super(message);
         if (this.message == null) {

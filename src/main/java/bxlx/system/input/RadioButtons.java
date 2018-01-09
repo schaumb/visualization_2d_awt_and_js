@@ -19,7 +19,7 @@ import java.util.function.Supplier;
 public class RadioButtons<X extends IDrawable, C extends SplitContainer<X>, O extends OnOffClickable, B extends Button<O>> extends
         TransformerContainer<B, X, C> {
     private int selectedButtonIndex = -1;
-    private final List<ChangeableValue<B>> buttons = new ArrayList<>();
+    private final List<ChangeableDrawable.ChangeableValue<B>> buttons = new ArrayList<>();
 
     public RadioButtons(C container, Function<B, X> transformFunction) {
         super(container, transformFunction);
@@ -29,7 +29,7 @@ public class RadioButtons<X extends IDrawable, C extends SplitContainer<X>, O ex
         return () -> selectedButtonIndex;
     }
 
-    public ChangeableValue<B> getButton(int index) {
+    public ChangeableDrawable.ChangeableValue<B> getButton(int index) {
         return buttons.get(index);
     }
 
@@ -60,7 +60,7 @@ public class RadioButtons<X extends IDrawable, C extends SplitContainer<X>, O ex
                         selectedButtonIndex = -1;
                     }
                 });
-        ChangeableValue<B> buttonChangeableValue = new ChangeableDrawable.ChangeableValue<>(this, button);
+        ChangeableDrawable.ChangeableValue<B> buttonChangeableValue = new ChangeableDrawable.ChangeableValue<>(this, button);
         buttons.add(buttonChangeableValue);
         super.addVal(buttonChangeableValue);
         return this;

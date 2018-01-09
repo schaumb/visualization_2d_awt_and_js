@@ -17,7 +17,7 @@ public class SelectorWrapper extends DrawableWrapper<Splitter> {
         super(new Splitter(true, 0, null, null));
 
         Splitter splitter = getChild().get();
-        fixSize = new ChangeableValue<>(this, fixSized);
+        fixSize = new ChangeableDrawable.ChangeableValue<>(this, fixSized);
         Slider slider = new Slider(false, 0, () -> false);
         splitter.getFirst().setElem(new ZoomDrawable<>(new ClippedDrawable<>(selector, true,
                 r -> r.withSize(r.getSize().asPoint().multiple(Direction.RIGHT.getVector()).add(

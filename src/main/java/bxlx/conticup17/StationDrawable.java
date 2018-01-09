@@ -26,7 +26,7 @@ public class StationDrawable extends Container<IDrawable> {
     public StationDrawable(Direction direction, RobotStates states, RobotStateTimer timer, int playerNum, int stationNum) {
         super();
 
-        this.time = new ChangeableValue<>(this, () -> timer.getTimer().percent());
+        this.time = new ChangeableDrawable.ChangeableValue<>(this, () -> timer.getTimer().percent());
 
         RobotStates.StationType station = states.getState().getPlayers()[playerNum].getStations().get(stationNum);
         if(station == null)

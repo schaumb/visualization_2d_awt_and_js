@@ -11,19 +11,19 @@ import java.util.function.Supplier;
  * Created by qqcs on 5/10/17.
  */
 public class PacketDrawable extends ChangeableDrawable {
-    private final ChangeableValue<RobotStates.Unit> unit;
-    private final ChangeableValue<Double> size = new ChangeableValue<>(this, (Double) null);
+    private final ChangeableDrawable.ChangeableValue<RobotStates.Unit> unit;
+    private final ChangeableDrawable.ChangeableValue<Double> size = new ChangeableDrawable.ChangeableValue<>(this, (Double) null);
 
     public PacketDrawable(RobotStates.Unit unit, double size) {
-        this.unit = new ChangeableValue<>(this, unit);
+        this.unit = new ChangeableDrawable.ChangeableValue<>(this, unit);
         this.size.setElem(size);
     }
 
     public PacketDrawable(Supplier<RobotStates.Unit> unit) {
-        this.unit = new ChangeableValue<>(this, unit);
+        this.unit = new ChangeableDrawable.ChangeableValue<>(this, unit);
     }
 
-    public ChangeableValue<RobotStates.Unit> getUnit() {
+    public ChangeableDrawable.ChangeableValue<RobotStates.Unit> getUnit() {
         return unit;
     }
 

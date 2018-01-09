@@ -1,5 +1,6 @@
 package bxlx.graphics.container;
 
+import bxlx.graphics.ChangeableDrawable;
 import bxlx.graphics.Direction;
 import bxlx.graphics.ICanvas;
 import bxlx.graphics.IDrawable;
@@ -15,7 +16,7 @@ import java.util.function.Supplier;
  * Created by qqcs on 2017.01.04..
  */
 public class Splitter extends DrawableContainer<IDrawable> {
-    private final ChangeableValue<Boolean> xSplit;
+    private final ChangeableDrawable.ChangeableValue<Boolean> xSplit;
     private final ChangeableDependentValue<Double, Rectangle> separate;
 
     public Splitter(boolean xSplit, double separate, IDrawable first, IDrawable second) {
@@ -38,7 +39,7 @@ public class Splitter extends DrawableContainer<IDrawable> {
 
     public Splitter(boolean xSplit, Function<Rectangle, Double> separate, IDrawable first, IDrawable second) {
         super(Arrays.asList(first, second));
-        this.xSplit = new ChangeableValue<>(this, xSplit);
+        this.xSplit = new ChangeableDrawable.ChangeableValue<>(this, xSplit);
         this.separate = new ChangeableDependentValue<>(this, separate);
     }
 
@@ -127,7 +128,7 @@ public class Splitter extends DrawableContainer<IDrawable> {
                 new Splitter(xSplit, sep2, center, last));
     }
 
-    public ChangeableValue<Boolean> getxSplit() {
+    public ChangeableDrawable.ChangeableValue<Boolean> getxSplit() {
         return xSplit;
     }
 
@@ -135,22 +136,22 @@ public class Splitter extends DrawableContainer<IDrawable> {
         return separate;
     }
 
-    public ChangeableValue<IDrawable> getFirst() {
+    public ChangeableDrawable.ChangeableValue<IDrawable> getFirst() {
         return get(0);
     }
 
-    public ChangeableValue<IDrawable> getSecond() {
+    public ChangeableDrawable.ChangeableValue<IDrawable> getSecond() {
         return get(1);
     }
 
     @Override
-    public Redraw needRedraw() {
-        return super.needRedraw().setIf(xSplit.isChanged() || separate.isChanged(), Redraw.PARENT_NEED_REDRAW);
+    public IDrawable.Redraw needRedraw() {
+        return super.needRedraw().setIf(xSplit.isChanged() || separate.isChanged(), IDrawable.Redraw.PARENT_NEED_REDRAW);
     }
 
     @Override
     public void forceRedraw(ICanvas canvas) {
-        Redraw redraw = needRedraw();
+        IDrawable.Redraw redraw = needRedraw();
         boolean noNeedRedraw = redraw.noNeedRedraw();
         boolean iNeedRedraw = redraw.iNeedRedraw();
 

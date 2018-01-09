@@ -8,14 +8,14 @@ import bxlx.graphics.shapes.Rectangle;
  * Created by qqcs on 2017.01.09..
  */
 public class DrawRectangle extends ChangeableDrawable {
-    private final ChangeableValue<Double> percent;
+    private final ChangeableDrawable.ChangeableValue<Double> percent;
 
     public DrawRectangle() {
         this(1);
     }
 
     public DrawRectangle(double percent) {
-        this.percent = new ChangeableValue<>(this, percent);
+        this.percent = new ChangeableDrawable.ChangeableValue<>(this, percent);
     }
 
 

@@ -18,26 +18,26 @@ public abstract class DrawableContainer<T extends IDrawable> extends ChangeableD
 
     public DrawableContainer(List<T> children) {
         for (T drawable : children) {
-            this.children.add(new ChangeableValue<>(this, drawable));
+            this.children.add(new ChangeableDrawable.ChangeableValue<>(this, drawable));
         }
     }
 
     @Override
-    public Redraw needRedraw() {
+    public IDrawable.Redraw needRedraw() {
         return super.needRedraw().orIf(true, childrenChanged());
     }
 
     protected DrawableContainer<T> add(T elem) {
-        children.add(new ChangeableValue<>(this, elem));
+        children.add(new ChangeableDrawable.ChangeableValue<>(this, elem));
         return this;
     }
 
     protected DrawableContainer<T> add(Supplier<T> elem) {
-        children.add(new ChangeableValue<>(this, elem));
+        children.add(new ChangeableDrawable.ChangeableValue<>(this, elem));
         return this;
     }
 
-    protected ChangeableValue<T> get(int index) {
+    protected ChangeableDrawable.ChangeableValue<T> get(int index) {
         return children.get(index);
     }
 
@@ -45,16 +45,16 @@ public abstract class DrawableContainer<T extends IDrawable> extends ChangeableD
         return children.size();
     }
 
-    protected Redraw childrenChanged() {
+    protected IDrawable.Redraw childrenChanged() {
         boolean parent = parentRedrawSatisfy();
-        Redraw result = new Redraw();
+        IDrawable.Redraw result = new IDrawable.Redraw();
         for (ChangeableValue<T> drawable : children) {
             T child = drawable.get();
             if (child != null) {
-                Redraw childNeedRedraw = child.needRedraw();
+                IDrawable.Redraw childNeedRedraw = child.needRedraw();
 
                 if (parent && childNeedRedraw.needRedraw()) {
-                    return new Redraw(Redraw.CHILD_NEED_REDRAW);
+                    return new IDrawable.Redraw(Redraw.CHILD_NEED_REDRAW);
                 } else if (childNeedRedraw.needRedraw()) {
                     if (childNeedRedraw.parentNeedRedraw()) {
                         result.setParentNeedRedraw();

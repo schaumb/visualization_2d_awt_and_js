@@ -1,5 +1,6 @@
 package bxlx.graphics.drawable;
 
+import bxlx.graphics.ChangeableDrawable;
 import bxlx.graphics.IDrawable;
 import bxlx.graphics.Point;
 import bxlx.graphics.Size;
@@ -13,14 +14,14 @@ import java.util.function.Supplier;
  * Created by qqcs on 2017.01.09..
  */
 public class AspectRatioDrawable<T extends IDrawable> extends ClippedDrawable<T> {
-    private final ChangeableValue<Integer> alignX;
-    private final ChangeableValue<Integer> alignY;
+    private final ChangeableDrawable.ChangeableValue<Integer> alignX;
+    private final ChangeableDrawable.ChangeableValue<Integer> alignY;
     private final ChangeableDependentValue<Double, T> ratio;
 
     public AspectRatioDrawable(T wrapped, boolean fake, int alignX, int alignY, Function<T, Double> ratio) {
         super(wrapped, fake, null);
-        this.alignX = new ChangeableValue<>(this, alignX);
-        this.alignY = new ChangeableValue<>(this, alignY);
+        this.alignX = new ChangeableDrawable.ChangeableValue<>(this, alignX);
+        this.alignY = new ChangeableDrawable.ChangeableValue<>(this, alignY);
         this.ratio = new ChangeableDependentValue<>(this, ratio);
         this.ratio.setDepSup(getChild().getAsSupplier());
         setTheClip();
@@ -34,15 +35,15 @@ public class AspectRatioDrawable<T extends IDrawable> extends ClippedDrawable<T>
         this(wrapped, fake, alignX, alignY, r -> ratio);
     }
 
-    public ChangeableValue<Integer> getAlignX() {
+    public ChangeableDrawable.ChangeableValue<Integer> getAlignX() {
         return alignX;
     }
 
-    public ChangeableValue<Integer> getAlignY() {
+    public ChangeableDrawable.ChangeableValue<Integer> getAlignY() {
         return alignY;
     }
 
-    public ChangeableValue<Double> getRatio() {
+    public ChangeableDrawable.ChangeableValue<Double> getRatio() {
         return ratio;
     }
 

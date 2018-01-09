@@ -1,5 +1,6 @@
 package bxlx.graphics.container;
 
+import bxlx.graphics.ChangeableDrawable;
 import bxlx.graphics.Direction;
 import bxlx.graphics.ICanvas;
 import bxlx.graphics.IDrawable;
@@ -13,7 +14,7 @@ import java.util.List;
  * Created by qqcs on 2017.01.04..
  */
 public class SplitContainer<T extends IDrawable> extends SizeChangeableContainer<T, SplitContainer<T>> {
-    private final ChangeableValue<Boolean> xSplit;
+    private final ChangeableDrawable.ChangeableValue<Boolean> xSplit;
 
     public SplitContainer() {
         this(false, new ArrayList<>());
@@ -34,10 +35,10 @@ public class SplitContainer<T extends IDrawable> extends SizeChangeableContainer
 
     public SplitContainer(boolean xSplit, List<T> list) {
         super(list);
-        this.xSplit = new ChangeableValue<>(this, xSplit);
+        this.xSplit = new ChangeableDrawable.ChangeableValue<>(this, xSplit);
     }
 
-    public ChangeableValue<Boolean> getxSplit() {
+    public ChangeableDrawable.ChangeableValue<Boolean> getxSplit() {
         return xSplit;
     }
 
@@ -52,7 +53,7 @@ public class SplitContainer<T extends IDrawable> extends SizeChangeableContainer
             return;
         }
 
-        Redraw redraw = needRedraw();
+        IDrawable.Redraw redraw = needRedraw();
         boolean noNeedRedraw = redraw.noNeedRedraw();
         boolean iNeedRedraw = redraw.iNeedRedraw();
 

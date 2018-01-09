@@ -2,7 +2,7 @@ package bxlx.jsweet;
 
 import bxlx.general.EntryPoint;
 
-import static jsweet.dom.Globals.window;
+import static def.dom.Globals.window;
 
 /**
  * Created by qqcs on 2016.12.22..

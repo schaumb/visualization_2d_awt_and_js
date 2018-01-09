@@ -13,14 +13,14 @@ import java.util.function.Supplier;
  */
 public class GameViewer extends Splitter {
     private final ChangeableDrawable.ChangeableValue<String> file;
-    private final ChangeableValue<StateHolder> stateHolder;
+    private final ChangeableDrawable.ChangeableValue<StateHolder> stateHolder;
     private PlayState playState = new PlayState();
 
 
     public GameViewer(Supplier<String> val, ChangeableDrawable.ChangeableValue<Boolean> settingIsOn) {
         super(true, -600, null, null);
-        this.file = new ChangeableValue<>(this, val);
-        this.stateHolder = new ChangeableValue<>(this, (StateHolder) null);
+        this.file = new ChangeableDrawable.ChangeableValue<>(this, val);
+        this.stateHolder = new ChangeableDrawable.ChangeableValue<>(this, (StateHolder) null);
 
         getFirst().setElem(
                 new Splitter(false, () -> settingIsOn.get() ? -50.0 : 0.0,
@@ -41,7 +41,7 @@ public class GameViewer extends Splitter {
 
     @Override
     public IDrawable.Redraw needRedraw() {
-        return super.needRedraw().setIf(file.isChanged() || stateHolder.isChanged(), Redraw.PARENT_NEED_REDRAW);
+        return super.needRedraw().setIf(file.isChanged() || stateHolder.isChanged(), IDrawable.Redraw.PARENT_NEED_REDRAW);
     }
 
     @Override
@@ -57,7 +57,7 @@ public class GameViewer extends Splitter {
             SystemSpecific.get().log("No file argument");
             return;
         }
-        if(fileName == null || !SystemSpecific.get().equals(fileName, file.get())) {
+        if(fileName == null || !SystemSpecific.get().isEquals(fileName, file.get())) {
             return;
         }
         stateHolder.setElem(null);
@@ -68,7 +68,7 @@ public class GameViewer extends Splitter {
     }
 
     public void start(String fileName, String file) {
-        if(!SystemSpecific.get().equals(fileName, this.file.get())) {
+        if(!SystemSpecific.get().isEquals(fileName, this.file.get())) {
             return;
         }
 

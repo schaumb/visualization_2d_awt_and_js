@@ -1,5 +1,6 @@
 package bxlx.graphics.container;
 
+import bxlx.graphics.ChangeableDrawable;
 import bxlx.graphics.ICanvas;
 import bxlx.graphics.IDrawable;
 
@@ -10,7 +11,7 @@ import java.util.List;
  * Created by qqcs on 2017.01.09..
  */
 public class Container<T extends IDrawable> extends SizeChangeableContainer<T, Container<T>> {
-    private final ChangeableValue<Integer> forceRedrawPrevLayer;
+    private final ChangeableDrawable.ChangeableValue<Integer> forceRedrawPrevLayer;
 
     public Container() {
         this(new ArrayList<>());
@@ -27,7 +28,7 @@ public class Container<T extends IDrawable> extends SizeChangeableContainer<T, C
 
     public Container(List<T> children, int forceRedrawPrevLayer) {
         super(children);
-        this.forceRedrawPrevLayer = new ChangeableValue<>(this, forceRedrawPrevLayer);
+        this.forceRedrawPrevLayer = new ChangeableDrawable.ChangeableValue<>(this, forceRedrawPrevLayer);
     }
 
     @Override
@@ -37,7 +38,7 @@ public class Container<T extends IDrawable> extends SizeChangeableContainer<T, C
 
     @Override
     protected void forceRedraw(ICanvas canvas) {
-        Redraw redraw = needRedraw();
+        IDrawable.Redraw redraw = needRedraw();
         boolean noNeedRedraw = redraw.noNeedRedraw();
         boolean iNeedRedraw = redraw.iNeedRedraw();
 
@@ -47,7 +48,7 @@ public class Container<T extends IDrawable> extends SizeChangeableContainer<T, C
                 continue;
             }
 
-            Redraw childRedraw = child.needRedraw();
+            IDrawable.Redraw childRedraw = child.needRedraw();
             boolean setINeedRedraw = false;
             if (!iNeedRedraw && childRedraw.needRedraw()) {
                 if (i > 0 && childRedraw.parentNeedRedraw()) {

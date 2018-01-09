@@ -10,17 +10,17 @@ import bxlx.graphics.shapes.Rectangle;
  * Created by qqcs on 2016.12.24..
  */
 public class Rect extends ChangeableDrawable {
-    private final ChangeableValue<Double> rate;
+    private final ChangeableDrawable.ChangeableValue<Double> rate;
 
     public Rect() {
         this(1 / 3.0);
     }
 
     public Rect(double rate) {
-        this.rate = new ChangeableValue<>(this, rate);
+        this.rate = new ChangeableDrawable.ChangeableValue<>(this, rate);
     }
 
-    public ChangeableValue<Double> getRate() {
+    public ChangeableDrawable.ChangeableValue<Double> getRate() {
         return rate;
     }
 

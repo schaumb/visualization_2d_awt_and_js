@@ -9,11 +9,10 @@
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
-    <orderEntry type="library" name="Maven: org.jsweet.candies:jsweet-core:1.1.0-SNAPSHOT" level="project" />
-    <orderEntry type="library" name="Maven: com.google.code.gson:gson:2.6" level="project" />
-    <orderEntry type="library" name="Maven: org.jsweet.candies:j4ts:0.3.0-SNAPSHOT" level="project" />
-    <orderEntry type="library" name="Maven: org.jsweet.candies:sprintf-js:0.0.0-SNAPSHOT" level="project" />
-    <orderEntry type="library" name="Maven: org.jsweet.candies:jquery:1.10.0-SNAPSHOT" level="project" />
+    <orderEntry type="library" name="Maven: org.jsweet:jsweet-core:6-SNAPSHOT" level="project" />
+    <orderEntry type="library" name="Maven: com.google.code.gson:gson:2.8.2" level="project" />
+    <orderEntry type="library" name="Maven: org.jsweet.candies.ext:angular:1.4.0-SNAPSHOT" level="project" />
+    <orderEntry type="library" name="Maven: org.jsweet.candies.ext:jquery:1.10.0-SNAPSHOT" level="project" />
     <orderEntry type="library" name="Maven: javax.media:jmf:2.1.1e" level="project" />
   </component>
 </module>

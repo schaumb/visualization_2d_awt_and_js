@@ -11,12 +11,12 @@ import java.util.function.Supplier;
 public class DiscreteSlider extends Slider {
     private double realCachedNow;
     private final ChangeableDrawable.ChangeableValue<Integer> from;
-    private final ChangeableValue<Integer> to;
+    private final ChangeableDrawable.ChangeableValue<Integer> to;
 
     public DiscreteSlider(boolean xDraw, int from, int to, int now, Supplier<Boolean> disabled) {
         super(xDraw, (double) (now - from) / (to - 1 - from), disabled);
-        this.from = new ChangeableValue<>(this, from);
-        this.to = new ChangeableValue<>(this, to);
+        this.from = new ChangeableDrawable.ChangeableValue<>(this, from);
+        this.to = new ChangeableDrawable.ChangeableValue<>(this, to);
         realCachedNow = (double) (now - from) / (to - 1 - from);
     }
 

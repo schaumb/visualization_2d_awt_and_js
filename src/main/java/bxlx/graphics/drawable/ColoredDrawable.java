@@ -1,5 +1,6 @@
 package bxlx.graphics.drawable;
 
+import bxlx.graphics.ChangeableDrawable;
 import bxlx.graphics.Color;
 import bxlx.graphics.ICanvas;
 import bxlx.graphics.IDrawable;
@@ -10,19 +11,19 @@ import java.util.function.Supplier;
  * Created by qqcs on 2017.01.09..
  */
 public class ColoredDrawable<T extends IDrawable> extends DrawableWrapper<T> {
-    private final ChangeableValue<Color> color;
+    private final ChangeableDrawable.ChangeableValue<Color> color;
 
     public ColoredDrawable(T wrapped, Color color) {
         super(wrapped);
-        this.color = new ChangeableValue<>(this, color);
+        this.color = new ChangeableDrawable.ChangeableValue<>(this, color);
     }
 
     public ColoredDrawable(T wrapped, Supplier<Color> color) {
         super(wrapped);
-        this.color = new ChangeableValue<>(this, color);
+        this.color = new ChangeableDrawable.ChangeableValue<>(this, color);
     }
 
-    public ChangeableValue<Color> getColor() {
+    public ChangeableDrawable.ChangeableValue<Color> getColor() {
         return color;
     }
 

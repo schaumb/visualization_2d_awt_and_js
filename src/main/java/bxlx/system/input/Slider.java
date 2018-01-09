@@ -28,7 +28,7 @@ public class Slider extends DrawableWrapper<Container<IDrawable>> implements IMo
     private Rectangle lastRectangle = Rectangle.NULL_RECTANGLE;
     private final Button<?> button;
     private final ChangeableDrawable.ChangeableValue<Boolean> xDraw;
-    private final ChangeableValue<Double> now;
+    private final ChangeableDrawable.ChangeableValue<Double> now;
 
     public Slider(boolean xDraw, double start, Supplier<Boolean> disabled) {
         this(new Button<>(new RectClickable(null), null, null, disabled), xDraw, start);
@@ -38,8 +38,8 @@ public class Slider extends DrawableWrapper<Container<IDrawable>> implements IMo
         super(new Container<>());
 
         this.button = button;
-        this.xDraw = new ChangeableValue<>(this, xDraw);
-        this.now = new ChangeableValue<>(this, Math.max(0, Math.min(1, start)));
+        this.xDraw = new ChangeableDrawable.ChangeableValue<>(this, xDraw);
+        this.now = new ChangeableDrawable.ChangeableValue<>(this, Math.max(0, Math.min(1, start)));
 
         Stick mainStick = new Stick(0, 0.1, 0.5, null, null);
         mainStick.getAngle().setSupplier(() -> this.xDraw.get() ? 0 : Math.PI / 2);
@@ -59,18 +59,18 @@ public class Slider extends DrawableWrapper<Container<IDrawable>> implements IMo
 
     @Override
     public IDrawable.Redraw needRedraw() {
-        return super.needRedraw().setIf(now.isChanged(), Redraw.PARENT_NEED_REDRAW);
+        return super.needRedraw().setIf(now.isChanged(), IDrawable.Redraw.PARENT_NEED_REDRAW);
     }
 
-    public ChangeableValue<Boolean> getxDraw() {
+    public ChangeableDrawable.ChangeableValue<Boolean> getxDraw() {
         return xDraw;
     }
 
-    public ChangeableValue<Double> getNow() {
+    public ChangeableDrawable.ChangeableValue<Double> getNow() {
         return now;
     }
 
-    public ChangeableValue<Boolean> getDisable() {
+    public ChangeableDrawable.ChangeableValue<Boolean> getDisable() {
         return button.getDisabled();
     }
 

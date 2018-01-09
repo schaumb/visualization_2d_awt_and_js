@@ -14,8 +14,8 @@ public class FPS implements IDrawable {
     private long drewFrames;
 
     @Override
-    public Redraw needRedraw() {
-        return new Redraw(Redraw.I_NEED_REDRAW);
+    public IDrawable.Redraw needRedraw() {
+        return new IDrawable.Redraw(IDrawable.Redraw.I_NEED_REDRAW);
     }
 
     @Override

@@ -49,7 +49,7 @@ public class ValueOrSupplier<T> {
     }
 
     public boolean isChanged() {
-        return !SystemSpecific.get().equals(lastShowedElem, supplier == null ? lastGetElem : (lastGetElem = supplier.get()));
+        return !SystemSpecific.get().isEquals(lastShowedElem, supplier == null ? lastGetElem : (lastGetElem = supplier.get()));
     }
 
     public void commit() {

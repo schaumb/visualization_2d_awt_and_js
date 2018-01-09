@@ -21,17 +21,17 @@ import java.util.function.UnaryOperator;
 public class ElementDrawable extends ChangeableDrawable {
     private final StateHolder stateHolder;
     private final PlayState playState;
-    private final ChangeableValue<States> statesChangeableValue;
-    private final ChangeableValue<Double> statePercent;
-    private final ChangeableValue<Integer> stateIndex;
+    private final ChangeableDrawable.ChangeableValue<States> statesChangeableValue;
+    private final ChangeableDrawable.ChangeableValue<Double> statePercent;
+    private final ChangeableDrawable.ChangeableValue<Integer> stateIndex;
 
     public ElementDrawable(StateHolder stateHolder, PlayState playState) {
         this.stateHolder = stateHolder;
         this.playState = playState;
 
-        statesChangeableValue = new ChangeableValue<>(this, () -> playState.getState());
-        statePercent = new ChangeableValue<>(this, () -> playState.getState().getTimer().percent());
-        stateIndex = new ChangeableValue<>(this, () -> stateHolder == null ? null : stateHolder.getStateIndex());
+        statesChangeableValue = new ChangeableDrawable.ChangeableValue<>(this, () -> playState.getState());
+        statePercent = new ChangeableDrawable.ChangeableValue<>(this, () -> playState.getState().getTimer().percent());
+        stateIndex = new ChangeableDrawable.ChangeableValue<>(this, () -> stateHolder == null ? null : stateHolder.getStateIndex());
     }
 
     @Override

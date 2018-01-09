@@ -22,7 +22,7 @@ public class Selector extends SplitContainer<MarginDrawable<Container>> {
 
     public Selector(boolean xSplit, boolean hasReferenceText) {
         super(xSplit);
-        this.getReferenceText = hasReferenceText ? new ChangeableValue<>(this, "") : null;
+        this.getReferenceText = hasReferenceText ? new ChangeableDrawable.ChangeableValue<>(this, "") : null;
     }
 
     public Supplier<Integer> getSelected() {

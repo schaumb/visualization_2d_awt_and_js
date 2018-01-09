@@ -16,13 +16,13 @@ import java.util.function.Supplier;
  */
 public class RobotStateTimer extends ChangeableDrawable {
     private final RobotStates states;
-    private Timer timer = new ChangeableTimer(this, new Timer(1500)).getTimer();
+    private Timer timer = new ChangeableDrawable.ChangeableTimer(this, new Timer(1500)).getTimer();
     private final ChangeableDrawable.ChangeableValue<Double> now;
     private final ChangeableDrawable.ChangeableValue<Double> speedSlider;
-    public RobotStateTimer(RobotStates states, ChangeableValue<Double> now, ChangeableValue<Double> speedSlider) {
+    public RobotStateTimer(RobotStates states, ChangeableDrawable.ChangeableValue<Double> now, ChangeableDrawable.ChangeableValue<Double> speedSlider) {
         this.states = states;
         this.now = now;
-        new ChangeableValue<>(this, now.getAsSupplier());
+        new ChangeableDrawable.ChangeableValue<>(this, now.getAsSupplier());
         this.speedSlider = speedSlider;
     }
 

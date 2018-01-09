@@ -9,14 +9,14 @@ import bxlx.graphics.shapes.Arc;
  * Created by qqcs on 2017.01.09..
  */
 public class DrawArc extends ChangeableDrawable {
-    private ChangeableValue<Boolean> inside;
-    private ChangeableValue<Double> fromRadius;
-    private ChangeableValue<Double> toRadius;
+    private ChangeableDrawable.ChangeableValue<Boolean> inside;
+    private ChangeableDrawable.ChangeableValue<Double> fromRadius;
+    private ChangeableDrawable.ChangeableValue<Double> toRadius;
 
     public DrawArc(boolean inside, double fromRadius, double toRadius) {
-        this.inside = new ChangeableValue<>(this, inside);
-        this.fromRadius = new ChangeableValue<>(this, fromRadius);
-        this.toRadius = new ChangeableValue<>(this, toRadius);
+        this.inside = new ChangeableDrawable.ChangeableValue<>(this, inside);
+        this.fromRadius = new ChangeableDrawable.ChangeableValue<>(this, fromRadius);
+        this.toRadius = new ChangeableDrawable.ChangeableValue<>(this, toRadius);
         setRedraw();
     }
 

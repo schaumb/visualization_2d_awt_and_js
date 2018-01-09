@@ -70,7 +70,7 @@ public abstract class SystemSpecific {
         return rendering;
     }
 
-    abstract public <T> boolean equals(T first, T second);
+    abstract public <T> boolean isEquals(T first, T second);
 
     abstract public int stringLength(Font font, String string);
 

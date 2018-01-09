@@ -11,16 +11,16 @@ import java.util.function.Supplier;
  * Created by qqcs on 5/10/17.
  */
 public class ShapeClippedDrawable<T extends IDrawable> extends DrawableWrapper<T> {
-    private final ChangeableValue<Shape> shape;
+    private final ChangeableDrawable.ChangeableValue<Shape> shape;
 
     public ShapeClippedDrawable(T drawable, Shape shape) {
         super(drawable);
-        this.shape = new ChangeableValue<>(this, shape);
+        this.shape = new ChangeableDrawable.ChangeableValue<>(this, shape);
     }
 
     public ShapeClippedDrawable(T drawable, Supplier<Shape> shape) {
         super(drawable);
-        this.shape = new ChangeableValue<>(this, shape);
+        this.shape = new ChangeableDrawable.ChangeableValue<>(this, shape);
     }
 
     @Override

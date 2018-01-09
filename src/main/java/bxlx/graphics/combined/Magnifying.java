@@ -13,13 +13,13 @@ import bxlx.graphics.fill.Text;
 public class Magnifying extends ChangeableDrawable {
     private final DrawArc arc = DrawArc.circle(true);
     private final DrawRectangle clipRect = new DrawRectangle(0.8);
-    private final ChangeableValue<Boolean> plus;
+    private final ChangeableDrawable.ChangeableValue<Boolean> plus;
 
     public Magnifying(boolean plus) {
-        this.plus = new ChangeableValue<>(this, plus);
+        this.plus = new ChangeableDrawable.ChangeableValue<>(this, plus);
     }
 
-    public ChangeableValue<Boolean> getPlus() {
+    public ChangeableDrawable.ChangeableValue<Boolean> getPlus() {
         return plus;
     }
 

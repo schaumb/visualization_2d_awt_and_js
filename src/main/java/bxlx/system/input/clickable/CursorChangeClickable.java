@@ -15,7 +15,7 @@ public class CursorChangeClickable extends Button.Clickable {
     private final ChangeableDrawable.ChangeableValue<Boolean> hoverChangeable;
 
     public CursorChangeClickable() {
-        hoverChangeable = new ChangeableValue<>(this, () -> getHoverNow());
+        hoverChangeable = new ChangeableDrawable.ChangeableValue<>(this, () -> getHoverNow());
     }
 
     @Override

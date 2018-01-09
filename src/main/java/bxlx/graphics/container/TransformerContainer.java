@@ -1,5 +1,6 @@
 package bxlx.graphics.container;
 
+import bxlx.graphics.ChangeableDrawable;
 import bxlx.graphics.IDrawable;
 import bxlx.graphics.drawable.DrawableWrapper;
 
@@ -19,18 +20,18 @@ public class TransformerContainer<F extends IDrawable, U extends IDrawable, T ex
     }
 
     public TransformerContainer<F, U, T> add(F elem) {
-        getChild().get().add(new ChangeableValue<>(this, elem).transform(transformFunction).getAsSupplier());
+        getChild().get().add(new ChangeableDrawable.ChangeableValue<>(this, elem).transform(transformFunction).getAsSupplier());
         return this;
     }
 
     public TransformerContainer<F, U, T> add(Supplier<F> supplier) {
-        getChild().get().add(new ChangeableValue<>(this, supplier).transform(transformFunction).getAsSupplier());
+        getChild().get().add(new ChangeableDrawable.ChangeableValue<>(this, supplier).transform(transformFunction).getAsSupplier());
         return this;
     }
 
     public TransformerContainer<F, U, T> add(ArrayList<F> elems) {
         for (F elem : elems) {
-            getChild().get().add(new ChangeableValue<>(this, elem).transform(transformFunction).getAsSupplier());
+            getChild().get().add(new ChangeableDrawable.ChangeableValue<>(this, elem).transform(transformFunction).getAsSupplier());
         }
         return this;
     }
@@ -44,7 +45,7 @@ public class TransformerContainer<F extends IDrawable, U extends IDrawable, T ex
         return transformFunction;
     }
 
-    public ChangeableValue<U> get(int index) {
+    public ChangeableDrawable.ChangeableValue<U> get(int index) {
         return getChild().get().get(index);
     }
 

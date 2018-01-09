@@ -1,5 +1,6 @@
 package bxlx.graphics.combined;
 
+import bxlx.graphics.ChangeableDrawable;
 import bxlx.graphics.Direction;
 import bxlx.graphics.ICanvas;
 import bxlx.graphics.IDrawable;
@@ -16,20 +17,20 @@ import java.util.Arrays;
  * Created by qqcs on 2017.01.10..
  */
 public class Stick extends DrawableContainer<IDrawable> {
-    private final ChangeableValue<Double> angle;
+    private final ChangeableDrawable.ChangeableValue<Double> angle;
     private final ChangeableDependentValue<Double, Rectangle> length;
-    private final ChangeableValue<Double> thickness;
-    private final ChangeableValue<Boolean> half;
+    private final ChangeableDrawable.ChangeableValue<Double> thickness;
+    private final ChangeableDrawable.ChangeableValue<Boolean> half;
 
     public Stick(double angle, double length, double thickness, IDrawable start, IDrawable end) {
         super(Arrays.asList(start, end));
-        this.angle = new ChangeableValue<>(this, angle);
+        this.angle = new ChangeableDrawable.ChangeableValue<>(this, angle);
         this.length = new ChangeableDependentValue<>(this, r -> length);
-        this.thickness = new ChangeableValue<>(this, thickness);
-        this.half = new ChangeableValue<>(this, false);
+        this.thickness = new ChangeableDrawable.ChangeableValue<>(this, thickness);
+        this.half = new ChangeableDrawable.ChangeableValue<>(this, false);
     }
 
-    public ChangeableValue<Double> getAngle() {
+    public ChangeableDrawable.ChangeableValue<Double> getAngle() {
         return angle;
     }
 
@@ -37,7 +38,7 @@ public class Stick extends DrawableContainer<IDrawable> {
         return length;
     }
 
-    public ChangeableValue<Double> getThickness() {
+    public ChangeableDrawable.ChangeableValue<Double> getThickness() {
         return thickness;
     }
 
@@ -52,7 +53,7 @@ public class Stick extends DrawableContainer<IDrawable> {
         double nowThickness = thickness.get();
         boolean nowHalf = half.get();
 
-        Redraw redraw = needRedraw();
+        IDrawable.Redraw redraw = needRedraw();
         boolean noNeedRedraw = redraw.noNeedRedraw();
         boolean iNeedRedraw = redraw.iNeedRedraw() || redraw.parentNeedRedraw();
 

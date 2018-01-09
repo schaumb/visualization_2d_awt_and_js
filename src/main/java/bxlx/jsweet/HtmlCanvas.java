@@ -10,19 +10,15 @@ import bxlx.graphics.shapes.Arc;
 import bxlx.graphics.shapes.Polygon;
 import bxlx.graphics.shapes.Rectangle;
 import bxlx.graphics.shapes.Shape;
-import jsweet.dom.CanvasGradient;
-import jsweet.dom.CanvasPattern;
-import jsweet.dom.CanvasRenderingContext2D;
-import jsweet.dom.HTMLCanvasElement;
-import jsweet.dom.HTMLImageElement;
+import def.dom.CanvasRenderingContext2D;
+import def.dom.HTMLCanvasElement;
+import def.dom.HTMLImageElement;
 import jsweet.util.StringTypes;
-import jsweet.util.union.Union3;
 
 import java.util.List;
 import java.util.Stack;
 
-import static jsweet.dom.Globals.document;
-import static jsweet.util.Globals.union;
+import static def.dom.Globals.document;
 
 /**
  * Created by qqcs on 2016.12.23..
@@ -30,7 +26,7 @@ import static jsweet.util.Globals.union;
 public class HtmlCanvas implements ICanvas {
     private final CanvasRenderingContext2D context;
     private final Stack<Rectangle> clips = new Stack<>();
-    private final Stack<Union3<String, CanvasGradient, CanvasPattern>> patterns = new Stack<>();
+    private final Stack<Object> patterns = new Stack<>();
     static final ImageCaches<HTMLImageElement> imageCaches =
             new ImageCaches<>(src -> {
                 HTMLImageElement img = document.createElement(StringTypes.img);
@@ -55,7 +51,7 @@ public class HtmlCanvas implements ICanvas {
     public void setColor(Color color) {
         if (color == null) return;
         latestColor = color;
-        context.fillStyle = union(color.toString());
+        context.fillStyle = color.toString();
 
         context.globalAlpha = color.getAlpha();
     }
@@ -75,9 +71,7 @@ public class HtmlCanvas implements ICanvas {
             CanvasRenderingContext2D tmpCanvas = tmpCanvasElement.getContext(StringTypes._2d);
             tmpCanvas.drawImage(element, 0, 0, resizeImg.getWidth(), resizeImg.getHeight());
 
-            CanvasPattern canvasPattern = context.createPattern(tmpCanvasElement, "repeat");
-
-            context.fillStyle = union(canvasPattern);
+            context.fillStyle = context.createPattern(tmpCanvasElement, "repeat");
             patterns.push(context.fillStyle);
         }
     }

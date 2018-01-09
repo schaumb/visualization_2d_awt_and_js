@@ -1,5 +1,6 @@
 package bxlx.graphics.drawable;
 
+import bxlx.graphics.ChangeableDrawable;
 import bxlx.graphics.ICanvas;
 import bxlx.graphics.IDrawable;
 
@@ -9,26 +10,26 @@ import java.util.function.Supplier;
  * Created by qqcs on 2017.01.09..
  */
 public class VisibleDrawable<T extends VisibleDrawable.VisibleDraw> extends DrawableWrapper<T> {
-    private final ChangeableValue<Boolean> visible;
+    private final ChangeableDrawable.ChangeableValue<Boolean> visible;
 
     public VisibleDrawable(T wrapped, boolean visible) {
         super(wrapped);
-        this.visible = new ChangeableValue<>(this, visible);
+        this.visible = new ChangeableDrawable.ChangeableValue<>(this, visible);
     }
 
     public VisibleDrawable(T wrapped, Supplier<Boolean> visible) {
         super(wrapped);
-        this.visible = new ChangeableValue<>(this, visible);
+        this.visible = new ChangeableDrawable.ChangeableValue<>(this, visible);
     }
 
-    public ChangeableValue<Boolean> getVisible() {
+    public ChangeableDrawable.ChangeableValue<Boolean> getVisible() {
         return visible;
     }
 
 
     @Override
-    public Redraw needRedraw() {
-        return super.needRedraw().setIf(!visible.get() && visible.isChanged(), Redraw.PARENT_NEED_REDRAW);
+    public IDrawable.Redraw needRedraw() {
+        return super.needRedraw().setIf(!visible.get() && visible.isChanged(), IDrawable.Redraw.PARENT_NEED_REDRAW);
     }
 
     @Override
@@ -36,7 +37,7 @@ public class VisibleDrawable<T extends VisibleDrawable.VisibleDraw> extends Draw
         if (getChild().get() == null)
             return;
 
-        Redraw redraw = needRedraw();
+        IDrawable.Redraw redraw = needRedraw();
         boolean noNeedRedraw = redraw.noNeedRedraw();
         boolean iNeedRedraw = redraw.iNeedRedraw();
 

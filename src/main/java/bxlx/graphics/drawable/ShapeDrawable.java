@@ -10,14 +10,14 @@ import java.util.function.Supplier;
  * Created by qqcs on 5/8/17.
  */
 public class ShapeDrawable extends ChangeableDrawable {
-    private final ChangeableValue<Shape> shape;
+    private final ChangeableDrawable.ChangeableValue<Shape> shape;
 
     public ShapeDrawable(Shape shape) {
-        this.shape = new ChangeableValue<>(this, shape);
+        this.shape = new ChangeableDrawable.ChangeableValue<>(this, shape);
     }
 
     public ShapeDrawable(Supplier<Shape> shape) {
-        this.shape = new ChangeableValue<>(this, shape);
+        this.shape = new ChangeableDrawable.ChangeableValue<>(this, shape);
     }
 
     @Override

@@ -240,7 +240,7 @@ public class AwtSystemSpecific extends SystemSpecific {
     }
 
     @Override
-    public <T> boolean equals(T first, T second) {
+    public <T> boolean isEquals(T first, T second) {
         return Objects.equals(first, second);
     }
 

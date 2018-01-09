@@ -22,19 +22,19 @@ import java.util.Arrays;
 public class RobotDrawable extends ChangeableDrawable {
     private final RobotStates states;
     private final int playerNum;
-    private final ChangeableValue<Double> timerFun;
-    private final ChangeableValue<Long> mainTime;
+    private final ChangeableDrawable.ChangeableValue<Double> timerFun;
+    private final ChangeableDrawable.ChangeableValue<Long> mainTime;
 
     public RobotDrawable(RobotStates states, RobotStateTimer timer, int playerNum) {
         this.states = states;
         this.playerNum = playerNum;
-        this.timerFun = new ChangeableValue<>(this, () -> timer.getTimer().percent());
-        this.mainTime = new ChangeableValue<>(this, () -> states.getTime());
+        this.timerFun = new ChangeableDrawable.ChangeableValue<>(this, () -> timer.getTimer().percent());
+        this.mainTime = new ChangeableDrawable.ChangeableValue<>(this, () -> states.getTime());
     }
 
     @Override
     public IDrawable.Redraw needRedraw() {
-        return super.needRedraw().setIf(super.needRedraw().iNeedRedraw(), Redraw.PARENT_NEED_REDRAW);
+        return super.needRedraw().setIf(super.needRedraw().iNeedRedraw(), IDrawable.Redraw.PARENT_NEED_REDRAW);
     }
 
     int timeCounter = 0;

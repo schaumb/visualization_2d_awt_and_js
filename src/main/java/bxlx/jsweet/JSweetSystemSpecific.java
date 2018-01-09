@@ -10,28 +10,27 @@ import bxlx.system.CommonError;
 import bxlx.system.IMouseEventListener;
 import bxlx.system.IRenderer;
 import bxlx.system.SystemSpecific;
-import jsweet.dom.CanvasRenderingContext2D;
-import jsweet.dom.Event;
-import jsweet.dom.HTMLAudioElement;
-import jsweet.dom.HTMLCanvasElement;
-import jsweet.dom.HTMLImageElement;
-import jsweet.dom.ImageData;
-import jsweet.dom.XMLHttpRequest;
-import jsweet.lang.Date;
+import def.dom.CanvasRenderingContext2D;
+import def.dom.Event;
+import def.dom.HTMLAudioElement;
+import def.dom.HTMLCanvasElement;
+import def.dom.HTMLImageElement;
+import def.dom.ImageData;
+import def.dom.XMLHttpRequest;
+import def.js.Date;
 import jsweet.util.StringTypes;
 
 import java.util.HashSet;
 import java.util.function.Consumer;
 
-import static jsweet.dom.Globals.console;
-import static jsweet.dom.Globals.document;
-import static jsweet.dom.Globals.setTimeout;
-import static jsweet.dom.Globals.window;
-import static jsweet.lang.Globals.isNaN;
-import static jsweet.lang.Globals.parseFloat;
-import static jsweet.util.Globals.equalsStrict;
-import static jsweet.util.Globals.equalsLoose;
-import static jsweet.util.Globals.typeof;
+import static def.dom.Globals.console;
+import static def.dom.Globals.document;
+import static def.dom.Globals.setTimeout;
+import static def.dom.Globals.window;
+import static def.js.Globals.isNaN;
+import static def.js.Globals.parseFloat;
+import static jsweet.util.Lang.$loose;
+import static jsweet.util.Lang.typeof;
 
 /**
  * Created by qqcs on 2016.12.23..
@@ -67,7 +66,7 @@ public class JSweetSystemSpecific extends SystemSpecific {
     }
 
     public static SystemSpecific create() {
-        if (INSTANCE != null) return get();
+        if (SystemSpecific.INSTANCE != null) return SystemSpecific.get();
         return new JSweetSystemSpecific();
     }
 
@@ -184,7 +183,7 @@ public class JSweetSystemSpecific extends SystemSpecific {
     public void playMusic(String src) {
         HTMLAudioElement elem = musicCache.get(src);
 
-        if (elem.readyState > 0) {
+        if ((int) elem.readyState > 0) {
             elem.play();
         }
     }
@@ -233,19 +232,20 @@ public class JSweetSystemSpecific extends SystemSpecific {
             int intX = (int) Math.min(htmlImageElement.naturalWidth - 1, Math.round(x * htmlImageElement.naturalWidth));
             int intY = (int) Math.min(htmlImageElement.naturalHeight - 1, Math.round(y * htmlImageElement.naturalHeight));
             int getPixel = intX + intY * (int) htmlImageElement.naturalWidth;
-            return new Color(data.data.$get(getPixel * 4).intValue(),
-                    data.data.$get(getPixel * 4 + 1).intValue(),
-                    data.data.$get(getPixel * 4 + 2).intValue(),
-                    data.data.$get(getPixel * 4 + 3).intValue());
+            return new Color((int) data.data[getPixel * 4],
+                    (int) data.data[getPixel * 4 + 1],
+                    (int) data.data[getPixel * 4 + 2],
+                    (int) data.data[getPixel * 4 + 3]);
         }
         return Color.OPAQUE;
     }
 
     @Override
-    public <T> boolean equals(T first, T second) {
-        return equalsStrict(first, second) ||
-                (equalsLoose(typeof(first), "number") &&
-                        equalsLoose(typeof(second), "number") &&
+    public <T> boolean isEquals(T first, T second) {
+
+        return first == second ||
+                ($loose(typeof(first).equals("number")) &&
+                        $loose(typeof(second).equals("number")) &&
                         isNaN(parseFloat(first.toString())) &&
                         isNaN(parseFloat(second.toString())));
     }

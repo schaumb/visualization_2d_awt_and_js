@@ -14,24 +14,62 @@ public interface IDrawable {
         return false;
     }
 
-    Redraw needRedraw();
+    IDrawable.Redraw needRedraw();
 
     void setRedraw();
 
     void forceDraw(ICanvas canvas);
 
-    class Redraw extends BitSet {
-        private static int COUNTER = 0;
-        public static int CHILD_NEED_REDRAW = COUNTER++;
-        public static int I_NEED_REDRAW = COUNTER++;
-        public static int PARENT_NEED_REDRAW = COUNTER++;
+    class Redraw {
+        public static final int CHILD_NEED_REDRAW = 0;
+        public static final int I_NEED_REDRAW = 1;
+        public static final int PARENT_NEED_REDRAW = 2;
+        private boolean childRedraw;
+        private boolean iRedraw;
+        private boolean parentRedraw;
+
+        private void set(int setting) {
+            switch (setting) {
+                case CHILD_NEED_REDRAW:
+                    childRedraw = true;
+                    break;
+                case I_NEED_REDRAW:
+                    iRedraw = true;
+                    break;
+                case PARENT_NEED_REDRAW:
+                    parentRedraw = true;
+                    break;
+            }
+        }
+
+        private boolean get(int getting) {
+            switch (getting) {
+                case CHILD_NEED_REDRAW:
+                    return childRedraw;
+                case I_NEED_REDRAW:
+                    return iRedraw;
+                case PARENT_NEED_REDRAW:
+                    return parentRedraw;
+            }
+            return false;
+        }
+
+        private void or(Redraw redraw) {
+            for (int i = 0; i < 3; ++i)
+                if (redraw.get(i))
+                    set(i);
+        }
+
+        private int cardinality() {
+            return (childRedraw ? 1 : 0) +
+                    (iRedraw ? 1 : 0) +
+                    (parentRedraw ? 1 : 0);
+        }
 
         public Redraw() {
-            super(COUNTER);
         }
 
         public Redraw(int setDef) {
-            this();
             set(setDef);
         }
 
@@ -64,29 +102,29 @@ public interface IDrawable {
             return cardinality() == 0;
         }
 
-        public Redraw setChildNeedRedraw() {
+        public IDrawable.Redraw setChildNeedRedraw() {
             set(CHILD_NEED_REDRAW);
             return this;
         }
 
-        public Redraw setINeedRedraw() {
+        public IDrawable.Redraw setINeedRedraw() {
             set(I_NEED_REDRAW);
             return this;
         }
 
-        public Redraw setParentNeedRedraw() {
+        public IDrawable.Redraw setParentNeedRedraw() {
             set(PARENT_NEED_REDRAW);
             return this;
         }
 
-        public Redraw setIf(boolean condition, int which) {
+        public IDrawable.Redraw setIf(boolean condition, int which) {
             if (condition) {
                 set(which);
             }
             return this;
         }
 
-        public Redraw orIf(boolean condition, Redraw redraw) {
+        public IDrawable.Redraw orIf(boolean condition, IDrawable.Redraw redraw) {
             if (condition) {
                 or(redraw);
             }

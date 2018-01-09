@@ -2,6 +2,7 @@ package bxlx.graphics.fill;
 
 import bxlx.graphics.ChangeableDrawable;
 import bxlx.graphics.ICanvas;
+import bxlx.graphics.IDrawable;
 import bxlx.graphics.Point;
 import bxlx.graphics.shapes.Rectangle;
 
@@ -11,14 +12,14 @@ import java.util.function.Supplier;
  * Created by qqcs on 2017.01.03..
  */
 public class Text extends ChangeableDrawable {
-    private final ChangeableValue<String> text;
-    private final ChangeableValue<String> referenceText;
-    private final ChangeableValue<Integer> align;
+    private final ChangeableDrawable.ChangeableValue<String> text;
+    private final ChangeableDrawable.ChangeableValue<String> referenceText;
+    private final ChangeableDrawable.ChangeableValue<Integer> align;
 
     public Text(Supplier<String> text) {
-        this.text = new ChangeableValue<>(this, text);
-        this.align = new ChangeableValue<>(this, 0);
-        this.referenceText = new ChangeableValue<>(this, (String) null);
+        this.text = new ChangeableDrawable.ChangeableValue<>(this, text);
+        this.align = new ChangeableDrawable.ChangeableValue<>(this, 0);
+        this.referenceText = new ChangeableDrawable.ChangeableValue<>(this, (String) null);
     }
 
     public Text(String text) {
@@ -26,44 +27,44 @@ public class Text extends ChangeableDrawable {
     }
 
     public Text(String text, String referenceText, int align) {
-        this.text = new ChangeableValue<>(this, text);
-        this.referenceText = new ChangeableValue<>(this, referenceText);
-        this.align = new ChangeableValue<>(this, (int) Math.signum(align));
+        this.text = new ChangeableDrawable.ChangeableValue<>(this, text);
+        this.referenceText = new ChangeableDrawable.ChangeableValue<>(this, referenceText);
+        this.align = new ChangeableDrawable.ChangeableValue<>(this, (int) Math.signum(align));
     }
 
     public Text(Supplier<String> text, String referenceText, int align) {
-        this.text = new ChangeableValue<>(this, text);
-        this.referenceText = new ChangeableValue<>(this, referenceText);
-        this.align = new ChangeableValue<>(this, (int) Math.signum(align));
+        this.text = new ChangeableDrawable.ChangeableValue<>(this, text);
+        this.referenceText = new ChangeableDrawable.ChangeableValue<>(this, referenceText);
+        this.align = new ChangeableDrawable.ChangeableValue<>(this, (int) Math.signum(align));
     }
 
     public Text(String text, Supplier<String> referenceText, int align) {
-        this.text = new ChangeableValue<>(this, text);
-        this.referenceText = new ChangeableValue<>(this, referenceText);
-        this.align = new ChangeableValue<>(this, (int) Math.signum(align));
+        this.text = new ChangeableDrawable.ChangeableValue<>(this, text);
+        this.referenceText = new ChangeableDrawable.ChangeableValue<>(this, referenceText);
+        this.align = new ChangeableDrawable.ChangeableValue<>(this, (int) Math.signum(align));
     }
 
     public Text(Supplier<String> text, Supplier<String> referenceText, int align) {
-        this.text = new ChangeableValue<>(this, text);
-        this.referenceText = new ChangeableValue<>(this, referenceText);
-        this.align = new ChangeableValue<>(this, (int) Math.signum(align));
+        this.text = new ChangeableDrawable.ChangeableValue<>(this, text);
+        this.referenceText = new ChangeableDrawable.ChangeableValue<>(this, referenceText);
+        this.align = new ChangeableDrawable.ChangeableValue<>(this, (int) Math.signum(align));
     }
 
     @Override
-    public Redraw needRedraw() {
-        Redraw result = super.needRedraw();
-        return result.setIf(result.iNeedRedraw(), Redraw.PARENT_NEED_REDRAW);
+    public IDrawable.Redraw needRedraw() {
+        IDrawable.Redraw result = super.needRedraw();
+        return result.setIf(result.iNeedRedraw(), IDrawable.Redraw.PARENT_NEED_REDRAW);
     }
 
-    public ChangeableValue<String> getText() {
+    public ChangeableDrawable.ChangeableValue<String> getText() {
         return text;
     }
 
-    public ChangeableValue<String> getReferenceText() {
+    public ChangeableDrawable.ChangeableValue<String> getReferenceText() {
         return referenceText;
     }
 
-    public ChangeableValue<Integer> getAlign() {
+    public ChangeableDrawable.ChangeableValue<Integer> getAlign() {
         return align;
     }
 

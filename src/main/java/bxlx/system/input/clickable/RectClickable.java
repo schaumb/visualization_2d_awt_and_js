@@ -31,8 +31,8 @@ public class RectClickable extends Button.Clickable {
     }
 
     @Override
-    public Redraw needRedraw() {
-        return drawable == null ? new Redraw() : drawable.needRedraw();
+    public IDrawable.Redraw needRedraw() {
+        return drawable == null ? new IDrawable.Redraw() : drawable.needRedraw();
     }
 
     @Override

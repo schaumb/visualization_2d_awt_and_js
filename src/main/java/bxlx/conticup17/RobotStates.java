@@ -362,7 +362,7 @@ public class RobotStates {
         public void removeUnit(String key) {
             units.remove(key);
         }
-
+/*
         @Override
         public String toString() {
             return "WholeState{" +
@@ -370,7 +370,7 @@ public class RobotStates {
                     ", units=" + units +
                     '}';
         }
-
+*/
         public void switchUnits(String unitKeyFrom, String unitKeyTo) {
             switchUnits.add(new String[]{unitKeyFrom, unitKeyTo});
         }
@@ -435,8 +435,8 @@ public class RobotStates {
             return changedFromPlayerIndex;
         }
 
-        public Set<Map.Entry<String, Unit>> getAllUnit() {
-            return units.entrySet();
+        public HashMap<String, Unit> getAllUnit() {
+            return units;
         }
     }
 
@@ -857,7 +857,7 @@ public class RobotStates {
                                                 if(beforeUnit == null) {
                                                     SystemSpecific.get().log("WARNING " + l + "  - NOT KNOWN UNITS ON STATION --- " + line + " --- ");
                                                     String unitPlace = "";
-                                                    for(Map.Entry<String, Unit> entry : state.getAllUnit()) {
+                                                    for(Map.Entry<String, Unit> entry : state.getAllUnit().entrySet()) {
                                                         if(entry.getValue().getId().equals(value)) {
                                                             unitPlace = entry.getKey();
                                                             break;

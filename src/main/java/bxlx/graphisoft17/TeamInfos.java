@@ -27,14 +27,14 @@ public class TeamInfos extends SplitContainer<IDrawable> {
     private final PlayState playState;
 
     private final ChangeableDrawable.ChangeableValue<Integer> whoIsTurn;
-    private final ChangeableValue<Integer> tickInfos;
+    private final ChangeableDrawable.ChangeableValue<Integer> tickInfos;
 
     public TeamInfos(StateHolder stateHolder, PlayState playState) {
         super(false);
         this.stateHolder = stateHolder;
         this.playState = playState;
-        this.whoIsTurn = new ChangeableValue<>(this, () -> stateHolder == null ? null : stateHolder.getWhosTurn());
-        this.tickInfos = new ChangeableValue<>(this, () -> stateHolder == null ? null : stateHolder.getTick());
+        this.whoIsTurn = new ChangeableDrawable.ChangeableValue<>(this, () -> stateHolder == null ? null : stateHolder.getWhosTurn());
+        this.tickInfos = new ChangeableDrawable.ChangeableValue<>(this, () -> stateHolder == null ? null : stateHolder.getTick());
 
         if(stateHolder == null)
             return;

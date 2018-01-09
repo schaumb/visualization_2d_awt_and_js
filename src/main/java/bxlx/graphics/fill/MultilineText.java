@@ -2,6 +2,7 @@ package bxlx.graphics.fill;
 
 import bxlx.graphics.ChangeableDrawable;
 import bxlx.graphics.ICanvas;
+import bxlx.graphics.IDrawable;
 import bxlx.graphics.container.SplitContainer;
 import bxlx.system.ColorScheme;
 import bxlx.system.SystemSpecific;
@@ -13,12 +14,12 @@ import java.util.function.Supplier;
  * Created by ecosim on 4/26/17.
  */
 public class MultilineText extends ChangeableDrawable {
-    private final ChangeableValue<String> text;
-    private final ChangeableValue<SplitContainer<Text>> texts;
+    private final ChangeableDrawable.ChangeableValue<String> text;
+    private final ChangeableDrawable.ChangeableValue<SplitContainer<Text>> texts;
 
     public MultilineText(Supplier<String> text) {
-        this.text = new ChangeableValue<>(this, text);
-        this.texts = new ChangeableValue<>(this, new SplitContainer<>());
+        this.text = new ChangeableDrawable.ChangeableValue<>(this, text);
+        this.texts = new ChangeableDrawable.ChangeableValue<>(this, new SplitContainer<>());
     }
 
     @Override
@@ -55,8 +56,8 @@ public class MultilineText extends ChangeableDrawable {
     }
 
     @Override
-    public Redraw needRedraw() {
-        return super.needRedraw().orIf(true, texts.get().needRedraw()).setIf(text.isChanged(), Redraw.PARENT_NEED_REDRAW);
+    public IDrawable.Redraw needRedraw() {
+        return super.needRedraw().orIf(true, texts.get().needRedraw()).setIf(text.isChanged(), IDrawable .Redraw.PARENT_NEED_REDRAW);
     }
 
     public ValueOrSupplier<String> getText() {

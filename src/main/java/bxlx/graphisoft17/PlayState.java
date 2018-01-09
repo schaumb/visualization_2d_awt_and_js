@@ -14,7 +14,7 @@ import bxlx.system.input.clickable.ColorSchemeClickable;
  * Created by ecosim on 2017.05.04..
  */
 public class PlayState extends SplitContainer<IDrawable> {
-    private ChangeableDrawable.ChangeableValue<Boolean> play = new ChangeableValue<>(this, true);
+    private ChangeableDrawable.ChangeableValue<Boolean> play = new ChangeableDrawable.ChangeableValue<>(this, true);
     private States state;
     private StateHolder stateHolder;
 

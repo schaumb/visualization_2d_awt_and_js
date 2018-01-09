@@ -1,5 +1,6 @@
 package bxlx.graphics.container;
 
+import bxlx.graphics.ChangeableDrawable;
 import bxlx.graphics.IDrawable;
 
 import java.util.ArrayList;
@@ -31,7 +32,7 @@ public abstract class SizeChangeableContainer<T extends IDrawable, Myself extend
     }
 
     @Override
-    public ChangeableValue<T> get(int index) {
+    public ChangeableDrawable.ChangeableValue<T> get(int index) {
         return super.get(index);
     }
 

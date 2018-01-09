@@ -1,5 +1,6 @@
 package bxlx.graphics.combined;
 
+import bxlx.graphics.ChangeableDrawable;
 import bxlx.graphics.Color;
 import bxlx.graphics.Direction;
 import bxlx.graphics.IDrawable;
@@ -25,7 +26,7 @@ import java.util.function.Supplier;
 /**
  * Created by qqcs on 2017.01.11..
  */
-public class Navigator extends DrawableWrapper<Container> {
+public class Navigator extends DrawableWrapper<Container<IDrawable>> {
 
     private IDrawable makeMargin(IDrawable drawable) {
         if (drawable == null) {
@@ -43,7 +44,7 @@ public class Navigator extends DrawableWrapper<Container> {
     private final DrawableWrapper<Button<?>> upRightWrapper;
 
     public Navigator(Button<?> upLeft, Button<?> upRight, IDrawable main, Supplier<Boolean> visibility, double buttonsThick, Color background) {
-        super(new Container(new ArrayList<>(), 2));
+        super(new Container<>(new ArrayList<>(), 2));
 
         Supplier<Double> buttThick = () -> visibility.get() ? -buttonsThick * 2 : 0;
 
@@ -95,15 +96,15 @@ public class Navigator extends DrawableWrapper<Container> {
                 null, null));
     }
 
-    public ChangeableValue<IDrawable> getMain() {
+    public ChangeableDrawable.ChangeableValue<IDrawable> getMain() {
         return mainWrapper.getChild();
     }
 
-    public ChangeableValue<Button<?>> getUpLeft() {
+    public ChangeableDrawable.ChangeableValue<Button<?>> getUpLeft() {
         return upLeftWrapper.getChild();
     }
 
-    public ChangeableValue<Button<?>> getUpRight() {
+    public ChangeableDrawable.ChangeableValue<Button<?>> getUpRight() {
         return upRightWrapper.getChild();
     }
 

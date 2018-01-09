@@ -24,13 +24,13 @@ public abstract class ChangeableDrawable implements IDrawable {
         }
     }
 
-    public static class ChangeableDependentValue<T, U> extends ChangeableValue<T> {
-        private final ChangeableValue<U> dependent;
-        private final ChangeableValue<Function<U, T>> depFun;
+    public static class ChangeableDependentValue<T, U> extends ChangeableDrawable.ChangeableValue<T> {
+        private final ChangeableDrawable.ChangeableValue<U> dependent;
+        private final ChangeableDrawable.ChangeableValue<Function<U, T>> depFun;
         public ChangeableDependentValue(ChangeableDrawable parent, Function<U, T> fun) {
             super(parent, (T) null);
-            dependent = new ChangeableValue<>(parent, (U) null);
-            depFun = new ChangeableValue<>(parent, fun);
+            dependent = new ChangeableDrawable.ChangeableValue<>(parent, (U) null);
+            depFun = new ChangeableDrawable.ChangeableValue<>(parent, fun);
             setSupplier(() -> depFun.get().apply(dependent.get()));
         }
 
@@ -50,7 +50,7 @@ public abstract class ChangeableDrawable implements IDrawable {
         }
     }
 
-    public static class ChangeableTimer extends ChangeableValue<Double> {
+    public static class ChangeableTimer extends ChangeableDrawable.ChangeableValue<Double> {
         private final Timer timer;
 
         public ChangeableTimer(ChangeableDrawable parent, Timer timer) {
@@ -76,8 +76,8 @@ public abstract class ChangeableDrawable implements IDrawable {
     }
 
     @Override
-    public Redraw needRedraw() {
-        return new Redraw().setIf(redraw || valueChanged(), Redraw.I_NEED_REDRAW);
+    public IDrawable.Redraw needRedraw() {
+        return new IDrawable.Redraw().setIf(redraw || valueChanged(), IDrawable.Redraw.I_NEED_REDRAW);
     }
 
     private boolean valueChanged() {

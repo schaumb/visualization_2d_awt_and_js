@@ -8,19 +8,19 @@ import bxlx.graphics.IDrawable;
  * Created by qqcs on 2017.01.13..
  */
 public abstract class DrawableWrapper<T extends IDrawable> extends ChangeableDrawable {
-    private ChangeableValue<T> child;
+    private ChangeableDrawable.ChangeableValue<T> child;
 
     public DrawableWrapper(T child) {
-        this.child = new ChangeableValue<>(this, child);
+        this.child = new ChangeableDrawable.ChangeableValue<>(this, child);
     }
 
-    public ChangeableValue<T> getChild() {
+    public ChangeableDrawable.ChangeableValue<T> getChild() {
         return child;
     }
 
 
     @Override
-    public Redraw needRedraw() {
+    public IDrawable.Redraw needRedraw() {
         return super.needRedraw().orIf(true, child.get().needRedraw());
     }
 

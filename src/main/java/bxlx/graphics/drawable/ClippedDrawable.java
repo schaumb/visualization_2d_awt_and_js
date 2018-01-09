@@ -1,5 +1,6 @@
 package bxlx.graphics.drawable;
 
+import bxlx.graphics.ChangeableDrawable;
 import bxlx.graphics.ICanvas;
 import bxlx.graphics.IDrawable;
 import bxlx.graphics.shapes.Rectangle;
@@ -10,20 +11,20 @@ import java.util.function.UnaryOperator;
  * Created by qqcs on 2017.01.11..
  */
 public class ClippedDrawable<T extends IDrawable> extends DrawableWrapper<T> {
-    private final ChangeableValue<Boolean> fake;
-    private final ChangeableValue<UnaryOperator<Rectangle>> clip;
+    private final ChangeableDrawable.ChangeableValue<Boolean> fake;
+    private final ChangeableDrawable.ChangeableValue<UnaryOperator<Rectangle>> clip;
 
     public ClippedDrawable(T drawable, boolean fake, UnaryOperator<Rectangle> clip) {
         super(drawable);
-        this.fake = new ChangeableValue<>(this, fake);
-        this.clip = new ChangeableValue<>(this, clip);
+        this.fake = new ChangeableDrawable.ChangeableValue<>(this, fake);
+        this.clip = new ChangeableDrawable.ChangeableValue<>(this, clip);
     }
 
-    public ChangeableValue<Boolean> getFake() {
+    public ChangeableDrawable.ChangeableValue<Boolean> getFake() {
         return fake;
     }
 
-    public ChangeableValue<UnaryOperator<Rectangle>> getClip() {
+    public ChangeableDrawable.ChangeableValue<UnaryOperator<Rectangle>> getClip() {
         return clip;
     }
 

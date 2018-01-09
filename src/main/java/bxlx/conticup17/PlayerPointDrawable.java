@@ -18,8 +18,8 @@ public class PlayerPointDrawable extends Container<IDrawable> {
     private final int playerNum;
 
     private final ChangeableDrawable.ChangeableValue<Boolean> ready;
-    private final ChangeableValue<String> name;
-    private final ChangeableValue<String> scores;
+    private final ChangeableDrawable.ChangeableValue<String> name;
+    private final ChangeableDrawable.ChangeableValue<String> scores;
 
     private boolean cachedIsIdentified;
     private String cachedStringLength;
@@ -44,9 +44,9 @@ public class PlayerPointDrawable extends Container<IDrawable> {
         this.states = states;
         this.playerNum = playerNum;
 
-        this.ready = new ChangeableValue<>(this, () -> states.getState() == null ? null : states.getState().getPlayers()[playerNum].isIdentified());
-        this.name = new ChangeableValue<>(this, () -> states.getState() == null ? null : states.getState().getPlayers()[playerNum].getName());
-        this.scores = new ChangeableValue<>(this, () -> states.getState() == null ? null : states.getState().getPlayers()[playerNum].getScores());
+        this.ready = new ChangeableDrawable.ChangeableValue<>(this, () -> states.getState() == null ? null : states.getState().getPlayers()[playerNum].isIdentified());
+        this.name = new ChangeableDrawable.ChangeableValue<>(this, () -> states.getState() == null ? null : states.getState().getPlayers()[playerNum].getName());
+        this.scores = new ChangeableDrawable.ChangeableValue<>(this, () -> states.getState() == null ? null : states.getState().getPlayers()[playerNum].getScores());
 
         add(Builder.background().makeColored(Color.WHITE).makeMargin(0.1/5)
                 .makeBackgrounded(Color.CONTI_COLOR).makeMargin(0.1).get());
