@@ -203,14 +203,14 @@ public class JSweetSystemSpecific extends SystemSpecific {
             }
             return null;
         });
-        ///*
+        /*
         request.open("POST", from, true);
         request.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
         request.send(fileName);
-        //*/
+        */
 
-        //request.open("GET", fileName, true);
-        //request.send();
+        request.open("GET", from + fileName, true);
+        request.send();
     }
 
     @Override

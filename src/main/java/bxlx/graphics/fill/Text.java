@@ -53,7 +53,7 @@ public class Text extends ChangeableDrawable {
     @Override
     public IDrawable.Redraw needRedraw() {
         IDrawable.Redraw result = super.needRedraw();
-        return result.setIf(result.iNeedRedraw(), IDrawable.Redraw.PARENT_NEED_REDRAW);
+        return result.setIf(result.iNeedRedraw() || text.isChanged(), IDrawable.Redraw.PARENT_NEED_REDRAW);
     }
 
     public ChangeableDrawable.ChangeableValue<String> getText() {
