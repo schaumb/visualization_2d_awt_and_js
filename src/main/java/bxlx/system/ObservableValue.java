@@ -2,7 +2,8 @@ package bxlx.system;
 
 import bxlx.system.functional.MySupplier;
 
-import java.util.function.Function;
+import java.util.List;
+import java.util.function.Supplier;
 
 public class ObservableValue<T> extends Observable<T> implements MySupplier<T> {
     private T value;
@@ -15,10 +16,12 @@ public class ObservableValue<T> extends Observable<T> implements MySupplier<T> {
         this.value = value;
     }
 
-    public ObservableValue(ObservableValue<?> other, Function<Object, T> trans) {
-        this(trans.apply(other.get()));
+    public ObservableValue(Supplier<T> get, List<ObservableValue<?>> dependencies) {
+        this(get.get());
 
-        other.addObserver((observable, from) -> this.setValue(trans.apply(from)));
+        for (ObservableValue<?> observableValue : dependencies) {
+            observableValue.addObserver((observable, from) -> this.setValue(get.get()));
+        }
     }
 
     public T get() {

@@ -16,25 +16,30 @@ public class Timer extends ObservableValue<Double> {
     public Timer(int length) {
         start = SystemSpecific.get().getTime();
         this.length = length;
+        tick();
     }
 
     public Timer(int length, double fromPercent) {
         start = (long) (SystemSpecific.get().getTime() - length * fromPercent);
         this.length = length;
+        tick();
     }
 
     public Timer setStart() {
         this.start = SystemSpecific.get().getTime();
+        tick();
         return this;
     }
 
     public Timer setPercent(double percent) {
         start = (long) (SystemSpecific.get().getTime() - length * percent);
+        tick();
         return this;
     }
 
     public Timer setLength(long length) {
         this.length = length;
+        tick();
         return this;
     }
 

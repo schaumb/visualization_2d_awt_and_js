@@ -6,6 +6,8 @@ import bxlx.graphics.drawable_helper.ChangerBuilder;
 import bxlx.graphics.drawable_helper.ObservableRectangleTranslator;
 import bxlx.system.ObservableValue;
 
+import java.util.Arrays;
+
 /**
  * Created by qqcs on 2017.01.04..
  */
@@ -21,13 +23,13 @@ public class Splitter extends DrawableContainer<Drawable> {
         super(ChangerBuilder.ClipperBuilder.clip(ObservableRectangleTranslator.different(
             ObservableRectangleTranslator.marginObserve(
                     new ObservableValue<>(0.0),
-                    new ObservableValue<>(xSplit, b -> !(boolean) b ? 1.0 : separate.get()),
+                    new ObservableValue<>(() -> !xSplit.get() ? 1.0 : separate.get(), Arrays.asList(xSplit, separate)),
                     new ObservableValue<>(0.0),
-                    new ObservableValue<>(xSplit, b -> (boolean) b ? 1.0 : separate.get())),
+                    new ObservableValue<>(() -> xSplit.get() ? 1.0 : separate.get(), Arrays.asList(xSplit, separate))),
                 ObservableRectangleTranslator.marginObserve(
-                        new ObservableValue<>(xSplit, b -> !(boolean) b ? 0.0 : separate.get()),
+                        new ObservableValue<>(() -> !xSplit.get() ? 0.0 : separate.get(), Arrays.asList(xSplit, separate)),
                         new ObservableValue<>(1.0),
-                        new ObservableValue<>(xSplit, b -> (boolean) b ? 0.0 : separate.get()),
+                        new ObservableValue<>(() -> xSplit.get() ? 0.0 : separate.get(), Arrays.asList(xSplit, separate)),
                         new ObservableValue<>(1.0)))).get());
 
         this.xSplit = xSplit;

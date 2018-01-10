@@ -33,7 +33,7 @@ public abstract class DrawableContainer<T extends Drawable> extends Drawable {
         if (!SystemSpecific.get().isEquals(this, from)) {
             boolean found = false;
             for (T drawable : child) {
-                if (SystemSpecific.get().isEquals(drawable, from)) {
+                if (SystemSpecific.get().isEquals(drawable, observable)) {
                     found = true;
                     updateFromChild(drawable);
                     break;

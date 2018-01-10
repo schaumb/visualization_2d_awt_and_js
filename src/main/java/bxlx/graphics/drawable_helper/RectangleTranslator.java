@@ -61,7 +61,7 @@ public interface RectangleTranslator {
         return (original, nTh, max) -> {
             double leftFrom = left >= 1 ? original.getStart().getX() + left :
                     left >= 0 ? original.getStart().getX() + original.getSize().getWidth() * left :
-                            left >=-1 ? original.getStart().getX() + original.getSize().getWidth() * (1 + left) :
+                            left >= -1 ? original.getStart().getX() + original.getSize().getWidth() * (1 + left) :
                                     original.getStart().getX() + original.getSize().getWidth() + left;
 
             double rightFrom = right > 1 ? original.getStart().getX() + right :
