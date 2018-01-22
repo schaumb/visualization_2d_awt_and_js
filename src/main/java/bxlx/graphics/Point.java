@@ -4,6 +4,7 @@ package bxlx.graphics;
  * Created by qqcs on 2016.12.23..
  */
 public class Point {
+    public static final Point ORIGO = new Point(0, 0);
     private final double x;
     private final double y;
 
@@ -106,6 +107,4 @@ public class Point {
                 ", y=" + y +
                 '}';
     }
-
-    public static final Point ORIGO = new Point(0, 0);
 }

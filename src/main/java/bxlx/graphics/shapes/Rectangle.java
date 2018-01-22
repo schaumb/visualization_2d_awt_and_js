@@ -1,17 +1,15 @@
 package bxlx.graphics.shapes;
 
-import bxlx.graphics.Direction;
 import bxlx.graphics.Point;
 import bxlx.graphics.Size;
 
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
 
 /**
  * Created by qqcs on 2016.12.23..
  */
 public class Rectangle extends Shape {
+    public static final Rectangle NULL_RECTANGLE = new Rectangle(0, 0, 0, 0);
     private final Point start;
     private final Size size;
 
@@ -63,8 +61,6 @@ public class Rectangle extends Shape {
 
         return new Rectangle(xStart, yStart, xEnd - xStart, yEnd - yStart);
     }
-
-    public static final Rectangle NULL_RECTANGLE = new Rectangle(0, 0, 0, 0);
 
     @Override
     public boolean equals(Object o) {

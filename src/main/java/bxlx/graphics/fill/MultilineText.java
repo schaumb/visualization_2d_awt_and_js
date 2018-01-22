@@ -26,16 +26,16 @@ public class MultilineText extends Drawable {
 
         String longest = "i";
         int longestSize = 0;
-        for(String line : lines) {
+        for (String line : lines) {
             int lineSize = SystemSpecific.get().stringLength(ColorScheme.getCurrentColorScheme().font, line);
-            if(lineSize > longestSize) {
+            if (lineSize > longestSize) {
                 longest = line;
                 longestSize = lineSize;
             }
         }
 
 
-        for(int where = 0; where < Math.min(100, lines.length); ++where) {
+        for (int where = 0; where < Math.min(100, lines.length); ++where) {
             c.add(new Text(lines[where], longest, -1));
         }
         c.setRedraw(this);

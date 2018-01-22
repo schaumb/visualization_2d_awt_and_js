@@ -4,6 +4,7 @@ package bxlx.graphics;
  * Created by qqcs on 2016.12.23..
  */
 public class Size {
+    public static final Size ZERO = square(0);
     private final double width;
     private final double height;
 
@@ -11,8 +12,6 @@ public class Size {
         this.width = width;
         this.height = height;
     }
-
-    public static final Size ZERO = square(0);
 
     public static Size square(double size) {
         return new Size(size, size);

@@ -7,6 +7,7 @@ import bxlx.graphics.ImageCaches;
 import bxlx.graphics.Point;
 import bxlx.graphics.Size;
 import bxlx.graphics.shapes.Arc;
+import bxlx.graphics.shapes.Line;
 import bxlx.graphics.shapes.Polygon;
 import bxlx.graphics.shapes.Rectangle;
 import bxlx.graphics.shapes.Shape;
@@ -24,15 +25,15 @@ import static def.dom.Globals.document;
  * Created by qqcs on 2016.12.23..
  */
 public class HtmlCanvas implements ICanvas {
-    private final CanvasRenderingContext2D context;
-    private final Stack<Rectangle> clips = new Stack<>();
-    private final Stack<Object> patterns = new Stack<>();
     static final ImageCaches<HTMLImageElement> imageCaches =
             new ImageCaches<>(src -> {
                 HTMLImageElement img = document.createElement(StringTypes.img);
                 img.src = src;
                 return img;
             });
+    private final CanvasRenderingContext2D context;
+    private final Stack<Rectangle> clips = new Stack<>();
+    private final Stack<Object> patterns = new Stack<>();
     private Color latestColor;
     private Font latestFont = new Font("sans-serif", 10, false, false);
 
@@ -48,17 +49,17 @@ public class HtmlCanvas implements ICanvas {
     }
 
     @Override
+    public Color getColor() {
+        return latestColor;
+    }
+
+    @Override
     public void setColor(Color color) {
         if (color == null) return;
         latestColor = color;
         context.fillStyle = color.toString();
 
         context.globalAlpha = color.getAlpha();
-    }
-
-    @Override
-    public Color getColor() {
-        return latestColor;
     }
 
     @Override
@@ -130,14 +131,22 @@ public class HtmlCanvas implements ICanvas {
     }
 
     @Override
-    public void setFont(Font font) {
-        latestFont = font;
-        context.font = (font.isItalic() ? "italic " : "") + (font.isBold() ? "bold " : "") + font.getSize() + "px " + font.getName();
+    public void drawLine(Line line) {
+        context.beginPath();
+        context.moveTo(line.getFrom().getX(), line.getFrom().getY());
+        context.lineTo(line.getTo().getX(), line.getTo().getY());
+        context.stroke();
     }
 
     @Override
     public Font getFont() {
         return latestFont;
+    }
+
+    @Override
+    public void setFont(Font font) {
+        latestFont = font;
+        context.font = (font.isItalic() ? "italic " : "") + (font.isBold() ? "bold " : "") + font.getSize() + "px " + font.getName();
     }
 
     @Override

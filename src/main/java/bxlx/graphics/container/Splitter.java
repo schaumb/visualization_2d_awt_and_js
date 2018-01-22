@@ -21,11 +21,11 @@ public class Splitter extends DrawableContainer<Drawable> {
 
     public Splitter(ObservableValue<Boolean> xSplit, ObservableValue<Double> separate, Drawable first, Drawable second) {
         super(ChangerBuilder.ClipperBuilder.clip(ObservableRectangleTranslator.different(
-            ObservableRectangleTranslator.marginObserve(
-                    new ObservableValue<>(0.0),
-                    new ObservableValue<>(() -> !xSplit.get() ? 1.0 : separate.get(), Arrays.asList(xSplit, separate)),
-                    new ObservableValue<>(0.0),
-                    new ObservableValue<>(() -> xSplit.get() ? 1.0 : separate.get(), Arrays.asList(xSplit, separate))),
+                ObservableRectangleTranslator.marginObserve(
+                        new ObservableValue<>(0.0),
+                        new ObservableValue<>(() -> !xSplit.get() ? 1.0 : separate.get(), Arrays.asList(xSplit, separate)),
+                        new ObservableValue<>(0.0),
+                        new ObservableValue<>(() -> xSplit.get() ? 1.0 : separate.get(), Arrays.asList(xSplit, separate))),
                 ObservableRectangleTranslator.marginObserve(
                         new ObservableValue<>(() -> !xSplit.get() ? 0.0 : separate.get(), Arrays.asList(xSplit, separate)),
                         new ObservableValue<>(1.0),

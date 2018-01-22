@@ -1,5 +1,6 @@
 package bxlx.graphics;
 
+import bxlx.graphics.shapes.Line;
 import bxlx.graphics.shapes.Rectangle;
 import bxlx.graphics.shapes.Shape;
 
@@ -16,9 +17,9 @@ public interface ICanvas {
 
     Rectangle getBoundingRectangle();
 
-    void setColor(Color color);
-
     Color getColor();
+
+    void setColor(Color color);
 
     void pushFillImg(String src, Size resizeImg);
 
@@ -28,9 +29,11 @@ public interface ICanvas {
 
     void drawImage(String src, Rectangle to);
 
-    void setFont(Font font);
+    void drawLine(Line line);
 
     Font getFont();
+
+    void setFont(Font font);
 
     void fillText(String text, Point to);
 

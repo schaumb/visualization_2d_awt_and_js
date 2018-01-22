@@ -7,10 +7,7 @@ import bxlx.graphics.ICanvas;
 import bxlx.graphics.ImageCaches;
 import bxlx.graphics.Point;
 import bxlx.graphics.Size;
-import bxlx.graphics.shapes.Arc;
-import bxlx.graphics.shapes.Polygon;
-import bxlx.graphics.shapes.Rectangle;
-import bxlx.graphics.shapes.Shape;
+import bxlx.graphics.shapes.*;
 
 import javax.imageio.ImageIO;
 import java.awt.Dimension;
@@ -30,10 +27,6 @@ import java.util.Stack;
  * Created by qqcs on 2016.12.23..
  */
 public class GraphicsCanvas implements ICanvas {
-    private final Graphics2D graphics;
-    private final Stack<Rectangle> clips = new Stack<>();
-    private final Stack<java.awt.Shape> areas = new Stack<>();
-    private final Stack<Paint> fillPaintStack = new Stack<>();
     static final ImageCaches<BufferedImage> imageCaches = new ImageCaches<>(str ->
     {
         try {
@@ -43,6 +36,10 @@ public class GraphicsCanvas implements ICanvas {
             return null;
         }
     });
+    private final Graphics2D graphics;
+    private final Stack<Rectangle> clips = new Stack<>();
+    private final Stack<java.awt.Shape> areas = new Stack<>();
+    private final Stack<Paint> fillPaintStack = new Stack<>();
     private Font latestFont;
 
     public GraphicsCanvas(Graphics2D graphics, java.awt.Rectangle rectangle) {
@@ -68,14 +65,14 @@ public class GraphicsCanvas implements ICanvas {
     }
 
     @Override
-    public void setColor(Color color) {
-        graphics.setColor(new java.awt.Color(color.getRed(), color.getGreen(), color.getBlue(), color.getAlpha()));
-    }
-
-    @Override
     public Color getColor() {
         java.awt.Color color = graphics.getColor();
         return new Color(color.getRed(), color.getGreen(), color.getBlue(), color.getAlpha());
+    }
+
+    @Override
+    public void setColor(Color color) {
+        graphics.setColor(new java.awt.Color(color.getRed(), color.getGreen(), color.getBlue(), color.getAlpha()));
     }
 
     @Override
@@ -153,15 +150,23 @@ public class GraphicsCanvas implements ICanvas {
     }
 
     @Override
-    public void setFont(Font font) {
-        latestFont = font;
-        graphics.setFont(new java.awt.Font(font.getName(), (font.isItalic() ? java.awt.Font.ITALIC : java.awt.Font.PLAIN) |
-                (font.isBold() ? java.awt.Font.BOLD : java.awt.Font.PLAIN), font.getSize()));
+    public void drawLine(Line line) {
+        graphics.drawLine((int) line.getFrom().getX(),
+                (int) line.getFrom().getY(),
+                (int) line.getTo().getX(),
+                (int) line.getTo().getY());
     }
 
     @Override
     public Font getFont() {
         return latestFont;
+    }
+
+    @Override
+    public void setFont(Font font) {
+        latestFont = font;
+        graphics.setFont(new java.awt.Font(font.getName(), (font.isItalic() ? java.awt.Font.ITALIC : java.awt.Font.PLAIN) |
+                (font.isBold() ? java.awt.Font.BOLD : java.awt.Font.PLAIN), font.getSize()));
     }
 
     @Override

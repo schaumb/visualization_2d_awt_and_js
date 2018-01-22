@@ -46,7 +46,7 @@ public class Text extends Drawable {
         String nowReferenceText = referenceText.get();
         int nowAlign = align.get();
 
-        if (nowText == null ||  nowText.isEmpty())
+        if (nowText == null || nowText.isEmpty())
             return;
 
         Rectangle rectangle = canvas.getBoundingRectangle();

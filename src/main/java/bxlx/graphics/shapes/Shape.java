@@ -6,8 +6,6 @@ import bxlx.graphics.Point;
  * Created by qqcs on 2017.01.03..
  */
 public abstract class Shape {
-    public enum Type {ARC, POLYGON, RECTANGLE}
-
     private final Type type;
 
     protected Shape(Type type) {
@@ -39,4 +37,6 @@ public abstract class Shape {
     public abstract Shape getScaled(double scale);
 
     public abstract Shape getRotated(double rotate);
+
+    public enum Type {ARC, POLYGON, RECTANGLE}
 }

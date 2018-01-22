@@ -4,6 +4,7 @@ import bxlx.graphics.Color;
 import bxlx.graphics.Cursor;
 import bxlx.graphics.Font;
 import bxlx.graphics.Size;
+import bxlx.system.functional.MySocket;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -19,13 +20,6 @@ public abstract class SystemSpecific {
     protected List<IMouseEventListener> listeners = new ArrayList<>();
     protected Size minimumSize = Size.ZERO;
 
-    public static SystemSpecific get() {
-        if (INSTANCE == null) {
-            throw new CommonError("No singleton instance", "no system specific instance created");
-        }
-        return INSTANCE;
-    }
-
     protected SystemSpecific() {
         if (INSTANCE != null) {
             throw new CommonError("Singleton two instance", "2 or more system specific instance created");
@@ -33,12 +27,19 @@ public abstract class SystemSpecific {
         INSTANCE = this;
     }
 
-    public void setArgs(String[] args) {
-        this.args = args;
+    public static SystemSpecific get() {
+        if (INSTANCE == null) {
+            throw new CommonError("No singleton instance", "no system specific instance created");
+        }
+        return INSTANCE;
     }
 
     public String[] getArgs() {
         return args;
+    }
+
+    public void setArgs(String[] args) {
+        this.args = args;
     }
 
     abstract public void setDrawFunction(IRenderer renderer);
@@ -87,4 +88,6 @@ public abstract class SystemSpecific {
     public void setMinimumSize(Size size) {
         minimumSize = size;
     }
+
+    abstract public MySocket openSocket(String to, Consumer<String> atRead, Consumer<String> atError, Consumer<MySocket> atReady);
 }

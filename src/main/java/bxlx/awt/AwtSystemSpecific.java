@@ -4,40 +4,33 @@ import bxlx.graphics.Color;
 import bxlx.graphics.Cursor;
 import bxlx.graphics.Font;
 import bxlx.graphics.Point;
-import bxlx.graphics.Size;
+import bxlx.graphics.*;
 import bxlx.system.*;
+import bxlx.system.Timer;
+import bxlx.system.functional.MySocket;
 
 import javax.media.Manager;
 import javax.media.MediaLocator;
-import javax.swing.JFrame;
-import javax.swing.JOptionPane;
-import javax.swing.JPanel;
-import javax.swing.WindowConstants;
-import java.awt.Desktop;
-import java.awt.Dimension;
-import java.awt.EventQueue;
-import java.awt.Graphics;
-import java.awt.Graphics2D;
-import java.awt.Rectangle;
-import java.awt.Toolkit;
-import java.awt.event.ComponentAdapter;
-import java.awt.event.ComponentEvent;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
+import javax.swing.*;
+import java.awt.*;
+import java.awt.event.*;
 import java.awt.image.BufferedImage;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
+import java.net.InetSocketAddress;
 import java.net.URI;
+import java.nio.ByteBuffer;
+import java.nio.channels.AsynchronousSocketChannel;
+import java.nio.channels.CompletionHandler;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Objects;
+import java.util.*;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
@@ -50,6 +43,8 @@ public class AwtSystemSpecific extends SystemSpecific {
         t.setDaemon(true);
         return t;
     });
+    private static final int MAX_LENGTH = 1024 * 5 * 20;
+    private final HashMap<String, ObservableValue<Size>> imageSizes = new HashMap<>();
     private JFrame frame;
     private JPanel panel;
     private IRenderer renderer;
@@ -216,7 +211,6 @@ public class AwtSystemSpecific extends SystemSpecific {
         });
     }
 
-
     @Override
     public void preLoad(String src, boolean img) {
         if (img) {
@@ -224,8 +218,6 @@ public class AwtSystemSpecific extends SystemSpecific {
         }
         // TODO music preload
     }
-
-    private final HashMap<String, ObservableValue<Size>> imageSizes = new HashMap<>();
 
     public ObservableValue<Size> imageSize(String src) {
         BufferedImage imgBuff = GraphicsCanvas.imageCaches.get(src);
@@ -315,6 +307,227 @@ public class AwtSystemSpecific extends SystemSpecific {
         super.setMinimumSize(size);
         if (frame != null) {
             frame.setMinimumSize(new Dimension((int) size.getWidth(), (int) size.getHeight()));
+        }
+    }
+
+    @Override
+    public MySocket openSocket(String to, Consumer<String> atRead, Consumer<String> atError, Consumer<MySocket> atReady) {
+        try {
+            AsynchronousSocketChannel open = AsynchronousSocketChannel.open();
+            String[] split = to.split(":");
+
+            open.connect(new InetSocketAddress(split[0], split.length > 1 ? Integer.parseUnsignedInt(split[1]) : 80));
+            ByteBuffer allocate = ByteBuffer.allocate(1024);
+
+            CompletionHandler<Integer, Void> ch = new CompletionHandler<Integer, Void>() {
+                @Override
+                public void completed(Integer result, Void attachment) {
+                    if (result == -1) {
+                        failed(new RuntimeException("Connection closed by server"), attachment);
+                        return;
+                    }
+
+
+                    byte[] decoded = decodeMessage(Arrays.copyOf(allocate.array(), result), open);
+
+                    if (decoded != null) {
+                        atRead.accept(new String(decoded, 0, decoded.length));
+                    }
+
+                    allocate.clear();
+
+                    open.read(allocate, attachment, this);
+                }
+
+                @Override
+                public void failed(Throwable exc, Void attachment) {
+                    atError.accept(exc.getMessage());
+                }
+            };
+
+            StringBuilder str = new StringBuilder();
+            final Random random = new Random();
+            for (int i = 0; i < 16; ++i) {
+                str.append((char) random.nextInt());
+            }
+
+            open.write(ByteBuffer.wrap(("GET / HTTP/1.1\r\n" +
+                    "Host: " + to + "\r\n" +
+                    "Sec-WebSocket-Key: " + Arrays.toString(Base64.getEncoder()
+                    .encode(str.toString().getBytes(StandardCharsets.ISO_8859_1))) + "\r\n" +
+                    "Connection: Upgrade\r\n" +
+                    "Upgrade: websocket\r\n\r\n").getBytes()));
+
+            final MySocket mySocket = new MySocket() {
+                @Override
+                public void write(String what) {
+                    open.write(ByteBuffer.wrap(encodeMessage(what.getBytes())));
+                }
+
+                @Override
+                public void close() {
+                    try {
+                        open.close();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                }
+            };
+
+            open.read(allocate, null, new CompletionHandler<Integer, Void>() {
+                @Override
+                public void completed(Integer integer, Void attachment) {
+                    if (integer < 0) {
+                        failed(new RuntimeException("Not got first message"), attachment);
+                        return;
+                    }
+
+                    // we assume that is OK :)
+                    allocate.clear();
+
+                    open.read(allocate, attachment, ch);
+
+                    atReady.accept(mySocket);
+                }
+
+                @Override
+                public void failed(Throwable exc, Void attachment) {
+                    atError.accept(exc.getMessage());
+                }
+            });
+
+            return mySocket;
+        } catch (IOException e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    private byte[] decodeMessage(byte[] in, AsynchronousSocketChannel channel) {
+        AtomicInteger start = new AtomicInteger(0);
+        AtomicInteger size = new AtomicInteger(MAX_LENGTH);
+        WebSocketFrameType type = getFrame(in, start, size);
+
+        switch (type) {
+            case PING_FRAME:
+                channel.write(ByteBuffer.wrap(makeFrame(WebSocketFrameType.PONG_FRAME, new byte[0])));
+            case INCOMPLETE_FRAME:
+            case OPENING_FRAME:
+            case CLOSING_FRAME:
+            case INCOMPLETE_TEXT_FRAME:
+            case INCOMPLETE_BINARY_FRAME:
+            case BINARY_FRAME:
+            case PONG_FRAME:
+                // OK :)
+                return new byte[0];
+            case TEXT_FRAME:
+                return Arrays.copyOfRange(in, start.get(), size.get() + start.get());
+            case ERROR_FRAME:
+            default:
+                return null;
+        }
+    }
+
+    private WebSocketFrameType getFrame(byte[] in, AtomicInteger start, AtomicInteger size) {
+        if (in.length < 3) return WebSocketFrameType.INCOMPLETE_FRAME;
+
+        int messageLength;
+        int pos = 2;
+        int wholeLength = (in[1] & 0xFF) & (~0x80);
+
+        if (wholeLength <= 125) {
+            messageLength = wholeLength;
+        } else if (wholeLength == 126) {
+            messageLength = (in[2] & 0xFF) + ((in[3] & 0xFF) << 8);
+            pos += 2;
+        } else {
+
+            messageLength = (in[2] & 0xFF) + ((in[3] & 0xFF) << 8) +
+                    ((in[4] & 0xFF) << 16);
+            pos += 8;
+        }
+        if (in.length < messageLength + pos) {
+            return WebSocketFrameType.INCOMPLETE_FRAME;
+        }
+
+        if ((((in[1] & 0xFF) >> 7) & 0x01) > 0) { // masked message
+            pos += 4;
+
+            for (int i = 0; i < messageLength; ++i) {
+                in[pos + i] = (byte) (in[pos + i] ^ in[pos - 4 + i % 4]);
+            }
+        }
+
+        start.set(pos);
+        size.set(messageLength);
+
+        boolean completedMessage = (((in[0] & 0xFF) >> 7) & 0x01) > 0;
+        switch (in[0] & 0xFF & 0x0F) {
+            case 0x0:
+            case 0x1:
+                return completedMessage ? WebSocketFrameType.TEXT_FRAME : WebSocketFrameType.INCOMPLETE_TEXT_FRAME;
+            case 0x2:
+                return completedMessage ? WebSocketFrameType.BINARY_FRAME : WebSocketFrameType.INCOMPLETE_BINARY_FRAME;
+            case 0x9:
+                return WebSocketFrameType.PING_FRAME;
+            case 0xA:
+                return WebSocketFrameType.PONG_FRAME;
+            default:
+                return WebSocketFrameType.ERROR_FRAME;
+        }
+    }
+
+    private byte[] encodeMessage(byte[] out) {
+        if (out.length == 0) {
+            return out;
+        }
+        return makeFrame(WebSocketFrameType.TEXT_FRAME, out);
+    }
+
+    private byte[] makeFrame(WebSocketFrameType frameType, byte[] from) {
+        ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+        byteArrayOutputStream.write(frameType.getNum() & 0xFF);
+        if (from.length <= 125) {
+            byteArrayOutputStream.write(from.length);
+        } else if (from.length <= 65535) {
+            byteArrayOutputStream.write(126);
+            byteArrayOutputStream.write((from.length >> 8) & 0xFF);
+            byteArrayOutputStream.write(from.length & 0xFF);
+        } else {
+            byteArrayOutputStream.write(127);
+            byteArrayOutputStream.write(new byte[]{0, 0, 0, 0}, 0, 4);
+            for (int i = 0; i < 4; ++i) {
+                byteArrayOutputStream.write((from.length >> 8 * (4 - i)) & 0xFF);
+            }
+        }
+        byteArrayOutputStream.write(from, 0, from.length);
+        return byteArrayOutputStream.toByteArray();
+    }
+
+    private enum WebSocketFrameType {
+        ERROR_FRAME(0xFF00),
+        INCOMPLETE_FRAME(0xFE00),
+
+        OPENING_FRAME(0x3300),
+        CLOSING_FRAME(0x3400),
+
+        INCOMPLETE_TEXT_FRAME(0x01),
+        INCOMPLETE_BINARY_FRAME(0x02),
+
+        TEXT_FRAME(0x81),
+        BINARY_FRAME(0x82),
+
+        PING_FRAME(0x19),
+        PONG_FRAME(0x1A);
+
+        private final int num;
+
+        WebSocketFrameType(int num) {
+            this.num = num;
+        }
+
+        public int getNum() {
+            return num;
         }
     }
 }

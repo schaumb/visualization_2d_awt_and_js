@@ -15,6 +15,7 @@ public class Include {
             "bxlx/system/IMouseEventListener.js",
             "bxlx/system/IRenderer.js",
             "bxlx/system/functional/MyConsumer.js",
+            "bxlx/system/functional/MySocket.js",
             "bxlx/system/CommonError.js",
             "bxlx/system/SystemSpecific.js",
             "bxlx/system/functional/MySupplier.js",
@@ -31,6 +32,7 @@ public class Include {
             "bxlx/graphics/Drawable.js",
             "bxlx/graphics/DrawableContainer.js",
             "bxlx/graphics/ImageCaches.js",
+            "bxlx/graphics/shapes/Line.js",
             "bxlx/graphics/shapes/Shape.js",
             "bxlx/graphics/shapes/Arc.js",
             "bxlx/graphics/shapes/Polygon.js",
@@ -52,13 +54,15 @@ public class Include {
             "bxlx/system/MouseInfo.js",
             "bxlx/general/IGame.js",
 
+            "bxlx/ball18/ClickPath.js",
             "bxlx/ball18/Game.js",
             "bxlx/general/Renderer.js",
             "bxlx/general/EntryPoint.js",
             "bxlx/jsweet/TestMain.js"
     };
+
     static {
-        for(String include : includes) {
+        for (String include : includes) {
             document.writeln("<script language=\"javascript\" src=\"target/ts/" + include + "\"></script>");
         }
         document.writeln("<script language=\"javascript\">" +

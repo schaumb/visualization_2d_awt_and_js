@@ -11,12 +11,14 @@ import bxlx.system.IMouseEventListener;
 import bxlx.system.IRenderer;
 import bxlx.system.ObservableValue;
 import bxlx.system.SystemSpecific;
+import bxlx.system.functional.MySocket;
 import def.dom.CanvasRenderingContext2D;
 import def.dom.Event;
 import def.dom.HTMLAudioElement;
 import def.dom.HTMLCanvasElement;
 import def.dom.HTMLImageElement;
 import def.dom.ImageData;
+import def.dom.WebSocket;
 import def.dom.XMLHttpRequest;
 import def.js.Date;
 import jsweet.util.StringTypes;
@@ -39,6 +41,7 @@ import static jsweet.util.Lang.typeof;
  */
 public class JSweetSystemSpecific extends SystemSpecific {
 
+    private final HashMap<String, ObservableValue<Size>> imageSizes = new HashMap<>();
     private HTMLCanvasElement canvasElement;
     private IRenderer renderer;
     private HashSet<Integer> buttonDowns = new HashSet<>();
@@ -225,8 +228,6 @@ public class JSweetSystemSpecific extends SystemSpecific {
         }
     }
 
-    private final HashMap<String, ObservableValue<Size>> imageSizes = new HashMap<>();
-
     public ObservableValue<Size> imageSize(String src) {
         HTMLImageElement htmlImageElement = HtmlCanvas.imageCaches.get(src);
 
@@ -300,5 +301,44 @@ public class JSweetSystemSpecific extends SystemSpecific {
     @Override
     public void runAfter(Runnable run, int millisec) {
         setTimeout(run, millisec);
+    }
+
+    public MySocket openSocket(String to, Consumer<String> atRead, Consumer<String> atError, Consumer<MySocket> atReady) {
+        if (!to.startsWith("ws://")) {
+            to = "ws://" + to;
+        }
+
+        WebSocket webSocket = new WebSocket(to);
+
+        final MySocket mySocket = new MySocket() {
+            @Override
+            public void write(String what) {
+                if (webSocket.readyState == 1) {
+                    webSocket.send(what);
+                }
+            }
+
+            @Override
+            public void close() {
+                webSocket.close();
+            }
+        };
+
+        webSocket.onmessage = e -> {
+            atRead.accept(e.data.toString());
+            return webSocket;
+        };
+
+        webSocket.addEventListener(StringTypes.error, e -> {
+            atError.accept(e.message);
+            return webSocket;
+        });
+
+        webSocket.onopen = e -> {
+            atReady.accept(mySocket);
+            return webSocket;
+        };
+
+        return mySocket;
     }
 }

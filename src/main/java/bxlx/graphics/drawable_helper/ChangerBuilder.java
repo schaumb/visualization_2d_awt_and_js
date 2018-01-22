@@ -11,6 +11,37 @@ public abstract class ChangerBuilder {
         this.before = before;
     }
 
+    public static ClipperBuilder clip(RectangleTranslator rectangleTranslator) {
+        return new ClipperBuilder(rectangleTranslator, null);
+    }
+
+    public static ShapeClipperBuilder clipShape() {
+        return new ShapeClipperBuilder(null);
+    }
+
+    public static PainterBuilder paint() {
+        return new PainterBuilder(null);
+    }
+
+    public ClipperBuilder thenClip(RectangleTranslator rectangleTranslator) {
+        return new ClipperBuilder(rectangleTranslator, this);
+    }
+
+    public PainterBuilder thenPaint() {
+        return new PainterBuilder(this);
+    }
+
+    public ShapeClipperBuilder thenClipShape() {
+        return new ShapeClipperBuilder(this);
+    }
+
+    public final CanvasChanger get() {
+        CanvasChanger andThen = getAndThen(null);
+        return before == null ? andThen : before.getAndThen(andThen);
+    }
+
+    protected abstract CanvasChanger getAndThen(CanvasChanger then);
+
     public static class ClipperBuilder extends ChangerBuilder {
         private boolean isFake;
         private RectangleTranslator rectangleTranslator;
@@ -75,35 +106,4 @@ public abstract class ChangerBuilder {
             return new ShapeClipper(then, shape);
         }
     }
-
-    public static ClipperBuilder clip(RectangleTranslator rectangleTranslator) {
-        return new ClipperBuilder(rectangleTranslator, null);
-    }
-
-    public static ShapeClipperBuilder clipShape() {
-        return new ShapeClipperBuilder(null);
-    }
-
-    public static PainterBuilder paint() {
-        return new PainterBuilder(null);
-    }
-
-    public ClipperBuilder thenClip(RectangleTranslator rectangleTranslator) {
-        return new ClipperBuilder(rectangleTranslator, this);
-    }
-
-    public PainterBuilder thenPaint() {
-        return new PainterBuilder(this);
-    }
-
-    public ShapeClipperBuilder thenClipShape() {
-        return new ShapeClipperBuilder(this);
-    }
-
-    public final CanvasChanger get() {
-        CanvasChanger andThen = getAndThen(null);
-        return before == null ? andThen : before.getAndThen(andThen);
-    }
-
-    protected abstract CanvasChanger getAndThen(CanvasChanger then);
 }

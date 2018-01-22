@@ -6,19 +6,14 @@ import bxlx.graphics.shapes.Rectangle;
 import bxlx.system.Observable;
 
 public interface RectangleTranslator {
-    Rectangle getTranslatedRectangle(Rectangle original, int nTh, int max);
-
     RectangleTranslator IDENTITY = (original, nTh, max) -> original;
-
     RectangleTranslator NULL_RECTANGLE = (original, nTh, max) -> Rectangle.NULL_RECTANGLE;
-
     RectangleTranslator SPLIT_X = (original, nTh, max) -> {
         double one = original.getSize().getWidth() / max;
         return new Rectangle(
                 original.getStart().add(nTh * one, 0),
                 original.getSize().withWidth(one));
     };
-
     RectangleTranslator SPLIT_Y = (original, nTh, max) -> {
         double one = original.getSize().getHeight() / max;
         return new Rectangle(
@@ -88,4 +83,6 @@ public interface RectangleTranslator {
             );
         };
     }
+
+    Rectangle getTranslatedRectangle(Rectangle original, int nTh, int max);
 }

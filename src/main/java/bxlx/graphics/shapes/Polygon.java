@@ -17,13 +17,9 @@ public class Polygon extends Shape {
         super(Type.POLYGON);
         this.points = new ArrayList<>(points);
 
-        if(this.points.size() == 0) {
+        if (this.points.size() == 0) {
             this.points.add(Point.ORIGO);
         }
-    }
-
-    public List<Point> getPoints() {
-        return points;
     }
 
     public static Polygon nGon(int n, Point center, double radius, double startAngle) {
@@ -46,6 +42,10 @@ public class Polygon extends Shape {
                             .getVector().multiple(size.asPoint().multiple(1 / 2.0))));
         }
         return new Polygon(points);
+    }
+
+    public List<Point> getPoints() {
+        return points;
     }
 
     @Override

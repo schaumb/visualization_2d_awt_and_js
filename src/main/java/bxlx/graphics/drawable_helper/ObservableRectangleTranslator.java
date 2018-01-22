@@ -38,8 +38,8 @@ public abstract class ObservableRectangleTranslator extends Observable<List<Inte
     }
 
     public static ObservableRectangleTranslator aspectRatioObserve(ObservableValue<Double> nowRatio,
-                                           ObservableValue<Double> alignX,
-                                           ObservableValue<Double> alignY) {
+                                                                   ObservableValue<Double> alignX,
+                                                                   ObservableValue<Double> alignY) {
         ObservableRectangleTranslator result = new ObservableRectangleTranslator() {
             @Override
             public Rectangle getTranslatedRectangle(Rectangle original, int nTh, int max) {
@@ -65,9 +65,9 @@ public abstract class ObservableRectangleTranslator extends Observable<List<Inte
     }
 
     public static ObservableRectangleTranslator marginObserve(ObservableValue<Double> left,
-                                                        ObservableValue<Double> right,
-                                                        ObservableValue<Double> top,
-                                                        ObservableValue<Double> bottom) {
+                                                              ObservableValue<Double> right,
+                                                              ObservableValue<Double> top,
+                                                              ObservableValue<Double> bottom) {
         ObservableRectangleTranslator result = new ObservableRectangleTranslator() {
             @Override
             public Rectangle getTranslatedRectangle(Rectangle original, int nTh, int max) {

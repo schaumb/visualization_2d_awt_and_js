@@ -7,11 +7,25 @@ import java.util.List;
  * Created by qqcs on 2016.12.23..
  */
 public class Color {
+    public final static Color WHITE = new Color(255, 255, 255);
+    public final static Color LIGHT_GRAY = new Color(192, 192, 192);
+    public final static Color GRAY = new Color(128, 128, 128);
+    public final static Color DARK_GRAY = new Color(64, 64, 64);
+    public final static Color BLACK = new Color(0, 0, 0);
+    public final static Color RED = new Color(255, 0, 0);
+    public final static Color GREEN = new Color(0, 255, 0);
+    public final static Color BLUE = new Color(0, 0, 255);
+    public final static Color YELLOW = new Color(255, 255, 0);
+    public final static Color MAGENTA = new Color(255, 0, 255);
+    public final static Color CYAN = new Color(0, 255, 255);
+    public final static Color PINK = new Color(255, 175, 175);
+    public final static Color ORANGE = new Color(255, 200, 0);
+    public final static Color CONTI_COLOR = new Color(0xf4, 0x99, 0x18);
+    public final static Color OPAQUE = new Color(0, 0, 0, 0);
     private final int red;
     private final int green;
     private final int blue;
     private final int alpha;
-
     public Color(int red, int green, int blue) {
         this(red, green, blue, 255);
     }
@@ -22,70 +36,8 @@ public class Color {
         this.blue = blue & 0xFF;
         this.alpha = alpha & 0xFF;
     }
-
     public Color(int rgba) {
         this(rgba >> 16, rgba >> 8, rgba, rgba >> 24);
-    }
-
-
-    public int getRed() {
-        return red;
-    }
-
-    public int getGreen() {
-        return green;
-    }
-
-    public int getBlue() {
-        return blue;
-    }
-
-    public int getAlpha() {
-        return alpha;
-    }
-
-    public Color withAlpha(int alpha) {
-        return new Color(red, green, blue, alpha);
-    }
-
-    public final static Color WHITE = new Color(255, 255, 255);
-    public final static Color LIGHT_GRAY = new Color(192, 192, 192);
-    public final static Color GRAY = new Color(128, 128, 128);
-    public final static Color DARK_GRAY = new Color(64, 64, 64);
-    public final static Color BLACK = new Color(0, 0, 0);
-
-    public final static Color RED = new Color(255, 0, 0);
-    public final static Color GREEN = new Color(0, 255, 0);
-    public final static Color BLUE = new Color(0, 0, 255);
-
-    public final static Color YELLOW = new Color(255, 255, 0);
-    public final static Color MAGENTA = new Color(255, 0, 255);
-    public final static Color CYAN = new Color(0, 255, 255);
-
-    public final static Color PINK = new Color(255, 175, 175);
-    public final static Color ORANGE = new Color(255, 200, 0);
-
-    public final static Color CONTI_COLOR = new Color(0xf4, 0x99, 0x18);
-
-    public final static Color OPAQUE = new Color(0, 0, 0, 0);
-
-    public Color getScale(Color to, double percent) {
-        return new Color(
-                (int) ((to.getRed() - getRed()) * percent + getRed()),
-                (int) ((to.getGreen() - getGreen()) * percent + getGreen()),
-                (int) ((to.getBlue() - getBlue()) * percent + getBlue()),
-                (int) ((to.getAlpha() - getAlpha()) * percent + getAlpha())
-        );
-    }
-
-    public List<Color> getScaleList(Color to, int count) {
-        List<Color> result = new ArrayList<>(count);
-
-        for (int i = 0; i < count; ++i) {
-            double percent = (double) i / (count - 1);
-            result.add(getScale(to, percent));
-        }
-        return result;
     }
 
     public static List<Color> getScaleList(Color from, Color middle, Color to, int count) {
@@ -110,6 +62,45 @@ public class Color {
 
     public static List<Color> getScaleFromBackToWhite(Color color, int count) {
         return getScaleList(BLACK, color, WHITE, count);
+    }
+
+    public int getRed() {
+        return red;
+    }
+
+    public int getGreen() {
+        return green;
+    }
+
+    public int getBlue() {
+        return blue;
+    }
+
+    public int getAlpha() {
+        return alpha;
+    }
+
+    public Color withAlpha(int alpha) {
+        return new Color(red, green, blue, alpha);
+    }
+
+    public Color getScale(Color to, double percent) {
+        return new Color(
+                (int) ((to.getRed() - getRed()) * percent + getRed()),
+                (int) ((to.getGreen() - getGreen()) * percent + getGreen()),
+                (int) ((to.getBlue() - getBlue()) * percent + getBlue()),
+                (int) ((to.getAlpha() - getAlpha()) * percent + getAlpha())
+        );
+    }
+
+    public List<Color> getScaleList(Color to, int count) {
+        List<Color> result = new ArrayList<>(count);
+
+        for (int i = 0; i < count; ++i) {
+            double percent = (double) i / (count - 1);
+            result.add(getScale(to, percent));
+        }
+        return result;
     }
 
     @Override

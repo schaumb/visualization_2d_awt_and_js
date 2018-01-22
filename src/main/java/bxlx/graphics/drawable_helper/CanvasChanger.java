@@ -7,6 +7,15 @@ import bxlx.system.Observer;
 import java.util.List;
 
 public abstract class CanvasChanger extends Observable<List<Integer>> implements Observer<List<Integer>> {
+    public static final CanvasChanger NO_CHANGE = new CanvasChanger(null) {
+        @Override
+        protected void makeChange(ICanvas canvas, int nTh, int max) {
+        }
+
+        @Override
+        protected void makeRestore(ICanvas canvas) {
+        }
+    };
     private final CanvasChanger andThen;
 
     CanvasChanger(CanvasChanger andThen) {
@@ -24,13 +33,13 @@ public abstract class CanvasChanger extends Observable<List<Integer>> implements
     public final void change(ICanvas canvas, int nTh, int max) {
         makeChange(canvas, nTh, max);
 
-        if(andThen != null) {
+        if (andThen != null) {
             andThen.change(canvas, nTh, max);
         }
     }
 
     public final void restore(ICanvas canvas) {
-        if(andThen != null) {
+        if (andThen != null) {
             andThen.restore(canvas);
         }
 
@@ -40,14 +49,4 @@ public abstract class CanvasChanger extends Observable<List<Integer>> implements
     protected abstract void makeChange(ICanvas canvas, int nTh, int max);
 
     protected abstract void makeRestore(ICanvas canvas);
-
-    public static final CanvasChanger NO_CHANGE = new CanvasChanger(null) {
-        @Override
-        protected void makeChange(ICanvas canvas, int nTh, int max) {
-        }
-
-        @Override
-        protected void makeRestore(ICanvas canvas) {
-        }
-    };
 }

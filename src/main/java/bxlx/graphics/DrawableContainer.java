@@ -60,7 +60,7 @@ public abstract class DrawableContainer<T extends Drawable> extends Drawable {
         if (child.size() == 1 && child.get(0) == -1) {
             for (T drawable : DrawableContainer.this.child) {
                 if (drawable != null) {
-                    drawable.update(this,this);
+                    drawable.update(this, this);
                 }
             }
         } else {
@@ -68,7 +68,7 @@ public abstract class DrawableContainer<T extends Drawable> extends Drawable {
                 T drawable = DrawableContainer.this.get(i);
 
                 if (drawable != null) {
-                    drawable.update(this,this);
+                    drawable.update(this, this);
                 }
             }
         }
@@ -80,7 +80,7 @@ public abstract class DrawableContainer<T extends Drawable> extends Drawable {
         for (int i = 0; i < size; ++i) {
             T drawable = get(i);
 
-            if(drawable != null && drawable.isNeedRedraw()) {
+            if (drawable != null && drawable.isNeedRedraw()) {
                 canvasChanger.change(canvas, i, size);
 
                 drawable.draw(canvas);
@@ -110,7 +110,7 @@ public abstract class DrawableContainer<T extends Drawable> extends Drawable {
         }
         T prev = get(index);
 
-        if(prev != null) {
+        if (prev != null) {
             prev.setRedraw();
             prev.removeObserver(this);
         }
